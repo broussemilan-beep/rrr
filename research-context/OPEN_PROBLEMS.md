@@ -13,25 +13,37 @@ action rather than two animations happening near each other.
 
 ### What has been tried
 
-A double-rig prototype. Two R6 characters animated **separately**, then the
-contact brought into alignment by hand: sweeping the placement parameters
-(relative offset and orientation of the two rigs, and the frame at which contact
-occurs) until the contact distance dropped to an acceptable value.
+A double-rig **previsualisation prototype**, built outside this codebase: an
+HTML/Canvas tool on a simplified two-segment toy rig, used to test the
+choreography before committing to a Luau implementation. Two characters animated
+separately, contact then forced by numerical adjustment.
 
-It produced a contact that looked right for that one pairing.
+The adjustment was a **single-parameter sweep**: vary the striking leg's angle,
+minimise the 3D Euclidean distance between the foot tip and the centre of the
+victim's torso, stop when it falls under a threshold judged acceptable by eye.
+On that simplified rig it converged from **5.86 to ~1.40 units** of contact
+distance.
+
+It produced a contact that read correctly for that one pairing.
 
 ### Why it stalls
 
-The parameter sweep is a numerical fit, not choreography. It yields a set of
-magic offsets for one animation pair at one relative placement, and there is no
-representation of the *hold itself* to carry to the next move. Nothing learned in
-one grapple transfers to another — the next one starts from a fresh sweep. The
-approach does not scale past a handful of hand-tuned pairs.
+Not "we haven't got round to the general case yet" — the method itself cannot
+produce one. Optimising distance over a **single isolated parameter** is not
+choreography. A real strike-into-contact couples pelvis rotation, torso lean and
+leg swing; they have to be solved together, against a contact constraint, or the
+pose that achieves the right foot position is not the pose that reads as a
+committed strike. Driving one angle to close a distance gap gets the extremity to
+the right place by deforming everything else around it.
 
-What is missing is a way to author or generate a two-body action where the
-contact constraint is part of the representation, so that a hold generalises
-across moves, character placements, and — ideally — across the eight character
-archetypes the project uses.
+Consequently there is no representation of the *hold itself* to carry forward.
+The output is a magic angle for one move on one rig at one relative placement;
+nothing learned transfers, and the next hold starts from a fresh sweep.
+
+What is missing is a formulation of a two-body action in which the contact
+constraint is part of the representation and the coupled DOF are solved jointly —
+so that a hold generalises across moves, across relative character placements,
+and ideally across the eight character archetypes the project uses.
 
 ### Constraints a solution has to respect
 
@@ -55,7 +67,11 @@ archetypes the project uses.
 `reference-code/r6_fk.py` gives the exact R6 kinematics — part dimensions and the
 real `C0`/`C1` attachment frames — needed to compute where a limb actually ends
 up. Contact-distance math between two rigs should be built on it rather than on
-assumed joint frames; see the C0/C1 note in `ARCHITECTURE.md` for why.
+assumed joint frames; see the C0/C1 note in `ARCHITECTURE.md` for why. That note
+is directly relevant here: the prototype above ran on a two-segment toy rig, and
+its contact distances are in that rig's units, not comparable to R6 studs. Any
+number produced against assumed joint frames rather than the engine's real ones
+is measuring the wrong geometry — which is exactly how the C0/C1 bug survived.
 
 ---
 
@@ -94,6 +110,8 @@ the character-design side.
 ## Note on provenance
 
 Sections 2 and 3 are declared greenfield by the project owner. Section 1's prior
-attempt is reported from the owner's account of it; the prototype is not in this
-repository. Everything in `ARCHITECTURE.md` is measured from the live codebase
-and the running engine.
+attempt is reported from the owner's account of it: the prototype lives outside
+this codebase — an HTML/Canvas previsualisation tool on a toy rig — and is not in
+this repository, so its numbers have not been independently reproduced here.
+Everything in `ARCHITECTURE.md` is measured from the live codebase and the
+running engine.
