@@ -52,7 +52,7 @@ fait monter Level ni Experience.
 d'écran, speedlines). Pas de barre de vie, pas de stamina visible, pas de
 cooldowns, pas de menu.
 
-**Qualité du corpus d'animations** : au gate par classe, bras seul — **9/12 au
+**Qualité du corpus d'animations** : au gate par classe, bras seul — **10/12 au
 vert** après amplification, amplitude médiane 2.43 studs et ratio de forme médian
 0.97 (pack commercial : 0.65–0.98). Les seeds ont la bonne *forme* (ratio de classe 0.71–0.95) ; c'est
 l'amplitude qui manque. Les seeds amplifiés ne sont pas encore bakés ni en jeu.
@@ -69,9 +69,93 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-25 — Réglage fin + diagnostic de forme sur luffy
+
+`a7565af`
+
+### 1. Réglage sur les deux seeds à 3 % du plancher
+
+Balayage serré du facteur d'échelle, ces deux seeds seulement.
+
+| seed | avant | après | plancher | ratio | verdict |
+|---|---|---|---|---|---|
+| `spear_thrust_jinwoo` | 2.17 | **2.45** (k=8.70) | 2.25 | 0.75 | **PASS** |
+| `M1_jab_toji` | 2.19 | 2.19 (k=5.30) | 2.25 | 0.99 | FAIL |
+
+**`spear_thrust_jinwoo` passe.** Ce qui le bloquait n'était pas sa géométrie mais
+mon plafond `k_max = 8.0` — une valeur devinée, jamais mesurée. Relevée à 12 ; le
+pic réel du seed est à k≈10.25 pour 2.71 studs.
+
+**`M1_jab_toji` ne passe pas, et c'est un vrai plafond.** La courbe monte puis
+redescend (2.185 à k=5.25, 2.05 à k=6.25) : c'est un maximum, pas une saturation.
+L'espace de tâche donne **2.191** — les deux méthodes convergent à 0.006 stud
+l'une de l'autre, ce qui confirme une contrainte structurelle du seed et non un
+défaut de méthode. Il reste 2.7 % sous le plancher.
+
+**Corpus : 10/12 au vert.**
+
+### 2. `devil_fruit_cast_luffy` — diagnostic, pas de réécriture
+
+Trois défauts distincts, chacun mesuré :
+
+**a) Le mouvement est latéral, pas frontal.** Au pic (frame 12, t=0.400 — pile
+sur le marker `Whoosh`) :
+
+```
+avant   0.349 stud
+latéral 0.803 stud      <- 2.3x plus que l'avant
+vertical 0.092 stud
+```
+
+Pour atteindre le seuil de forme 0.67 il faudrait un hors-axe ≤ 0.387 stud ; on
+est à 0.808. Le geste balaie de côté là où un `front_palm_cast` doit projeter
+devant.
+
+**b) Un saut de 2.57 studs en une image.** Entre f12 (t=0.400) et f13 (t=0.433),
+le poignet gauche traverse : `dx` passe de −0.803 à +1.545. C'est un
+téléport de 2.57 studs en 1/30 s, entre le `Whoosh` et le `Hit`. Aucune
+interpolation ne rattrape ça — c'est un défaut d'écriture, pas de rendu.
+
+**c) 26 % du clip est figé.** Les frames 6 à 11 (t=0.200 → 0.367) sont
+rigoureusement identiques : 6 frames sur 23 à déplacement nul, juste avant la
+frappe. Un temps de pose de 0.2 s peut être voulu, mais placé là il mange le
+windup.
+
+**Les deux bras sont mauvais**, ce n'est pas une erreur de sélection du poignet :
+
+```
+Right Wrist : avant max 0.216   latéral max 1.557   ratio 0.18
+Left Wrist  : avant max 0.349   latéral max 1.545   ratio 0.40
+```
+
+**Cible de réécriture** : le geste doit projeter sur `−Z` au marker `Hit`
+(t=0.4667), pas balayer sur X ; supprimer le hold f6–f11 ou le déplacer avant le
+windup ; et lisser la transition f12→f13, qui porte à elle seule le tiers du
+déplacement total du clip.
+
+### Ouvert
+
+- `M1_jab_toji` : 2.19 contre 2.25. Deux méthodes indépendantes plafonnent au même
+  endroit — à investiguer côté structure du seed, pas côté amplification.
+- `devil_fruit_cast_luffy` : diagnostiqué, pas réécrit.
+- Rien n'est baké ni uploadé.
+
+### Correction de process
+
+Les entrées du journal étaient taguées `` `a7565af` `` au lieu d'un SHA : le
+dernier commit visible dans le journal **publié** restait donc `e1385da` alors que
+trois commits avaient suivi. Corrigé, et `sync_progress_log.sh` estampille
+désormais le SHA du HEAD automatiquement.
+
+À noter pour lever une ambiguïté : **le dépôt MyAnimeRPG n'a aucun remote et
+aucune branche `main`** — il est purement local. Seul le miroir public `rrr` est
+poussé. Un commit « sur main » n'existe pas dans ce projet.
+
+---
+
 ## 2026-08-25 — Amplification en espace de tâche : 9/12 au vert
 
-`(ce tour)`
+`e1d938e`
 
 ### Fait
 
@@ -139,7 +223,7 @@ atteignable — la limite n'est pas géométrique.
 
 ## 2026-08-25 — Le gate savait juger un jab ; nos bornes bridaient tout le reste
 
-`(ce tour)`
+`fc3495a`
 
 Deux découvertes, dont la seconde annule la première hypothèse.
 
