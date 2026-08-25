@@ -34,7 +34,7 @@ droite, unités en studs (1 stud ≈ 0.28 m à l'échelle personnage par défaut
 | Moteur de combat | 14 services serveur, ~22 contrôleurs client. Prédiction client + validation serveur, rollback (buffer de snapshots), hitbox, stamina, block, lock-on, dash, double-jump, transformations, VFX, camera shake, hitstop. **Vérifié en Play Solo : 0 erreur, 0 warning, 61 fps.** |
 | Ship path animations | JSON → bake KeyframeSequence → upload Open Cloud → câblage AnimationDB → joué en jeu. **Prouvé bout en bout 2026-08-24.** |
 | FK géométrique | `r6_fk.py` — validé contre le moteur à **0.0001 stud**. |
-| Cascade de gates | 9 gates déterministes (direction, travel, focus, footplant, joint_bounds, pose_engage, silhouette, magnitude, timing). |
+| Cascade de gates | 9 gates déterministes + jugement **par classe de coup** (straight / hook / uppercut / overhead / wide), seuils calibrés sur un pack commercial. |
 | Capture visuelle | MCP Studio officiel Roblox — capture le viewport **en Play mode**, Studio pas besoin d'être au premier plan. |
 
 ### Ce qui manque — c'est le jeu, pas la technique
@@ -52,9 +52,10 @@ fait monter Level ni Experience.
 d'écran, speedlines). Pas de barre de vie, pas de stamina visible, pas de
 cooldowns, pas de menu.
 
-**Qualité du corpus d'animations** : sur 12 seeds, mesuré bras seul —
-**5 propres, 4 latérales, 3 franchement BACKWARD**. Et l'amplitude est le vrai
-problème (voir l'entrée du 2026-08-25).
+**Qualité du corpus d'animations** : au gate par classe, bras seul — **7/12 au
+vert** après amplification, amplitude médiane 2.19 studs contre 3.91 pour un pack
+commercial. Les seeds ont la bonne *forme* (ratio de classe 0.71–0.95) ; c'est
+l'amplitude qui manque. Les seeds amplifiés ne sont pas encore bakés ni en jeu.
 
 ### Les trois chantiers ouverts de R&D externe
 
@@ -65,6 +66,96 @@ problème (voir l'entrée du 2026-08-25).
    jamais abordé.
 
 Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
+
+---
+
+## 2026-08-25 — Le gate savait juger un jab ; nos bornes bridaient tout le reste
+
+`(ce tour)`
+
+Deux découvertes, dont la seconde annule la première hypothèse.
+
+### 1. Le gate ne savait noter qu'un coup droit — corrigé
+
+`scripts/animator_ai/strike_classes.py`. Le critère `focus` mesurait la portée
+avant du poignet et comptait tout mouvement latéral comme un échec : test correct
+pour un jab, erreur de catégorie pour tout le reste. Un uppercut monte, un crochet
+traverse, un overhead descend.
+
+**Preuve que c'était mal calibré et pas seulement étroit** : les coups droits du
+pack commercial Battleground scorent **0.47** sur l'ancien ratio
+`avant / (avant + latéral)` — sous le seuil FOCUSED de 0.65. *Le matériel de
+référence échouait notre gate.*
+
+Cinq classes, tirées du `metadata.pattern` que chaque seed déclare déjà :
+`straight`, `hook`, `uppercut`, `overhead`, `wide`. Seuils calibrés **sur le pack
+commercial**, 10 % sous son membre le plus faible par classe. Sanity : le pack
+passe **8/8** son propre gate.
+
+### 2. Nos seeds ont la bonne forme — c'est l'amplitude qui manque
+
+Corpus repassé au gate par classe (bras seul) :
+
+| | ratio de classe | amplitude |
+|---|---|---|
+| nos 12 seeds | **0.71–0.95** (souvent > le pack) | médiane **1.23** stud |
+| pack Battleground | 0.65–0.98 | médiane 3.91 stud |
+
+**10/12 échouent en `FAIL_AMPLITUDE`, 2 seulement en forme.** Nos animations sont
+des miniatures correctement dessinées. Le verdict « 3 BACKWARD » du 24 août était
+en grande partie un artefact du jugement mono-patron.
+
+### 3. Le vrai plafond : nos propres bornes articulaires
+
+Amplification (`amplify_seed.py`, `v' = v0 + k·(v − v0)` depuis la pose de garde,
+clampé) : d'abord **saturation à k=8 sur 10/12**. Diagnostic — le pack commercial
+**dépasse nos bornes de jusqu'à 90°** :
+
+```
+Right Shoulder.rz  atteint +179.6°   notre borne [-90,+90]
+RootJoint.rx       atteint +100.4°   notre borne [-45,+45]
+RootJoint.rz       atteint  -95.7°   notre borne [-45,+45]
+```
+
+Enveloppe mesurée sur **79 animations commerciales** (19 battleground + 60 Close
+Combat) : épaules et RootJoint vont à ±180, hanches à ±130–155. Nos bornes
+étaient 2 à 4× trop serrées et n'avaient **jamais été calibrées contre quoi que
+ce soit**. Recalibrées (élargissement seul, jamais de rétrécissement) ; les
+anciennes valeurs conservées sous `_previous_limits_deg`.
+
+`mocap_anchor._R6_BOUNDS` reste le clamp **conservateur** appliqué par le
+polisher — deux usages distincts, et un test garantit que l'enveloppe calibrée
+n'est jamais plus étroite que lui.
+
+### Résultat chiffré
+
+| | avant | après |
+|---|---|---|
+| amplitude médiane (bras seul) | **1.23** stud | **2.19** stud |
+| seeds au vert (gate par classe) | **2/12** | **7/12** |
+
+Les 12 seeds amplifiés sont écrits en `<seed>_amplified.json`, non bakés.
+
+### Limite atteinte, honnêtement
+
+Le facteur `k` était trouvé par bissection — qui suppose la monotonie. Elle est
+fausse : l'échelle linéaire d'angles d'Euler cesse d'être une exagération valide
+au-delà de ~3×, le joint s'enroule et le poignet part ailleurs (M1_jab : k=8 →
+1.24 stud là où k≈3 → 2.22). Remplacée par un balayage.
+
+Les **5 seeds restants** saturent encore. C'est la limite de la méthode : mettre
+à l'échelle des angles ne peut pas viser une position. La suite logique est
+d'amplifier **en espace de tâche** — fixer un déplacement de poignet cible et
+résoudre les angles avec le `contact_solver` construit ce mois-ci. Non fait.
+
+### Ouvert
+
+- 5 seeds sous le plancher d'amplitude : `M1_jab_toji`, `M1_palm_gojo`,
+  `devil_fruit_cast_luffy`, `domain_open_gojo`, `spear_thrust_jinwoo`.
+- Les seeds amplifiés ne sont ni bakés ni uploadés — aucun changement en jeu.
+- L'enveloppe recalibrée inclut des clips de chute/ragdoll : elle est permissive
+  par construction. C'est une borne sur ce que du contenu **livré** fait, pas une
+  affirmation anatomique.
 
 ---
 
