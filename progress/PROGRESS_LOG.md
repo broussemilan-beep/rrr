@@ -52,9 +52,9 @@ fait monter Level ni Experience.
 d'écran, speedlines). Pas de barre de vie, pas de stamina visible, pas de
 cooldowns, pas de menu.
 
-**Qualité du corpus d'animations** : au gate par classe, bras seul — **7/12 au
-vert** après amplification, amplitude médiane 2.19 studs contre 3.91 pour un pack
-commercial. Les seeds ont la bonne *forme* (ratio de classe 0.71–0.95) ; c'est
+**Qualité du corpus d'animations** : au gate par classe, bras seul — **9/12 au
+vert** après amplification, amplitude médiane 2.43 studs et ratio de forme médian
+0.97 (pack commercial : 0.65–0.98). Les seeds ont la bonne *forme* (ratio de classe 0.71–0.95) ; c'est
 l'amplitude qui manque. Les seeds amplifiés ne sont pas encore bakés ni en jeu.
 
 ### Les trois chantiers ouverts de R&D externe
@@ -66,6 +66,74 @@ l'amplitude qui manque. Les seeds amplifiés ne sont pas encore bakés ni en jeu
    jamais abordé.
 
 Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
+
+---
+
+## 2026-08-25 — Amplification en espace de tâche : 9/12 au vert
+
+`(ce tour)`
+
+### Fait
+
+`scripts/animator_ai/amplify_taskspace.py`. Au lieu de mettre à l'échelle les
+angles d'Euler, on met à l'échelle le **chemin du poignet** et on laisse
+`contact_solver.solve_trajectory` trouver les angles — jointement sur toutes les
+frames, avec le couplage de continuité.
+
+Cibles dérivées de l'amplitude du pack Battleground pour la classe du coup :
+`straight` 2.71, `hook` 1.95, `uppercut` 3.06, `overhead` 3.55 studs.
+
+### Tableau final — 12 seeds, gate calibré, bras seul
+
+| seed | classe | avant | après | plancher | ratio | méthode | verdict |
+|---|---|---|---|---|---|---|---|
+| M1_jab_toji | straight | 0.58 | 2.19 | 2.25 | 0.99 | euler | **FAIL** |
+| M1_cross_toji | straight | 0.75 | 2.43 | 2.25 | 0.98 | euler | PASS |
+| M1_3_hook_toji | hook | 1.61 | 1.84 | 1.75 | 0.97 | euler | PASS |
+| M1_4_finisher_toji | overhead | 2.85 | 3.10 | 2.85 | 0.98 | euler | PASS |
+| M1_palm_gojo | straight | 0.32 | 2.31 | 2.25 | 0.99 | **taskspace** | PASS |
+| M1_uppercut_saitama | uppercut | 1.23 | 2.95 | 2.75 | 0.91 | euler | PASS |
+| dash_strike_toji | straight | 0.74 | 2.43 | 2.25 | 0.93 | euler | PASS |
+| devil_fruit_cast_luffy | straight | 0.35 | 1.69 | 2.25 | 0.49 | euler | **FAIL** |
+| domain_open_gojo | wide | 1.48 | 2.91 | 2.00 | 0.85 | **taskspace** | PASS |
+| dual_slash_swordsman | wide | 1.41 | 2.11 | 2.00 | 0.86 | euler | PASS |
+| heavy_finisher_sukuna | overhead | 2.85 | 3.10 | 2.85 | 0.98 | euler | PASS |
+| spear_thrust_jinwoo | straight | 0.42 | 2.17 | 2.25 | 0.69 | euler | **FAIL** |
+
+| | avant | après |
+|---|---|---|
+| seeds au vert | **2/12** | **9/12** |
+| amplitude médiane | **1.23** stud | **2.43** stud |
+| ratio de forme médian | — | **0.97** (pack : 0.65–0.98) |
+
+### Trois approches essayées, deux échecs instructifs
+
+1. **Mise à l'échelle uniforme du chemin en 3D** → cibles hors de l'ensemble
+   atteignable, **2.6 à 10.7 studs** d'erreur de chemin, poses contorsionnées.
+2. **Projection sur la sphère atteignable** (rayon 1.5811 autour du pivot
+   d'épaule au repos) → erreur de chemin effondrée à 0.05… et amplitude effondrée
+   à 1.19 aussi, parce que figer le pivot jette la portée qu'apportent les DOF du
+   root. Faisable et inutile.
+3. **Ce qui marche** : n'amplifier **que l'axe de la classe**, balayer l'échelle,
+   et garder ce que le solveur *atteint réellement* avec un filtre d'erreur
+   **relatif** à l'amplitude (15 %). Le terme de bornes du solveur fait le
+   raisonnement de faisabilité qu'aucune projection fermée ne peut faire.
+
+Plafond physique mesuré (root 3 DOF + épaule 3 DOF, sans translation de root) :
+**5.206 studs** d'amplitude sagittale. La cible de 2.71 est donc largement
+atteignable — la limite n'est pas géométrique.
+
+### Ouvert
+
+- **3 seeds rouges** : `M1_jab_toji` (2.19 contre 2.25 — à 3 % du plancher),
+  `spear_thrust_jinwoo` (2.17, idem), `devil_fruit_cast_luffy` (1.69, et ratio de
+  forme 0.49 : celui-là a un vrai problème de **forme**, pas seulement de taille,
+  amplifier ne le sauvera pas).
+- L'espace de tâche plafonne vers ~2.3 studs sur ces seeds alors que le rig peut
+  aller à 5.2. Cause probable : la continuité et le warm-start maintiennent la
+  solution près de la pose autorisée. Non diagnostiqué.
+- **Rien n'est baké ni uploadé.** Les seeds amplifiés vivent en
+  `<seed>_amplified.json` et `<seed>_taskspace.json` — aucun changement en jeu.
 
 ---
 
