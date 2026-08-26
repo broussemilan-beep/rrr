@@ -69,6 +69,124 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-26 — §18-6/7/8 : le disque, et le miroir public réparé pour de bon
+
+`52a1143`
+
+Deux chantiers en parallèle, découpés par **propriété de fichiers** pour qu'aucun
+conflit d'écriture ne soit possible : un agent sur toute la chaîne de publication,
+moi sur `src/shared/Arena/*`.
+
+Captures de ce tour (résoudre la base courante via `LATEST.md`, cf. plus bas) :
+`2026-08-26_capture-disc-fixed.jpg`, `2026-08-26_capture-materials-eye.jpg`,
+`2026-08-26_capture-plate-closeup.jpg`.
+
+### §18-6 — le carré devient un disque
+
+Le §1 demandait une forme « presque circulaire ». Le premier graybox posait un
+**carré** de 180×180. Les lignes de vue et la symétrie étaient justes, la
+**forme** était simplement fausse — aucune mesure ne pouvait le dire, la première
+capture l'a dit.
+
+Sol en anneaux concentriques (8 / 16 / 16 segments sur les rayons 0-30, 30-56,
+56-78, périphérie 78-88). Sert le §1 **et** les « motifs circulaires » du §17. Les
+comptes de segments sont des multiples de 4 : la symétrie d'ordre 4 devient une
+propriété du générateur, le miroir n'a plus à reproduire le sol.
+
+**Deux défauts, aucun visible à l'œil :**
+
+1. Boîtes dimensionnées sur le rayon **médian** — une boîte droite tenant lieu de
+   secteur annulaire est la plus large où l'arc est le plus long, d'où des trous
+   en coin externe.
+2. Et le vrai : **la convention d'axe était inversée**. Avec
+   `CFrame.Angles(0, -a, 0)`, le X **local** d'une Part tombe sur la direction
+   **radiale**, pas tangentielle. Un secteur annulaire s'écrit donc
+   `Vector3.new(radial, épaisseur, tangentiel)` — l'inverse de la lecture
+   intuitive. À l'envers on construit une rosace au lieu d'un anneau. La même
+   erreur était dans le monument, la périphérie et l'anneau suspendu.
+
+`CheckFloorHoles` (raycasts sur grille polaire) : **183 trous** au premier disque,
+**0** après le fix d'axe. Sans lui la map partait avec des trous où l'on tombe.
+
+### §18-7/8 — et l'image a corrigé mon propre diagnostic
+
+J'avais rapporté que les plaques fracturées se lisaient comme des panneaux plats.
+**Faux.** Le gros plan montre que les dalles inclinées sont l'élément qui se lit
+le mieux. Les rectangles blancs étaient les **pads de spawn**, qui portaient le
+pâle du monument et le concurrençaient.
+
+**Le vrai défaut** : une plaque **flottait dans le vide**. Les coordonnées Q1 sont
+cartésiennes et l'arène est ronde — `(74, 74)` se lit « près du bord » et vaut
+**r = 104.7** contre un disque de 88. Trois plaques rentrées à r 77.7–79.2.
+
+`CheckOverhang` ajouté, et il a fallu **deux corrections avant qu'il soit fiable** :
+lancé depuis sous chaque Part il rapportait 38 faux positifs (l'origine était
+*dans* la dalle, et un raycast Roblox n'accroche pas la Part où il démarre) ; puis
+il signalait les 8 murs posés légitimement **sur une plaque** — une plaque
+déplacée *est* du sol.
+
+**Et une erreur à moi** : le commit `14e6a07` affirmait que les pads avaient pris
+l'accent chaud. Ils ne l'avaient pas — toujours `rgb(214,208,226)`. Mon
+remplacement visait un appel d'une ligne que stylua avait reformaté sur sept :
+il n'a rien matché, en silence. Corrigé et **mesuré sur l'arène construite** :
+`pad rgb(186,138,96) | monument rgb(214,208,226) | distincts = true`.
+
+```
+154 parts | centre 8/8 | opposés 8/8 | trous 0 | porte-à-faux 0
+§18-5 rejoué sur le disque : chaîne M1 complète, traversée r=42.4 -> r=12.4
+franchissant la limite d'anneau à r=30 sans chute, 0 erreur
+```
+
+**§18-9 non faite volontairement.** Le §17 exige que les VFX d'environnement ne
+gênent jamais la lisibilité PvP — vérifiable seulement en playtest avec des
+pouvoirs qui n'existent pas encore.
+
+### Le miroir public : deux caches, pas un échec de sync
+
+Ce n'était pas un échec de synchronisation. **Deux caches indépendants**, tous
+deux mesurés :
+
+- **Fastly sur les URLs de branche.** `max-age=300` et **GitHub ne purge pas au
+  push** : sur une sonde V1→V2, V1 était encore servi à **T+242 s**. Le
+  cache-busting `?t=<epoch>` **ne marche pas** (la query string n'est pas dans la
+  clé de cache) et l'en-tête de requête `Cache-Control: no-cache` est **ignoré**
+  — donc ma vérification « no-cache » d'un tour précédent ne prouvait rien.
+- **Le cache du lecteur, et c'est le dominant.** `WebFetch` met en cache ~15 min
+  et **ignore le `max-age`** de la réponse. Preuve au même instant, même URL :
+  `curl → V2`, `WebFetch → V1`.
+
+Puisque la couche 2 ignore les en-têtes serveur, **aucun réglage côté serveur ne
+peut corriger ça**. Le seul levier est que la **chaîne d'URL change**. D'où des
+URLs **épinglées au SHA** : une URL qu'aucun client n'a jamais lue, donc qu'aucun
+cache ne peut détenir.
+
+`progress/LATEST.md` est le point d'entrée à URL stable — il porte le
+`content_commit`, un `generated_utc` et les URLs épinglées. Il reste cacheable,
+mais il est **auto-daté** : la péremption devient *visible* au lieu d'être
+silencieuse, et la chaîne se termine toujours sur du contenu immuable.
+
+### Captures publiées
+
+`scripts/sync_progress_log.sh [IMAGE ...]` publie sous `progress/screenshots/`.
+Validation par **magic bytes, pas par extension** — vérifié indépendamment : un
+`.lua` renommé en `.jpg` daté est refusé et le miroir reste propre.
+
+### À utiliser désormais
+
+**Point d'entrée** :
+<https://raw.githubusercontent.com/broussemilan-beep/rrr/main/progress/LATEST.md>
+
+### Ouvert
+
+- Décision île : effacer le Terrain et remettre `BASE_Y = 0`.
+- Playtest multi-joueurs (§16 : 4-8 répartis) — le round-robin des spawns n'est
+  toujours pas vérifié en conditions réelles.
+- §18-9 (VFX d'environnement), en attente de pouvoirs jouables.
+- Non établi par l'agent : les en-têtes réels de GitHub Pages (non activé) et le
+  TTL exact de `WebFetch` (prouvé > 6 min, pas déroulé jusqu'à 15).
+
+---
+
 ## 2026-08-26 — Spawns câblés, playtest §18-5 passé, capture réparée
 
 `e9e1c93`
