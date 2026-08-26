@@ -69,6 +69,88 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-26 — Spawns câblés, playtest §18-5 passé, capture réparée
+
+`e9e1c93`
+
+### 1. Pourquoi `screen_capture` timeout — trouvé en une commande
+
+**La fenêtre Studio était minimisée** (`AXMinimized = true`). `execute_luau` n'a
+besoin d'aucun rendu et continue de répondre ; `screen_capture` rend le viewport,
+qui n'a plus de surface quand la fenêtre est réduite. D'où l'asymétrie exacte
+observée.
+
+**Précision utile sur la note existante** : arrière-plan ≠ minimisé. Studio peut
+être **en arrière-plan** (une autre app au premier plan) et la capture marche —
+c'était déjà mesuré le 2026-08-24. **Minimisé**, elle ne marche pas. Vérifié en
+dé-minimisant : la capture est repassée du premier coup.
+
+Remède : `osascript -e 'tell application "System Events" to tell process
+"RobloxStudio" to set value of attribute "AXMinimized" of front window to false'`
+
+### 2. La capture a immédiatement trouvé ce que les mesures ne voyaient pas
+
+Première image de l'arène : **seuls les deux anneaux étaient visibles**. Le reste
+était enterré dans le terrain natif de l'île existante — **47 % des voxels** d'une
+boîte 200×60×200 autour du centre sont solides.
+
+Les 130 Parts existaient, la symétrie était correcte, les lignes de vue mesurées
+justes. Et la carte était invisible. Aucune de nos mesures ne pouvait le dire.
+
+Arène relevée à `BASE_Y = 300` — réversible, et **la suppression de l'île reste
+une décision du propriétaire, pas un effet de bord d'un graybox**. À remettre à 0
+quand l'île partira (§1 et §15 interdisent le Terrain et font de cette arène le
+monde unique).
+
+### 3. Spawns câblés
+
+`ArenaBootstrap.server.lua` préfère désormais les 8 pads de l'arène et retombe
+sur `IslandSpawn` sinon — l'ancienne île continue de fonctionner jusqu'à sa
+suppression.
+
+Attribution **round-robin, pas aléatoire** : les huit pads sont symétriques par
+construction (§14), et les distribuer dans l'ordre est la seule façon que cette
+symétrie atteigne réellement les joueurs. Un tirage aléatoire réintroduit le
+regroupement que le miroir existe pour empêcher. Le spawn oriente vers le centre.
+
+### 4. Playtest §18-5 — M1 + dash uniquement
+
+```
+spawn          Spawn_1, 3.5 studs du pad, 42.4 du centre   (spec §13 : 35-50)
+combo M1       M1_1, M1_2, M1_3, M1_4 — chaîne complète sur 4 clics
+dash           7 déclenchements
+locomotion     Idle x9, Walk x4, AthleticRun x2
+erreurs        0   (hors les permissions d'assets pré-existantes)
+chute          aucune — y=303 sur un sol à 300, hp 100
+```
+
+Vérification finale après relevage : `parts=130, spawns=8, y=300, centre 8/8
+bloqué, opposés 8/8 bloqués`.
+
+### Ce que l'œil dit et que la mesure ne disait pas
+
+- La palette tient : violet-ardoise et marbre pâle, **clairement pas le
+  beige/gris désertique** que le §17 désigne comme la contrainte de
+  différenciation la plus importante.
+- L'anneau suspendu fonctionne comme silhouette — lisible depuis le sol,
+  reconnaissable.
+- **Les plaques fracturées ne se lisent pas comme des fractures** : blanches sur
+  violet, elles ressemblent à des panneaux posés à plat plutôt qu'à du sol
+  déplacé. À reprendre à la passe matériaux (§18-7).
+- **Le sol est carré, pas « presque circulaire »** comme le demande le §1. Les
+  dalles forment un carré de 180×180 ; seule la périphérie est annulaire.
+
+### Ouvert
+
+- Décision île : effacer le Terrain et remettre `BASE_Y = 0`, ou garder les deux.
+- Forme carrée contre §1.
+- Lisibilité des plaques de fracture.
+- Playtest multi-joueurs (§16 demande 4–8 répartis) — un seul joueur testé, donc
+  le round-robin des spawns n'est pas vérifié en conditions réelles.
+- §18 étapes 6–10 non faites.
+
+---
+
 ## 2026-08-26 — L'Arène Fracturée : graybox V1 bâti et mesuré
 
 `049f686`
