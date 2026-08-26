@@ -69,6 +69,95 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-26 — L'Arène Fracturée : graybox V1 bâti et mesuré
+
+`049f686`
+
+Spec reçue (`artifacts/ARENE_FRACTUREE_spec.md`), étapes 1 à 4 de son §18 faites.
+
+### Conflit de spec tranché, pas contourné
+
+Le §3 demande quatre secteurs d'identités **différentes** (Nord dalle ouverte,
+Est colonnes, Sud cour brisée, Ouest terrain fracturé) tandis que le §14 impose
+le **miroir par quadrant**. Les deux ne peuvent pas tenir : le miroir produit
+quatre quadrants identiques, donc un secteur cardinal ne peut pas avoir son
+caractère propre.
+
+Le §14 est marqué « confirmé par la recherche externe, pas juste pratique », et
+l'équité dans un monde PvP libre est structurante — la symétrie l'emporte. Les
+caractères de secteur sont conservés en **bandes radiales** : chaque quadrant
+porte de la dalle ouverte près du centre, des colonnes à mi-rayon, des fragments
+de mur au-delà, des plaques fracturées sur le pourtour. Chaque joueur rencontre
+les quatre textures de jeu quel que soit son spawn.
+
+### Bâti
+
+- `src/shared/Arena/ArenaSpec.lua` — quadrant maître Q1 déclaratif
+- `src/shared/Arena/ArenaBuilder.lua` — construction, miroir, spawns, outil §19
+
+Le miroir est **du code, pas une étape de modélisation** : Q1 est écrit une fois,
+Q2/Q3/Q4 en dérivent. Le lacet s'inverse sur un miroir à un seul axe et se
+conserve quand les deux s'inversent (cette composition est une rotation de 180°,
+pas une réflexion) — c'est le seul endroit où la transformation n'est pas un
+simple changement de signe, et la source habituelle d'une carte discrètement
+asymétrique.
+
+```
+parts = 130        spawns = 8        quadrants = 4
+jouable = 180 x 180 studs
+distance spawn -> centre = 42.4 studs   (spec §13 : 35-50)
+```
+
+**130 Parts** pour le graybox complet — le §15 s'inquiétait du budget, il y a de
+la marge.
+
+### L'outil de lignes de vue a trouvé un défaut réel, deux fois
+
+C'est exactement ce que le §19 demandait, et il a servi immédiatement.
+
+**Première mesure** : spawns 2 et 6 avec ligne dégagée vers le centre **et** l'un
+vers l'autre, les six autres bloqués. Cause : les deux fissures du monument
+étaient sur les segments 4 et 12 de 16, soit exactement 180° d'écart — un rayon
+diamétral entrait par l'une et sortait par l'autre.
+
+**Deuxième mesure**, fissures déplacées en 3 et 10 : opposés 8/8 bloqués, mais le
+spawn 5 seul voyait le centre — la fissure 10 couvre 191–214° et le spawn 5 est à
+199.3°.
+
+**Placement final, dérivé au lieu d'être choisi à l'œil** : les huit spawns sont à
+19.3, 70.7, 109.3, 160.7, 199.3, 250.7, 289.3 et 340.7° ; **tout segment impair**
+évite ces angles. Fissures sur 3 (45°) et 9 (180°), 135° d'écart donc aucun rayon
+diamétral ne traverse les deux.
+
+```
+centre bloqué  8/8   (uniforme = true)
+opposés bloqués 8/8   <- exigence §13 satisfaite
+```
+
+L'uniformité compte plus que la valeur : aucun spawn n'a d'avantage systématique.
+
+### Piège d'outillage noté
+
+Le cache `require` de Studio a servi un module périmé après mise à jour de la
+source : l'arène rebâtie gardait les anciennes fissures alors que la source était
+correcte. Vérifié en comparant la source injectée aux Parts réellement présentes,
+pas en supposant. Contournement : recréer les `ModuleScript` (changer l'identité
+d'instance casse le cache).
+
+### Ouvert
+
+- **Capture visuelle non obtenue** : `screen_capture` a timeout deux fois de suite
+  alors que Studio répondait à `execute_luau`. Non diagnostiqué. Les mesures sont
+  complètes, l'œil ne l'est pas.
+- Étapes §18 5–10 (playtest PvP, correction des volumes, matériaux, fractures,
+  VFX) non faites — le §18 interdit explicitement de paralléliser 7–9 avant que
+  1–6 soient validées en vrai playtest.
+- `ArenaBootstrap.server.lua` attend un `IslandSpawn` : le câblage des 8 spawns de
+  l'arène au flux de respawn n'est pas fait.
+- L'arène vit dans la place Studio, pas encore synchronisée par Rojo.
+
+---
+
 ## 2026-08-25 — Réglage fin + diagnostic de forme sur luffy
 
 `a7565af`
