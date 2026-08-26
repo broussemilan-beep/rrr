@@ -176,6 +176,35 @@ Validation par **magic bytes, pas par extension** — vérifié indépendamment 
 **Point d'entrée** :
 <https://raw.githubusercontent.com/broussemilan-beep/rrr/main/progress/LATEST.md>
 
+### Correction — une capture publiée était périmée
+
+Relecture de `2026-08-26_capture-disc-fixed.jpg` par le propriétaire : deux
+plaques semblaient posées sur l'herbe, hors du disque. **L'observation était
+juste ; l'image était périmée.** Elle datait de l'étape du fix d'axe, AVANT que
+trois plaques soient rentrées dans le disque, et je l'avais publiée pour
+illustrer un état postérieur déjà corrigé. Vraie sur son propre instant,
+trompeuse comme preuve.
+
+État réel mesuré sur l'arène courante :
+
+```
+bord du sol            r = 92.1
+plaques, coin le plus loin  r = 86.7 a 87.2   -> les 12 sur le sol
+```
+
+Capture périmée **retirée du miroir public**, remplacée par
+`2026-08-26_capture-disc-current.jpg`.
+
+**Règle qui en découle** : une capture doit être prise après le build FINAL du
+tour, pas au milieu d'une itération. Une image publiée est une preuve, et une
+preuve datée d'un état intermédiaire ment sur l'état courant.
+
+L'anneau suspendu du §5 a aussi été vérifié à la demande, avec deux cadrages
+dédiés (`2026-08-26_capture-ring-from-ground.jpg`,
+`2026-08-26_capture-ring-from-under.jpg`) : il se lit comme un cercle clair net
+contre le ciel depuis le sol — la silhouette et l'outil d'orientation que le §5
+demande. Les pads en accent chaud y sont visibles et distincts du marbre.
+
 ### Ouvert
 
 - Décision île : effacer le Terrain et remettre `BASE_Y = 0`.
