@@ -69,6 +69,107 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-27 (suite 4) — Demi-Dieu Phase 4 (Ultimate), disque-seul, rien vérifié en jeu
+
+Même consigne : disque-seul, même exigence d'honnêteté, décision bloquante
+tranchée par défaut plutôt que laissée ouverte, et signaler explicitement
+tout chemin partagé ou mécanique neuve — comme pour Jugement en Phase 3.
+
+### Ce chantier touche un chemin partagé — signalé avant d'écrire le module
+
+`MoveData.Skill5` (la touche R au-delà du slot 4) n'était pas un
+emplacement libre : il appartenait déjà à l'ultimate d'un **autre**
+personnage (`Ultimate_SaitamaAsura_Verdict`), gaté par un mécanisme
+**complètement différent** de Momentum — `TransformController.IsTransformed()`,
+un flag client posé par la touche Y. Ce système est **réellement vivant**
+aujourd'hui (`TransformationService` s'initialise au boot, confirmé dans la
+capture console Play Solo de la Phase 1) — pas du code mort à ignorer.
+
+Un simple OR entre les deux conditions aurait créé une vraie collision : un
+joueur ayant pressé Y (transformé) mais pas à 100 de Momentum aurait vu sa
+touche R silencieusement rejetée par le nouveau module Ultimate au lieu de
+lancer Jugement — une régression, pas un no-op propre. Remplacé
+entièrement (même schéma que tous les autres swaps par défaut de cette
+session : ancienne condition commentée, pas supprimée) plutôt que superposé.
+Fichiers touchés par ce remplacement : `InputController.lua` (routage de la
+touche R), `CombatController.lua` (nouvelle `IsUltimateReady()`, lit le
+miroir Momentum déjà injecté en Phase 2 — aucun nouveau point d'accès à
+Momentum créé), `MoveData.lua` (Skill5).
+
+**À vérifier en premier au prochain Play Solo, avant le reste du module** :
+le routage de la touche R lui-même. Si le routage est faux, rien du
+mécanisme ci-dessous n'est même observable.
+
+### Le module — `Ultimate_DescenteDuDemiDieu.lua`
+
+« S'élève, suspend brièvement le combat, puis chute comme un projectile.
+Impact = onde circulaire massive + cratère, puis relevé final. » Coût :
+Momentum à 100, consommé entièrement — vérifié en premier et de façon
+atomique via `MomentumService.TryConsumeForUltimate` (posé et testé dès la
+Phase 1) : si ça échoue, rien d'autre ne s'exécute, pas même le cooldown
+de sécurité.
+
+- Montée puis chute : même mécanisme `LinearVelocity` + `Attachment` que
+  `Skill1_DashStrike.lua`/`Skill3_MarcheDuTitan.lua`, noms d'objets propres
+  (`UltimateRise`/`UltimateFall`) pour ne jamais entrer en collision.
+- i-frames pendant toute la phase aérienne (`CombatStateService.SetIFrames`)
+  — cohérent avec le reste du projet, évite de punir un joueur suspendu en
+  l'air sans defense.
+- Ciblage : « onde circulaire massive » est réellement circulaire, pas un
+  cône avant — `HitboxService.ComputeTargets` (la convention du reste du
+  dossier) ne peut pas exprimer ça, une boîte ne peut pas être un cercle.
+  Utilisé un calcul de distance manuel à la place — délibérément pas
+  `GetPartBoundsInRadius` (interdit par la règle B3 du scanner du projet
+  pour tout hitbox de combat) ni `GetPartBoundsInBox` (ne peut pas être
+  circulaire sans déborder aux coins ou sous-couvrir en diagonale).
+- Knockback radial (loin du centre du cratère), pas une direction unique —
+  cohérent avec « onde de choc ».
+- Dégâts 50, stun 1.8s, rayon 14 studs, cooldown de sécurité 3s (Momentum à
+  100 est le vrai verrou, pas ce cooldown).
+
+**Piège de scanner retrouvé, cette fois dans mon propre commentaire** : le
+scanner fait du texte brut, pas de l'analyse Lua — il a détecté la chaîne
+`GetPartBoundsInRadius` **dans le commentaire qui explique pourquoi je ne
+l'utilise pas**, l'a pris pour du vrai code, et a bloqué le commit.
+Reformulé sans citer le nom littéral de la fonction. Aucune règle nouvelle
+apprise ici (déjà su que le scanner est du texte brut depuis le piège B12
+sur les blocs Toji commentés en Phase 3), juste une nouvelle façon de s'y
+faire prendre.
+
+### Tests
+
+Aucun spec dédié pour `Ultimate_DescenteDuDemiDieu.lua` lui-même — même
+précédent que Skill1/2/3 en Phase 3 (fortement couplé à `Workspace`/
+`Instance`, pas de sous-module pur à en extraire comme `JugementWindow`).
+`MomentumService.spec.lua` (Phase 1) couvre déjà `TryConsumeForUltimate` à
+exactement 100 vs 99 — le vrai verrou de cette compétence, pas dupliqué ici.
+
+`stylua` + `selene` + `scan_recurring_bugs.py --staged` propres sur tous
+les fichiers.
+
+### Honnêtement non vérifié
+
+**Rien de ce tour n'a tourné.** Le routage de la touche R (le point le
+plus fragile, cf. ci-dessus) et le calcul de distance radiale sont
+raisonnés sur papier, pas exécutés.
+
+### Bloqué, en attente du retour de Milan
+
+- Toute vérification Play Solo — Phases 2, 3 et 4 comprises.
+- Rojo, Cmd+S — toujours reportés par Milan.
+- Décision M1/Skills/Ultimate Toji-Saitama vs Demi-Dieu — appliquée par
+  défaut sur toute la ligne maintenant (M1, 4 compétences, ultimate),
+  réversible, à confirmer à la vérif.
+
+**Les 4 phases du plan Demi-Dieu sont maintenant toutes écrites** (Momentum,
+M1, Dash, Cancels, 4 compétences, Ultimate). Rien n'a tourné une seule fois
+en dehors des tests réels de la Phase 1 (avant que Rojo/Cmd+S soient
+reportés). La prochaine session Play Solo a du pain sur la planche, dans
+l'ordre de risque : Jugement (chemin `DamageService.Apply` partagé) →
+routage R de l'Ultimate → le reste.
+
+---
+
 ## 2026-08-27 (suite 3) — Demi-Dieu Phase 3 (les 4 compétences), disque-seul, rien vérifié en jeu
 
 Consigne inchangée : continuer sans Studio ni Rojo, même exigence
