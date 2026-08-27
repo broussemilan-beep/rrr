@@ -125,8 +125,96 @@ Momentum qui gouverne, pas l'ancien `TransformController.IsTransformed()`),
 `ultimate_confirm_1.result="Module"` (serveur dispatche),
 `momentum_after_ultimate=0` (jauge consommée). **PASS réel, propre.**
 
-*(Suite : vérification Cancels + Skill1-3, statut animations M1, capture
-in-game — voir entrée suivante une fois faite.)*
+---
+
+## 2026-08-27 (suite 6) — Skill1/Skill2 OK, Skill3 cassé puis partiellement corrigé, Cancels non fonctionnels, statut animations confirmé
+
+Suite directe de la vérification ci-dessus. Tous les résultats viennent de
+vrais tests Play Solo (remotes réseau réels, scripts `Script`/`LocalScript`
+insérés dans le DataModel live, jamais `execute_luau` isolé pour lire un état
+mutable — piège documenté en mémoire).
+
+**Main du Colosse (Skill1) : PASS réel.** Dégâts mesurés 2000→1980, delta
+exact = 20 (`MoveData.Skill1.damage`).
+
+**Frappe Céleste (Skill2) : PASS réel.** Dégâts mesurés 1980→1958, delta
+exact = 22.
+
+**Marche du Titan (Skill3) : bug réel trouvé, diagnostiqué, corrigé
+partiellement, re-testé.**
+Deux premiers tests (3 studs puis 13 studs de distance de départ) : 0/2
+touchés. Position loguée après le skill : le joueur avait parcouru ~20.7
+studs pour 2 pas dont le calcul propre (55 studs/s × 0.15s × 2) ne prévoit
+que ~16.5 — largement dépassé la cible.
+
+Cause : `applyStepImpulse` (`Skill3_MarcheDuTitan.lua`) détruisait la
+contrainte `LinearVelocity` sans jamais remettre à zéro
+l'`AssemblyLinearVelocity` résiduelle — le personnage continuait de glisser
+sur son élan bien après la durée annoncée du pas (le contrôleur Humanoid de
+Roblox ne reprend la main que progressivement). **Fix commit `05a4910`** :
+remise à zéro de la composante horizontale de la vélocité à la fin de
+chaque pas. Session Play Solo relancée à zéro (obligatoire, même raison que
+pour Momentum). Re-test : distance parcourue ramenée à ~16.7 studs, conforme
+au calcul du skill — le fix est réel et confirmé.
+
+**Mais le skill rate encore.** Un troisième test, avec l'orientation du
+joueur explicitement verrouillée sur la cible juste avant le cast (pour
+éliminer toute ambiguïté de facing), montre une **dérive latérale de ~7
+studs** pendant la séquence de 2 pas — le joueur finit à côté de la cible,
+pas dessus. Cause non isolée : soit un vrai bug de recalcul de facing entre
+les pas, soit un artefact du test (aucune touche de direction n'est
+maintenue pendant le script, contrairement à un vrai joueur). **Marche du
+Titan reste NON FIABLE en l'état** — un fix a été appliqué et confirmé
+utile, mais le skill ne touche toujours pas sa cible dans mes tests. À
+retester avec un vrai joueur tenant une touche de direction avant de
+considérer le skill livrable.
+
+**Cancels (Phase 2) : NON FONCTIONNEL en pratique, confirmé.**
+Grind réel jusqu'au tier "chargé" (10 coups, momentum 40.7), puis 4
+tentatives de cancel avec sondage `RunService.Heartbeat` à chaque frame
+(réaction "parfaite", meilleur cas possible) : **0/4 réussies.** Tous les
+`busyEndedAt` mesurés (0.34-0.47s) collent exactement aux valeurs de
+`recovery` de chaque coup M1, pas à la fenêtre de cancel de 0.2s censée
+suivre l'impact. Confirme, avec des vrais coups à tier réellement chargé
+(pas juste un calcul), le diagnostic déjà repéré dans les logs bruts :
+`[V1] WARN marker fallback for M1_3` et `M1_4` apparaissent systématiquement
+(jamais pour M1_1/M1_2) — pour ces deux coups, le marker `Impact` arrive
+après (ou quasi en même temps que) `recovery` dans `MoveData.lua`, donc le
+minuteur de secours ne se déclenche jamais à temps et la fenêtre de cancel
+ne s'ouvre jamais. Pour M1_1/M1_2 le marker arrive bien avant `recovery`,
+mais la marge (6.7ms pour M1_2) est trop courte pour être exploitable même
+par un sondage frame-parfait. **Non corrigé ce tour-ci** — root cause
+identifiée avec précision, mais le fix touche soit les valeurs de timing
+`MoveData.lua` (resynchroniser `recovery` avec les vrais markers `Impact`
+Demi-Dieu, qui ont changé de valeurs par rapport aux anciens markers Toji)
+soit la logique de fenêtre elle-même ; pas fait faute de temps, à traiter
+en session dédiée.
+
+**Statut animations M1 — confirmé inchangé, avec preuve visuelle directe
+cette fois.** Les 4 `.rbxm` existent bien sur disque
+(`artifacts/animator_ai/agent_outputs/M1_*_demidieu_handkeyed/upload/`),
+mais `Combat.lua` porte toujours les 4 IDs littéraux `PENDING_UPLOAD_*`,
+`verified_assets.json` ne contient aucune entrée `demidieu`, et
+`scripts/verify_asset.py` n'a jamais tourné dessus. Confirmé en direct
+cette session : chaque `[AssetVerifier]` de chaque Play Solo affiche
+`VERIFIED=0`, et chaque `[AnimationDriver]` log `M1_1..4 -> FAILED:
+LoadAnimation error`. Deux captures d'écran réelles (voir ci-dessous)
+montrent la conséquence visuelle : le personnage ne joue AUCUNE animation
+de coup (pose statique) pendant que les VFX d'impact et les dégâts, eux,
+fonctionnent normalement. **Verdict inchangé : baké + gates géométriques
+passés, PAS uploadé, PAS câblé, PAS vérifié en moteur** — catégoriquement
+différent des 12 seeds Toji réelles.
+
+**Captures in-game : prises, affichées, PAS publiées sur le miroir.**
+Deux captures réelles via `screen_capture` (Play Solo, vrai combat M1 en
+cours) confirment visuellement l'état ci-dessus. Limitation technique
+rencontrée : l'outil de capture retourne l'image directement dans la
+conversation sans l'écrire sur disque à un chemin accessible en shell —
+aucune méthode trouvée cette session pour la sauvegarder localement et donc
+la faire passer par `scripts/sync_progress_log.sh` (qui exige un fichier
+local). Contrairement aux captures d'arène précédentes (probablement
+sauvegardées via un pipeline différent), celles-ci restent donc visibles
+uniquement dans la conversation Claude Code, pas sur le miroir public.
 
 ---
 
