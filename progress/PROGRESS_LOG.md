@@ -69,7 +69,110 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
-## 2026-08-27 — Cycle de vie Studio, 3 décisions arène, et les deux défauts fermés
+## 2026-08-27 (suite) — Demi-Dieu Phase 1 : construit, poussé à la main, vérifié en jeu réel
+
+Trois agents en parallèle (MomentumService+miroir, chaîne M1 4 coups, dash Pas
+Divin), chacun vérifié indépendamment (fichiers réels, `require` réel, lint
+propre) avant confiance — l'un des trois (M1) a correctement refusé d'écraser
+les animations Toji déjà vérifiées et a remonté la décision plutôt que de
+trancher seul.
+
+### Rojo hors service — poussé à la main via Luau
+
+`rojo serve` tournait mais le plugin Studio (`Rojo_autoReconnect: false`)
+n'avait plus retenté de connexion depuis 15:59 — confirmé par le journal
+Studio (dernière ligne `34872` avant le début de la Phase 1). Aucun des
+10 fichiers de la Phase 1 n'était donc dans la place. Poussés un par un par
+`execute_luau`, en répliquant exactement le mapping `default.project.json`
+(`src/server` → `ServerScriptService.Server`, etc.), source embarquée en
+chaîne longue Lua avec niveau de crochets calculé pour éviter toute collision.
+
+### Un vrai test Play Solo a trouvé une vraie régression
+
+Premier Play Solo après le push : le terrain est remonté à **20.6 % de voxels
+solides** — quasiment le défaut d'avant la correction de l'île. Cause : la
+suppression d'`IslandGenerator.server.lua` n'avait été faite que **sur
+disque** (`git mv` vers `disabled/`) au tour précédent ; jamais poussée dans
+la place réelle faute de sync Rojo. Le script existait donc toujours,
+intact, dans `ServerScriptService.Server.World`, et Play Solo clone l'état
+Édition à chaque lancement — il régénérait l'île et le terrain à chaque
+partie. Confirmé, corrigé (`IslandGenerator:Destroy()` en direct + push des
+3 scripts re-séquencés sur `ArenaFracturee`), re-testé : terrain à
+**0.00 %**, `IslandRoot` absent, aucune régénération.
+
+C'est exactement le genre d'écart que la règle « vérification Play Solo
+réelle, pas le rapport qui fait foi » est censée attraper — et elle a
+attrapé une régression sur **mon propre** travail d'arène, pas seulement
+sur celui des agents.
+
+### Vérification fonctionnelle réelle — piège d'outillage découvert au passage
+
+Interroger `MomentumService.Get(joueur)` via des appels `execute_luau`
+isolés retournait obstinément 0 après de vrais coups qui infligeaient bien
+des dégâts (988/1000 PV après 2 coups) — **piège d'outillage** : chaque appel
+`execute_luau` obtient sa propre instance `require()`, séparée de celle que
+`CombatService.server.lua` a chargée une fois au démarrage. Prouvé en isolant
+un appel `OnAttackResolved` + `Get` dans le **même** `execute_luau` (0 → 6,
+cohérent) contre un `Get` séparé sur l'état réellement vivant (toujours 0).
+**À retenir pour toute vérification future** : ne jamais lire l'état d'un
+service en re-`require`-ant depuis `execute_luau` — écouter le vrai
+`RemoteEvent` réseau à la place, qui lui ne connaît pas cette isolation.
+
+Une fois corrigé, vérification bout-en-bout par de vrais remotes réseau
+(clic gauche simulé sans effet — `user_keyboard_input` sur `MouseLeftButton`
+n'a jamais déclenché `InputController` ; remplacé par `CombatRequest
+:FireServer(...)`, le même appel que fait le vrai contrôleur) :
+
+```
+2 coups M1 réels sur un mannequin  -> dégâts 1000 -> 988 (2 x 6, confirmé)
+Momentum, écouté sur le vrai remote -> premier push après un coup : 6
+                                     -> décroissance -8/s mesurée sur les pushs suivants
+Dash t=0.00  -> accepté (silencieux)
+Dash t=0.33  -> REJETÉ  reason=on_cooldown  (fenêtre 0.55s respectée)
+Dash t=0.70  -> accepté (silencieux)
+Dash + M1_4 sous 1.2s -> +31 en un push = 6 (coup) + 10 (chaîne M1 complète,
+                          comboStep était à 4) + 15 (dash converti) — les 3
+                          bonus se sont cumulés correctement en une seule
+                          requête réelle
+```
+
+Terrain 0.00 %, `IslandRoot` absent après un Play Solo complet, 0 erreur
+dans `PlaytestReporter` (`errors: []`), seul avertissement = `PasDivin`
+(animation non uploadée, attendu et documenté).
+
+### Bug trouvé, non corrigé — hors périmètre de ce tour
+
+`TrainingDummies.server.lua` (le mannequin singulier, pas ceux de
+`DummyService`) a un `DUMMY_HRP_Y` calculé sur l'ancien sol de l'île
+(`SURFACE_Y = 7`), jamais mis à jour depuis le passage de l'arène à
+`BASE_Y = 0` — le mannequin flotte 7 studs au-dessus du sol réel. Découvert
+en essayant de le viser pour le test M1 (raté systématiquement malgré une
+portée de 6 studs et une cible à 4). Contourné en ciblant un mannequin de
+`DummyService` à la place (qui se cale au sol par raycast, donc insensible
+au problème). Le fix est mécanique (remplacer la constante par un raycast,
+comme `DummyService` le fait déjà) mais n'a pas été fait — hors périmètre
+de la vérification Demi-Dieu.
+
+### Ce qui reste UNVERIFIED, honnêtement
+
+Les 5 animations (M1_1..4, PasDivin) sont hand-keyées et passent les gates
+géométriques (M1 : direction FORWARD/classe correcte sur les 4 ; Pas Divin :
+direction FORWARD confirmée sur la courbe brute, mais pas de gate dédié aux
+déplacements). Aucune n'est uploadée — `PENDING_UPLOAD_*`, `status =
+"UNVERIFIED"` partout, conforme à la règle anti-hallucination. `M1_1..4`
+actuels dans `AnimationDB/Combat.lua` restent ceux de Toji (vérifiés,
+uploadés) — pas écrasés, décision en attente de l'utilisateur.
+
+### Toujours en suspens
+
+- Sauvegarde Studio (Cmd+S) et connexion manuelle du plugin Rojo dans
+  Studio — aucun des deux n'a abouti au moment d'écrire ceci.
+- Le bug `TrainingDummies` Y ci-dessus.
+- Le remplacement (ou non) des animations M1 Toji par celles de Demi-Dieu.
+
+---
+
+## 2026-08-27 — Cycle de vie Studio, 3 décisions arène, et les deux défauts fermés, 3 décisions arène, et les deux défauts fermés
 
 Quatre tours, quatre rapports : `artifacts/STUDIO_LIFECYCLE_2026-08-27.md`,
 `artifacts/STUDIO_PLUGINS_DIAG_2026-08-27.md`, `artifacts/ARENE_DECISIONS_2026-08-27.md`.
