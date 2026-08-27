@@ -69,6 +69,132 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-27 (suite 3) — Demi-Dieu Phase 3 (les 4 compétences), disque-seul, rien vérifié en jeu
+
+Consigne inchangée : continuer sans Studio ni Rojo, même exigence
+d'honnêteté (papier ≠ vérifié), et cette fois : trancher la décision M1
+Toji-vs-Demi-Dieu par défaut (cohérent, réversible) plutôt que la laisser
+en suspens.
+
+### Décision appliquée — M1 et Skills, Demi-Dieu = kit par défaut, réversible
+
+`AnimationDB/Combat.lua` (M1_1..4) ET `MoveData.lua` (Skill1..4) basculés sur
+Demi-Dieu. Chaque ancienne entrée (Toji M1, Chasseur Fantôme, Torrent
+Carnassier, Annihilation Lite, HeavyFinisher) est commentée juste en dessous
+de la nouvelle, pas supprimée — un reverse est un copier-coller d'un bloc,
+pas une ré-autorisation. Les anciens modules serveur
+(`Skill1_DashStrike.lua` etc.) restent intacts sur disque, juste plus
+référencés par `MoveData`. Les 4 nouvelles animations M1 utilisent les seeds
+hand-keyées de la Phase 1 (gates déjà passées) ; aucune n'est uploadée.
+
+### Recentrage de périmètre, assumé explicitement
+
+Contrairement à la chaîne M1 (Phase 1), **aucune animation n'a été
+hand-keyée pour les 4 compétences ce tour**. Raison : une entrée
+`PENDING_UPLOAD` non uploadée se comporte de façon strictement identique
+qu'elle soit issue d'un hand-keyer soigné ou d'un simple placeholder —
+`AnimationService.LoadTrack` retombe sur le générateur procédural dans les
+deux cas, et je ne peux vérifier ni l'un ni l'autre sans Studio. La Phase 3
+a donc porté sur la **mécanique réelle** (modules serveur, `MoveData`,
+câblage Momentum), pas sur l'authoring — même logique de périmètre que la
+Phase 2, qui n'avait pas eu besoin de nouvelles animations non plus.
+
+### Les 4 compétences — `src/server/Skills/`
+
+**Skill1 (F) — Main du Colosse** (★★☆☆☆) : un seul coup horizontal large,
+`HitboxService.ComputeTargets` (le helper partagé, pas une resweep à la
+main comme le font les anciens modules Skill1/Skill2 malgré leur propre
+commentaire TODO qui dit le contraire). Dégâts 20, cooldown 5s.
+
+**Skill2 (G) — Frappe Céleste** (★★☆☆☆) : frappe au sol courte portée. Le
+palier Momentum « surchargé » élargit la zone de x1.5 (rayon, pas dégâts —
+exactement ce que le spec §2 demande), lu une fois à l'Impact via
+`MomentumService.GetTier(player)`.
+
+**Skill3 (H) — Marche du Titan** (★★★☆☆) : 2 pas lourds à impulsion (même
+mécanisme `LinearVelocity` + `Attachment` que `Skill1_DashStrike.lua`
+existant, nom d'objet différent pour ne jamais entrer en collision) puis
+coup final. Palier « chargé »+ ajoute un 3e pas. Le coup final relit la
+`HumanoidRootPart.CFrame` **au moment où il tire**, pas une direction
+capturée au lancement — ce qui donne « orientable pendant le déplacement »
+gratuitement, sans système de visée séparé. Bug trouvé et corrigé avant
+lint : au palier chargé (3 pas), la résolution serveur tombe à 1.05s mais
+`recovery` client était à 0.90s — le joueur aurait pu ré-agir avant que son
+propre coup final atterrisse. `recovery` remonté à 1.10s.
+
+**Skill4 (R) — Jugement** (★★★★☆) : la seule des 4 qui demandait une vraie
+architecture neuve. Confirmé par investigation avant d'écrire une ligne :
+**aucun mécanisme de parade/contre ne vit dans ce projet.**
+`BlockService.lua` existe mais est mort (rien ne le require, son
+équivalent client est un stub 2 lignes « legacy runtime disabled ») — pas
+réutilisé, ni pour éviter de ranimer du code non vérifié ni parce que
+c'est un mécanisme de blocage (réduit/annule), pas une parade-contre.
+
+Construit : `JugementWindow.lua` (état pur, fenêtre de 0.25s, extrait pour
+être testable — même raisonnement que `DashCooldown.lua` en Phase 1) +
+`Skill4_Jugement.lua` (active la fenêtre, expose `TryConsumeParry`).
+Nouveau point d'intégration : `DamageService.Apply` gagne un 4e paramètre
+optionnel (`attacker: Model?`, rétrocompatible — un appelant qui l'omet
+se comporte exactement comme avant) et consulte `TryConsumeParry` avant
+d'appliquer les dégâts ; `CombatService.server.lua` passe `char` à ses deux
+sites d'appel existants. Sur une parade réussie : dégâts de la victime
+annulés, contre-coup fixe (25 dégâts) + projection sur l'attaquant,
+`MomentumService.OnJugementSuccess` (+25, le hook posé en Phase 1 attendait
+exactement ça).
+
+**Trois limitations documentées explicitement dans le code, pas cachées :**
+- Le hook n'intercepte que les dégâts qui passent par `DamageService.Apply`
+  (les M1, oui). Les compétences (les 4 nouvelles ET les anciennes déjà en
+  place) infligent leurs dégâts en direct via `humanoid:TakeDamage(...)`,
+  **sans jamais passer par `DamageService`** — un vrai gap déjà présent
+  avant ce tour, pas introduit par Jugement. Parer une attaque de
+  compétence adverse ne marchera pas aujourd'hui.
+- « Mange le combo entier » sur une parade ratée n'est **pas** implémenté —
+  toucherait l'état privé de combo de `CombatService.server.lua`, jamais
+  exposé nulle part. Le « gros recovery » (moitié réellement demandée) l'est
+  (`recovery = 1.30s`, la plus haute des 4 mouvements Demi-Dieu).
+- Une parade réussie ne débloque pas les touches du joueur en avance — même
+  limitation d'asymétrie de recovery déjà notée pour Pas Divin en Phase 1 ;
+  demanderait un nouveau signal serveur→client, pas ajouté ce tour.
+
+### Tests
+
+`tests/JugementWindow.spec.lua` — 8 cas sur l'état pur (fenêtre ouverte/
+fermée/à la frontière, consommation unique, "raté" vs consommé, `Clear`,
+ré-ouverture, deux joueurs indépendants). `MomentumService.spec.lua`
+(Phase 1) couvrait déjà `OnSkillResolved`/`OnJugementSuccess` — pas
+dupliqué ici.
+
+`stylua` + `selene` + `scan_recurring_bugs.py --staged` (le vrai mode du
+hook, pas `--files` qui scanne le fichier entier et fait remonter une
+fausse alerte sur une ligne pré-existante de `CombatService.server.lua`
+jamais touchée par mon diff — piège évité, pas re-tombé dedans) propres sur
+tous les fichiers.
+
+### Honnêtement non vérifié
+
+**Rien de ce tour n'a tourné**, ni en Play Solo ni même les specs TestEZ
+(confirmé en Phase 2 : aucun moyen de les lancer hors Studio dans ce
+projet). Jugement est, de loin, la pièce la plus à risque : c'est de la
+mécanique neuve, sans aucun précédent vivant dans le code à copier, et le
+hook `DamageService.Apply` touche un chemin que TOUT dégât M1 emprunte —
+si quelque chose s'y casse, ça casse le combat entier, pas juste Jugement.
+**À vérifier en premier** à la prochaine session Play Solo, avant tout le
+reste de la Phase 3.
+
+### Bloqué, en attente du retour de Milan
+
+- Toute vérification Play Solo — Phases 2 et 3 comprises, rien n'est dans
+  la place.
+- Connexion Rojo, Cmd+S — toujours reportés par Milan.
+- Décision M1/Skills Toji vs Demi-Dieu — appliquée par défaut cette fois
+  (pas laissée en suspens), réversible, à confirmer à la vérif.
+- Phase 4 (Ultimate) — pas commencée ; dépend de A (Momentum,
+  `TryConsumeForUltimate` déjà prêt depuis la Phase 1) — écrivable de la
+  même façon disque-seule si Milan le souhaite.
+
+---
+
 ## 2026-08-27 (suite 2) — Bug TrainingDummies corrigé, Phase 2 (Cancels) écrite, tout non vérifié en jeu
 
 Session en deux temps : Milan reprend la main sur Rojo/Cmd+S lui-même une
