@@ -69,6 +69,101 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-27 — Cycle de vie Studio, 3 décisions arène, et les deux défauts fermés
+
+Quatre tours, quatre rapports : `artifacts/STUDIO_LIFECYCLE_2026-08-27.md`,
+`artifacts/STUDIO_PLUGINS_DIAG_2026-08-27.md`, `artifacts/ARENE_DECISIONS_2026-08-27.md`.
+Résumé ici, détail chiffré dans ces fichiers.
+
+### Studio fermé n'est pas gratuit à relancer
+
+Objectif : arrêter Studio entre deux tâches (pâte thermique changée, mais la
+chaleur inutile reste à éviter). Mesuré : Studio ouvert = 19-34 % CPU en continu
+juste pour le viewport, fermé = 0 %. Coût du cycle : ~5 s à l'ouverture, ~2 s à
+la fermeture — négligeable.
+
+Mais **rouvrir Studio ne suffit pas à le rendre pilotable**. Deux lancements ont
+échoué avec `Invalid Launch Intent` (le `placeId` utilisé était en réalité un
+gameId — le vrai est `73755316903092`, recoupé sur les `AutoSaves` et les
+`Rojo_priorEndpoints`). Un premier diagnostic croyait les 4 plugins tiers
+(Weppy/Rojo/AnimExport/rodeo) absents de tout lancement — **c'était une erreur
+de mesure** : Roblox charge les plugins utilisateur sous le préfixe `user_`,
+distinct de `builtin_`/`sabuiltin_`, et mon filtre ne cherchait ni l'un ni
+l'autre correctement. Une fois la bonne place ouverte à la main, les 4 plugins
+chargent normalement (`builtin_=49`, les 4 `user_*` présents) — pas de bug Rojo
+isolé, contrairement à l'hypothèse de départ.
+
+Rojo a quand même été réinstallé (`rojo plugin install`, 7.6.1) par précaution ;
+sauvegarde de l'ancien binaire conservée. Sans effet direct puisque le vrai
+problème était la place jamais ouverte, mais sans risque non plus.
+
+### Les 3 décisions, exécutées et vérifiées dans la place
+
+1. **Île supprimée, `BASE_Y` 300 → 0.** `Terrain:Clear()` puis translation
+   −300 en Y de l'arène et de son entourage (418 parts, 0 perdue). Terrain
+   avant 21.3 % de voxels solides autour de l'origine, après 0.00 %.
+   `IslandGenerator.server.lua` déplacé vers `disabled/` (sinon il régénère le
+   terrain à chaque démarrage serveur). Trois scripts qui attendaient
+   `IslandRoot` re-séquencés sur `ArenaFracturee` (`DummyService`,
+   `TrainingDummies`, `SetupLighting`) — sans ça, 30 s de blocage au démarrage
+   pour rien. `RaceClassService.lua` a la même attente bloquante mais n'est
+   chargé par aucun service en mode V1 actuel — laissé tel quel, à traiter
+   avant tout retour au `ServiceLoader`.
+2. **Dôme + murs de Map Detailing supprimés.** Le dôme mesurait 2013×1895×1935
+   studs — son bord passait à 187 studs du centre de l'arène malgré un centre
+   à 1193 studs, d'où l'occupation d'un quadrant entier du ciel. 12 BaseParts
+   supprimées (`Sphere`, `Main Wall`, tout `Dividers`), `Map Detailing` 178 →
+   98 descendants. Capture avant/après : ciel bleu dégagé.
+3. **Échelle : pas touchée, verdict confirmé plutôt que supposé.** Capture à
+   hauteur d'œil réelle (y=5.5, mesure R6, pas une estimation) : l'arène ne se
+   lit plus d'un coup d'œil. Relief solide max 11.0 → 16.0 studs, platitude
+   16:1 → 11:1, parts au-dessus de l'œil 8/154 → 56/170, bandes radiales vides
+   5 → 2. L'impression de petitesse n'est pas confirmée à cette hauteur : par
+   consigne, `PLAYABLE_RADIUS` reste à 88, aucun recalcul par ratios.
+
+### Les deux défauts restants, fermés ce tour
+
+**Bande r80-90 vide** — dernière bande radiale sans relief après les
+corrections ci-dessus (mesuré : 0 part de plus de 2 studs). Fermée avec le même
+prop qui avait déjà comblé r60-70 : une colonne de plus, un anneau plus loin,
+pas un nouvel élément. Paire diagonale-symétrique à r=83, theta 10°/80°
+(6 studs de diamètre, 14 de haut, Marbre — géométrie et couleur identiques à la
+colonne extérieure existante), mirée sur les 4 quadrants = 8 colonnes. Mesuré
+après : r80-90 passe de 0 à **8 parts**.
+
+**`Fire Arrow` × 2** — `UnionOperation` orange (rgb 213,115,61) au bord de
+l'arène (r=90), rig VFX complet (~40 descendants : particules, beams,
+PointLight). Aucune référence dans le code (`grep` sur `src/` et `scripts/` :
+zéro résultat). Supprimées plutôt que recolorées : un rig de flamme reteint en
+violet-ardoise aurait été visuellement plus faux que la couleur d'origine, donc
+moins propre à exécuter que la suppression. Une des deux instances était déjà
+hors-monde (y = −2 668 834) — reliquat cassé, aucune perte réelle. Mesuré
+après : **zéro** couleur chaude dans un rayon de 200 studs autour de l'arène.
+
+Édits faits en double : sur `src/shared/Arena/ArenaSpec.lua` (source de
+vérité, avec le commentaire expliquant le choix de placement) et en direct dans
+la place via Luau, avec la même géométrie que produirait `ArenaBuilder.Build()`
+— **pas** un appel à `Build()` lui-même, parce que le module `ArenaSpec` chargé
+en mémoire par la place lisait encore `BASE_Y = 300` au moment des mesures :
+`rojo serve` ne tournait pas cette session (`ConnectFail` sur le port du plugin
+dans le journal Studio), donc aucune synchronisation automatique. `rojo serve`
+relancé en tâche de fond à la fin de ce tour pour la suite ; la connexion du
+plugin dans Studio reste à faire à la main, je n'ai pas les moyens de cliquer
+dans l'interface.
+
+### Ouvert
+
+- Studio ouvert avec des changements non sauvegardés depuis plusieurs heures ;
+  sauvegarde demandée à la personne physiquement présente, non confirmée par le
+  journal Studio au moment d'écrire ceci (aucune ligne de sauvegarde/publication
+  après l'ouverture de la place).
+- `rojo serve` tourne mais le plugin Studio n'est pas connecté — resync manuel à
+  faire.
+- `RaceClassService.lua` : boucle d'attente infinie sur `IslandRoot`/`IslandSpawn`,
+  dormante en mode V1, à corriger avant réactivation du `ServiceLoader`.
+
+---
+
 ## 2026-08-26 — §18-6/7/8 : le disque, et le miroir public réparé pour de bon
 
 `52a1143`
