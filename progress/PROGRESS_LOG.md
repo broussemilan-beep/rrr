@@ -69,6 +69,67 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-27 (suite 5) — Vérification réelle Play Solo : Jugement OK, bug Momentum trouvé et corrigé
+
+Studio débloqué (Rojo connecté, sauvegarde faite par l'utilisateur). Reprise en
+ordre de risque décroissant, avec de vrais remotes réseau à chaque étape —
+aucun claim "vérifié" sans test réel qui a effectivement tourné.
+
+**1. Jugement (le plus risqué — touche `DamageService.Apply`, chemin de
+dégâts partagé) : PASS, réel.**
+Deux scripts `Script` réels insérés côté serveur (bypassent le piège
+d'isolation `require()` d'`execute_luau` documenté en mémoire) :
+- Cas parry réussi : `hp_after=100` (inchangé), `dummy_hp_after=975`
+  (contre-coup de 25 appliqué), `momentum_after=24.01` (récompense
+  Jugement). `jugement_execute_ok=true`.
+- Cas régression (pas de parry actif) : `hp_after_unparried=85` = exactement
+  100−15, `hp_after_missed_window=75` = exactement 85−10. **Le hook parry ne
+  touche rien en dehors de sa fenêtre — `DamageService.Apply` se comporte à
+  l'identique d'avant Jugement.**
+
+**2. Routage touche R de l'Ultime : bug réel trouvé, corrigé, re-testé PASS.**
+Premier test (`ULTIMATE_ROUTING_TEST_RESULT`, budget 15s) : grind M1 réel
+plafonne à `momentum_after_grind=97.75`, jamais 100.
+Deuxième test (`ULTIMATE_ROUTING_TEST2_RESULT`, budget 25s — pour écarter
+l'hypothèse "pas assez de temps") : même plafond, `97.60`. Confirme que ce
+n'est pas un problème de durée.
+
+Cause identifiée dans `src/server/V1/MomentumService.lua` :
+`TryConsumeForUltimate` exigeait `momentum == 100` (égalité stricte), mais
+`Tick()` (branché sur `RunService.Heartbeat`) décroît le Momentum de −8/s
+**sans exception, y compris au plafond**. Dès qu'un coup portait le Momentum
+à exactement 100.0 (via `math.clamp`), la frame Heartbeat suivante (~16ms)
+le faisait redescendre — avant qu'un vrai appui R (RemoteEvent, jamais
+synchronisé sur cette frame précise) puisse l'observer. L'Ultime était
+structurellement infirable en jeu réseau réel.
+
+**Fix (commit `18e1016`)** : la décroissance est maintenant gelée dès que le
+Momentum atteint 100, et ne reprend qu'après consommation par l'Ultime ou
+perte suite à un coup encaissé. `stylua`/`selene`/`scan_recurring_bugs.py
+--staged` : clean, 0 blocker.
+
+**Ce bug n'invalide PAS la Phase 1 déclarée vérifiée** : à l'époque,
+`TryConsumeForUltimate` n'avait aucun appelant (le fichier le disait
+lui-même : *"nothing calls it yet"*) — seul `Ultimate_DescenteDuDemiDieu.lua`
+(Phase 4) l'appelle. Ce que la Phase 1 avait testé (gain M1, seuils de
+tiers, bonus de chaîne, cooldown dash) ne dépend pas de ce chemin.
+
+**Re-test après fix, session Play Solo relancée à zéro** (obligatoire — les
+modules déjà `require()`és dans l'ancienne session gardaient l'ancienne
+logique en mémoire) : `ULTIMATE_ROUTING_TEST3_RESULT` —
+`momentum_after_grind=100`, `momentum_after_1s_hold=100` (le gel tient
+vraiment, pas un pic d'une frame), `is_ready_after_hold=true`
+(`CombatController.IsUltimateReady()` — exactement ce que lit
+`InputController` pour router R vers le slot 5, donc c'est bien le verrou
+Momentum qui gouverne, pas l'ancien `TransformController.IsTransformed()`),
+`ultimate_confirm_1.result="Module"` (serveur dispatche),
+`momentum_after_ultimate=0` (jauge consommée). **PASS réel, propre.**
+
+*(Suite : vérification Cancels + Skill1-3, statut animations M1, capture
+in-game — voir entrée suivante une fois faite.)*
+
+---
+
 ## 2026-08-27 (suite 4) — Demi-Dieu Phase 4 (Ultimate), disque-seul, rien vérifié en jeu
 
 Même consigne : disque-seul, même exigence d'honnêteté, décision bloquante
