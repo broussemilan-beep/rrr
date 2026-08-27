@@ -69,6 +69,100 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-27 (suite 2) — Bug TrainingDummies corrigé, Phase 2 (Cancels) écrite, tout non vérifié en jeu
+
+Session en deux temps : Milan reprend la main sur Rojo/Cmd+S lui-même une
+fois de retour chez lui, pas maintenant. Consigne : continuer ce qui ne
+demande ni Studio ni Rojo, dire clairement ce qui est bloqué. Rien de ce tour
+n'a été poussé dans la place ni testé en Play Solo — c'est le prix assumé de
+cette consigne, pas un oubli.
+
+### Bug corrigé — `TrainingDummies.server.lua`
+
+Celui trouvé et contourné pendant la vérification de la Phase 1 (mannequin
+flottant 7 studs au-dessus du sol, Y codé sur l'ancienne île). Remplacé par
+le même raycast que `DummyService.server.lua` utilise déjà (`findGroundY`),
+déplacé après le `WaitForChild("ArenaFracturee", 30)` existant (relocalisé
+depuis le bas du fichier) pour qu'il ait un sol à toucher. Commit `9e52af9`.
+
+### Phase 2 — Cancels, écrite intégralement, aucune dépendance Studio pour l'écrire
+
+Dépend de A (Momentum) + B (chaîne M1), tous deux prêts depuis la Phase 1 —
+pas de parallélisation nécessaire, un seul fil de travail.
+
+**Découverte avant d'écrire une ligne** : le dash actuel (`DashController.
+TryDash()`, appelé depuis `InputController.lua` sur Q) n'avait **aucune**
+conscience de l'état M1 — un joueur pouvait déjà annuler sa recovery M1 en
+dashant à N'IMPORTE QUEL palier de Momentum, y compris 0. Ce n'était pas
+juste une fonctionnalité manquante : c'était l'inverse de la règle du spec
+(« 0-33 éteint : rien n'est bridé » suppose une base sans annulation à
+débrider, pas une base déjà permissive). Corrigé en même temps que l'ajout
+du vrai système d'annulation.
+
+**Mécanique implémentée** (`CombatController.lua`, `InputController.lua`,
+`V1/init.client.lua`) :
+
+- Fenêtre d'annulation ouverte à l'Impact d'un coup M1, 0.2s, seulement si
+  le palier Momentum (lu sur `Momentum.GetTier()`, le vrai miroir client
+  server-authoritative de la Phase 1) l'autorise : palier 1 (chargé)
+  seulement après le 2e ou 3e coup, palier 2 (surchargé) après chaque coup,
+  palier 0 jamais.
+- `CombatController.IsBusy()` / `TryCancelIntoDash()` exposés ;
+  `InputController`'s Q ne déclenche `DashController.TryDash()`
+  qu'après l'accord explicite de `TryCancelIntoDash()` si un M1 est en
+  cours — sinon comportement Q inchangé (dash libre hors combat).
+- **Aucun changement serveur nécessaire** : `CombatService.server.lua`
+  accepte déjà n'importe quel `sentStep` dans [1,4] et snap son compteur de
+  combo dessus (règle « forgiving » du v7 Phase 0c.3) — annuler en dash
+  revient juste à envoyer moins/différemment de `CombatRequest`, ce que le
+  serveur absorbe déjà.
+- Jeton d'annulation par tentative (`_cancelFlag = { canceled = false }`)
+  pour qu'un timer de recovery périmé, s'il se déclenche après une
+  annulation, ne réinitialise pas un état qu'une tentative plus récente
+  possède déjà.
+- Tout le câblage échoue **ouvert** vers l'ancien comportement (vérif
+  d'existence de fonction avant chaque appel) plutôt que fermé — une copie
+  partielle ou périmée de `CombatController` ne peut pas bloquer la touche
+  Dash, seulement lui retirer la capacité d'annulation.
+
+Fichiers : `src/client/V1/CombatController.lua`,
+`src/client/V1/InputController.lua`, `src/client/V1/init.client.lua`,
+`tests/CombatController_Cancels.spec.lua` (5 cas, mocks — palier 0 jamais,
+palier 1 pas au coup 1, palier 1 au coup 2 utilisable une fois puis épuisé,
+expiration de la fenêtre à 0.2s, palier 2 dès le coup 1). Au passage,
+supprimé 3 déclarations mortes pré-existantes dans `CombatController.lua`
+(`Players`, `SKILL_KEYS`, `SKILL_BINDS`, jamais utilisées) — sans ça le hook
+pre-commit bloque sur n'importe quel avertissement `selene` du fichier
+entier, pas seulement sur le diff ajouté (même piège que la Phase 1).
+
+`stylua` + `selene` + `scan_recurring_bugs.py` propres sur les 4 fichiers.
+
+### Honnêtement non vérifié
+
+**Rien de ce tour n'a tourné.** Ni en Play Solo, ni même le spec TestEZ —
+confirmé qu'il n'existe aucun moyen de lancer un `.spec.lua` (TestEZ) hors
+Studio dans ce projet : `tests/run_all.sh` ne lance que les
+`tests/test_*.luau` (couche Lune, smoke tests structurels), pas la suite
+TestEZ, qui a besoin du Test Service de Roblox. Le raisonnement sur le
+timing (recovery M1_1 = 0.34s, fenêtre 0.2s, `ComboResetTime` = 1.0s) a été
+vérifié à la main contre les vraies constantes du projet, pas supposé — mais
+« vérifié sur le papier » n'est pas « vérifié en jeu ».
+
+### Bloqué, en attente du retour de Milan
+
+- **Toute vérification Play Solo** — Phase 2 (Cancels) et le fix
+  `TrainingDummies` compris. Rien de tout ça n'est dans la place, disque
+  seulement.
+- **Connexion du plugin Rojo** et **Cmd+S** — reportés explicitement à plus
+  tard par Milan, pas oubliés.
+- **Décision sur les M1 Toji vs Demi-Dieu** dans `AnimationDB/Combat.lua` —
+  toujours en attente, inchangée depuis la Phase 1.
+- Phase 3 (les 4 compétences) et Phase 4 (Ultimate) — pas commencées ;
+  Phase 3 ne dépend que de A (Momentum), pourrait être écrite de la même
+  manière disque-seule si Milan le souhaite avant son retour.
+
+---
+
 ## 2026-08-27 (suite) — Demi-Dieu Phase 1 : construit, poussé à la main, vérifié en jeu réel
 
 Trois agents en parallèle (MomentumService+miroir, chaîne M1 4 coups, dash Pas
