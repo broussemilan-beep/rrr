@@ -218,6 +218,78 @@ uniquement dans la conversation Claude Code, pas sur le miroir public.
 
 ---
 
+## 2026-08-27 (suite 7) — Animations M1 uploadées + câblées + vérifiées, Cancels amélioré, Marche du Titan diagnostiquée, captures enfin publiées
+
+Suite directe des trois demandes en attente de l'entrée précédente.
+
+**1. Upload + câblage + vérification des 4 animations M1 Demi-Dieu — FAIT,
+pipeline complet réel, pas juste les gates.**
+`assets/animations/handkeyer/M1_[1-4]_demidieu.rbxm` (déjà bakés) uploadés
+via `asphalt sync cloud` (Open Cloud réel, gratuit — aucun Robux, cf. règle
+gravée en mémoire) : `M1_1=137721498143059`, `M1_2=138058194756149`,
+`M1_3=102280920188057`, `M1_4=87702115873385`. Câblés dans
+`AnimationDB/Combat.lua` (remplace les 4 `PENDING_UPLOAD_*`) — `Fighter_M1_
+1..4` (`_LegacyAliases.lua`) héritent automatiquement des mêmes IDs, ce sont
+des références à la MÊME table, pas des entrées séparées. **Vérifié en
+moteur, vrai Play Solo** : `[AnimationDriver]` loadout report —
+`M1_1..4 OK len=0.50/0.57/0.63/0.83s` (et `Fighter_M1_1..4` identiques),
+largement au-dessus du seuil 0.1s. Entrées ajoutées dans
+`verified_assets.json` (status=VERIFIED) pour les 8 noms de slot. Commit
+`a2c35fc`.
+
+**2. Cancels — vérifié si le vrai upload corrige le timing "naturellement"
+avant tout correctif séparé, comme demandé.**
+Réponse : **PARTIELLEMENT.** Avec les vraies animations chargées, M1_1/M1_2
+cessent d'émettre `[V1] WARN marker fallback` (leur marker réel arrive à
+temps) et un premier cancel réussit enfin (0 succès avant → 1/4). Mais
+`WARN marker fallback for M1_3` et `M1_4` **persistent** même avec les
+vraies animations : la cause n'était pas "pas d'animation réelle", c'était
+`MoveData.lua`'s `recovery` (0.34/0.45) plus court que le marker `Impact`
+propre de `Combat.lua` (0.3667/0.4667) — la course était perdue avant même
+de regarder l'animation. **Correctif appliqué (commit `901213b`)** :
+`M1_3.recovery` 0.34→0.42, `M1_4.recovery` 0.45→0.52. Session Play Solo
+relancée à zéro, re-testé avec 8 tentatives réelles (sondage
+`Heartbeat` frame-parfait) : **3/8 réussies**, contre 0/4 puis 1/4 avant.
+Succès reproductibles sur M1_2/M1_3 à tier "chargé". M1_1 et M1_4 ratent
+encore par moments même en sondage parfait — **progrès réel et mesuré, pas
+encore 100% fiable.** Root cause exacte identifiée si besoin d'aller plus
+loin : marge de M1_1 à tier2 semble insuffisante face à la latence de
+polling ; à creuser en session dédiée si le taux de 3/8 ne suffit pas.
+
+**3. Marche du Titan avec vrai input directionnel — dérive latérale
+confirmée réelle, PAS un artefact de test.**
+Test avec `Humanoid:Move(direction, false)` réasserti à chaque frame
+pendant tout le cast (reproduit fidèlement ce que fait le `ControlModule`
+natif quand un joueur tient W) : **0 dégât, encore.** Le dépassement en Z
+est bien corrigé (1.68 studs de trop contre ~7.7 avant, cohérent avec le
+fix de vélocité résiduelle de l'entrée précédente) mais une **dérive
+latérale en X quasi identique (~+7 studs) apparaît malgré un input tenu en
+continu vers une cible alignée sur le même axe X que le joueur**. Conclusion
+ferme : ce n'est pas un artefact d'absence d'input — c'est un vrai bug dans
+le mécanisme des pas (`Skill3_MarcheDuTitan.lua`), cause non identifiée
+(candidat le plus probable : les deux appels `applyStepImpulse` successifs
+interagissent avec la physique du Humanoid d'une façon qui introduit une
+composante latérale non voulue). **Non corrigé** — diagnostic net livré,
+correctif à faire en session dédiée avec plus de marge d'investigation.
+
+**4. Chemin disque pour les captures — RÉSOLU.**
+L'outil de capture exposé par le harness ne touche jamais le disque, mais
+`scripts/studiomcp_capture_animated.py` (déjà dans le repo, jamais utilisé
+pour un besoin ad-hoc jusqu'ici) montre la voie : se connecter DIRECTEMENT
+à `StudioMCP --stdio` (même binaire, même session Studio, connexion JSON-RPC
+indépendante de celle du harness) et décoder soi-même le base64 retourné.
+Script autonome écrit (`capture_demidieu_m1.py`), lancé pendant un vrai
+combat M1 en cours : **2 PNG réels sur disque** (276KB/281KB), confirmés
+visuellement avant publication. **Publiés sur le miroir public** (commit
+mirror `f88f449`) :
+- <https://raw.githubusercontent.com/broussemilan-beep/rrr/ba10f79638c7386fb9c02d88de6d3acb5954b2aa/progress/screenshots/2026-08-27_demidieu-m1-capture-1.jpg>
+- <https://raw.githubusercontent.com/broussemilan-beep/rrr/ba10f79638c7386fb9c02d88de6d3acb5954b2aa/progress/screenshots/2026-08-27_demidieu-m1-capture-2.jpg>
+
+**Commits de cette suite** : `a2c35fc` (upload+câblage+vérif animations),
+`901213b` (fix recovery M1_3/M1_4).
+
+---
+
 ## 2026-08-27 (suite 4) — Demi-Dieu Phase 4 (Ultimate), disque-seul, rien vérifié en jeu
 
 Même consigne : disque-seul, même exigence d'honnêteté, décision bloquante
