@@ -69,6 +69,94 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite 3) — M1_1 réautoré : le direct était piloté sur un axe qui ne va PAS vers l'avant
+
+### La vraie cause, enfin
+
+En cherchant comment donner plus de marge au seed, j'ai mesuré sa trajectoire
+réelle plutôt que de supposer. Le poignet droit **ne va jamais vers l'avant** :
+sa coordonnée z reste entre −0.11 et +0.07 sur tout le clip (course avant :
+0.181 stud). En x il part de +0.95, passe par +1.93, puis traverse à **−0.37** —
+le bras balaie *en travers du corps*.
+
+Sonde axe par axe depuis la pose de repos, via `r6_fk` :
+
+```
+Right Shoulder rx = +90  ->  dx -2.000  dy +1.000  dz  0.000     <- ZÉRO avant
+Right Shoulder ry = +90  ->  dx -0.500  dy  0.000  dz -0.500
+Right Shoulder rz = +90  ->  dx  0.000  dy +1.500  dz -1.500     <- l'axe du direct
+```
+
+L'avant est −Z. **`rx` produit exactement zéro déplacement avant.** Or le pattern
+`rear_hand_straight` pilote le contact sur `rx: 90`, et son propre en-tête
+affirme « POSITIVE rx = forward » — ce qui était vrai **avant** le fix C0/C1 de
+`r6_fk` du 24/08 (qui a dé-permuté les plans sagittal et coronal). Les fichiers
+de patterns n'ont jamais été mis à jour derrière.
+
+**Toute la chaîne causale du punch mou tient là-dedans** : le seed mesurait 0.617
+stud contre un plancher de 2.25 (le poignet partait de côté — le gate de classe
+désignait même le poignet **gauche** comme frappeur), `amplify_seed` a été poussé
+à son plafond k=12 (4× au-delà du ~3× où l'échelle linéaire d'Euler reste
+valide), et le clamp dur a alors figé l'épaule à ±180° sur 47 % du clip. Tous les
+gates passaient, parce qu'un bras gelé en pleine extension mesure quand même
+comme « étendu ».
+
+**Pourquoi M1_2/3/4 allaient bien** : hook (X) et uppercut/overhead (Y) ont
+besoin d'axes que `rx` produit effectivement. Seule la classe *straight* avait
+besoin de Z. C'est exactement pour ça que M1_1 exigeait 3.65× là où les trois
+autres tournaient à 1.0-2.4×.
+
+### Réautorage
+
+Nouveau pattern `rear_hand_straight_v2`, même intention de personnage (frappe du
+pilier lourde, armé profond, torse qui se déroule derrière), authoré sur `rz`.
+Créé comme **nouveau fichier** plutôt qu'en modifiant le partagé : cinq autres
+patterns de classe *straight* ont le même défaut et leurs seeds sont déjà bakés
+et livrés — les toucher ici aurait été un balayage non demandé et non vérifié.
+
+**Résultat, sans aucune amplification (k=1.0) :**
+
+| | valeur | plancher |
+|---|---|---|
+| class amplitude | **2.704** | 2.25 (+20 % de marge) |
+| class ratio | **0.905** | 0.67 |
+| longest static run | **20 %** | max 40 % |
+| poignet frappeur détecté | **droit** | (c'était le gauche avant) |
+
+C'est bien « plus de marge réelle avant amplification », pas une nouvelle
+tentative du pipeline sur le même seed insuffisant.
+
+### Bake → upload → câblage → moteur
+
+Uploadé `rbxassetid://127337837827260` (AssetTypeId=24 vérifié), câblé, tous les
+ids précédents commentés pour retour arrière.
+
+**Vérifié en vrai Play Solo**, en scrubbant la piste live :
+
+```
+t=0.10-0.20   arm z = +0.63   (armé en arrière)   rz = -80.1
+t=0.25-0.30   arm z = -0.65   (extension avant)   rz = +90
+```
+
+**1.28 stud de course avant en repère torse**, là où l'ancien asset restait cloué
+à −0.5 pendant toute la fenêtre de frappe. `rx` reste à 0 : le coup est bien
+porté par `rz`.
+
+### Reste ouvert, volontairement non touché
+
+`dash_strike`, `front_palm_cast`, `lead_palm`, `rear_hand_cross` et
+`two_handed_thrust` pilotent eux aussi leurs frappes avant sur `rx`. C'est très
+probablement la cause d'origine du constat « nos seeds font 5.3× moins que le
+pack commercial » qui avait motivé `amplify_seed` — autrement dit, l'amplification
+a peut-être toujours été un pansement sur ce bug d'axe.
+
+**Capture de contrôle** : non tentée, en attente que Milan soit physiquement
+devant l'écran (le rendu en pilotage à distance reste cassé).
+
+**Commit** : `48d8089`. Tests : 51 verts.
+
+---
+
 ## 2026-08-28 (suite 2) — Gate de mouvement construit, clamp dur remplacé, et M1_1 déclaré non réparable par amplification
 
 ### 1. Nouveau gate : « le bras bouge-t-il ? » (`strike_motion.py`)
