@@ -69,6 +69,92 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite 8) — DIAGNOSTIC : le perso qui se tortille = M1_2 et M1_4
+
+Retour de Milan après la démo : le M1 part bien vers l'avant (fix validé à
+l'œil), les coups sont « corrects mais fades », et **le perso se tortillait dans
+tous les sens** à un moment de la boucle. Diagnostic demandé avant toute
+correction.
+
+### Mesure 1 — sources : sauts angulaires bruts
+
+| animation | saut max/frame | où | valeurs \|≥175°\| | flip de signe à 180 |
+|---|---|---|---|---|
+| M1_1 (réautoré) | 170.0° | R.Shoulder.rz | **0** | 0 |
+| **M1_2** (jamais réautoré) | **286.1°** | R.Shoulder.rx | **8** | 0 |
+| **M1_3** (jamais réautoré) | **260.8°** | R.Shoulder.rx | **4** | 0 |
+| **M1_4** (jamais réautoré) | **360.0°** | R.Shoulder.rx (−180 → +180) | **22** | **1** |
+| PasDivin | 170.0° | R.Shoulder.rz | 0 | 0 |
+| Skill1_DashStrike | 170.0° | R.Shoulder.rz | 0 | 0 |
+| Skill2_BeamOrProjectile | 150.0° | R.Shoulder.rz | 0 | 0 |
+
+### Mesure 2 — moteur : ce que le rig fait réellement
+
+Les poses bakées sont des CFrames, pas des Euler : le moteur peut interpoler par
+le chemin court, donc une valeur source ne prouve rien. J'ai scrubé chaque asset
+sur 60 points et mesuré l'angle réel entre orientations consécutives (via la
+trace de la matrice de rotation — aucune ambiguïté de wrap), **en excluant
+l'entrée en pose depuis le repos** (artefact de mesure repéré au premier essai).
+
+Le critère discriminant n'est pas le pic isolé — un grand pas unique, c'est le
+snap d'impact voulu — mais **le NOMBRE de pas violents** :
+
+| animation | pas > 45° (sur 60) | 3 plus gros |
+|---|---|---|
+| M1_1 | **2** | 75° @0.216 épaule |
+| **M1_2** | **8** | 114° @0.255 épaule · **91° @0.217 RootJoint** · 81° @0.425 |
+| M1_3 | 3 | 67° @0.422 épaule |
+| **M1_4** | **6** | **128° @0.361 RootJoint** · 82° @0.388 épaule · 55° @0.486 RootJoint |
+| PasDivin | 2 | 83° @0.151 épaule |
+| Skill1_DashStrike | 2 | 99° @0.284 épaule |
+| Skill2_BeamOrProjectile | 1 | 114° @0.421 épaule |
+
+**Les 4 réautorés font 1-2 pas violents : un snap propre.** M1_2 en fait 8 et
+M1_4 en fait 6, dont des rotations du **RootJoint** (91° et 128°) — c'est le
+corps entier qui fouette, plusieurs fois, en pleine animation. C'est ça, le
+tortillement.
+
+**La corrélation est parfaite et monotone** : le nombre de valeurs saturées près
+de 180° dans la source prédit le nombre de pas violents en moteur
+(22→6, 8→8, 4→3, 0→1-2).
+
+### Mesure 3 — d'où vient la saturation
+
+| seed | BRUT : \|≥175°\| | BRUT : saut max | AMPLIFIÉ : \|≥175°\| | AMPLIFIÉ : saut max |
+|---|---|---|---|---|
+| M1_2 | **0** | 103.0° | **8** | 286.1° |
+| M1_3 | **0** | 125.5° | **4** | 260.8° |
+| M1_4 | **0** | 165.7° | **22** | 360.0° |
+
+**Les seeds bruts sont propres. C'est `amplify_seed` qui crée la saturation** —
+le clamp dur qui écrase toutes les valeurs hors bornes sur la même. C'est
+exactement le bug corrigé plus tôt dans la session par `soft_limit`… mais ces
+trois fichiers n'ont **jamais été régénérés** depuis. Le correctif existe, il
+n'a simplement pas été appliqué à eux.
+
+### Verdict
+
+**Coupables : M1_2 (8 pas violents) et M1_4 (6, dont 128° sur le RootJoint).**
+M1_3 est en limite (3). Ce sont précisément les trois animations que je n'ai
+jamais réautorées — elles n'étaient pas touchées par le bug d'axe (hook et
+uppercut/overhead utilisent des axes que `rx` produit bien), donc elles sont
+passées à travers les 7 corrections.
+
+Aucune des 4 animations réautorées n'est en cause.
+
+**Rien corrigé** — diagnostic demandé avant correction. Le chemin est direct :
+régénérer M1_2/3/4 via `amplify_seed` avec le `soft_limit` désormais en place,
+puis re-gate + bake + upload + câblage + vérif moteur, comme les 7 autres.
+
+### Point séparé, non traité : « corrects mais fades »
+
+Le retour « Pas Divin n'a rien de divin, c'est bien un dash mais le perso
+marche » est un problème de **caractère**, pas de correction — distinct du
+tortillement. Les gates actuels mesurent l'amplitude, la direction et le
+mouvement ; aucun ne mesure la personnalité. À traiter comme un chantier propre.
+
+---
+
 ## 2026-08-28 (suite 7) — 7e et dernier seed : spear_thrust_jinwoo — et une correction de ma part
 
 `spear_thrust_jinwoo` réautoré sur `two_handed_thrust_v2`, séquence complète.
