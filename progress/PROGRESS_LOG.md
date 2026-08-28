@@ -69,6 +69,79 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite 5) — 6 seeds réautorés sur le bon axe ; 1 uploadé, 5 en attente ; RIEN vérifié en moteur
+
+### Résultats des 6 réautorages
+
+Toutes ces animations pilotaient leur frappe sur `Shoulder.rx`, qui produit zéro
+course avant. Réautorées sur les patterns v2 (avant = `rz`, positif à droite /
+négatif à gauche). Même intention, mêmes timings — seul l'axe change.
+
+| seed | amplitude (plancher 2.25) | ratio | poignet frappeur | static |
+|---|---|---|---|---|
+| `M1_jab_toji` | 0.580 → **2.626** | 0.817 → 0.875 | gauche → **DROIT** | 24 % |
+| `M1_cross_toji` | 0.749 → **2.682** | 0.907 → 0.869 | gauche → **DROIT** | 27 % |
+| `dash_strike_toji` | 0.738 → **2.444** | 0.852 → 0.814 | gauche → **DROIT** | 26 % |
+| `Dash_demidieu` | 0.736 → **2.588** | 0.765 → 0.864 | gauche → **DROIT** | 23 % |
+| `devil_fruit_cast_luffy` | 0.349 → **2.781** | 0.397 → 0.945 | gauche (symétrique) | 26 % |
+| `M1_palm_gojo` | 0.319 → **2.424** | 0.713 → 0.827 | gauche → **DROIT** | 23 % |
+
+**Les six passent les deux gates sans aucune amplification**, là où ils exigeaient
+auparavant 3.00× à 7.05× — tous au-delà de la limite de validité (~3×), le
+mécanisme même qui avait fini par geler le bras de M1_1.
+
+**Le basculement du poignet frappeur de gauche à droite sur 5 des 6 est la
+confirmation la plus nette** : le gate désignait la main de garde parce que le
+bras nominalement frappeur n'avançait pas du tout. Luffy reste « gauche » à juste
+titre — `front_palm_cast` est un cast symétrique à deux mains.
+
+### État de livraison — à lire attentivement
+
+| seed | baké | uploadé | câblé | vérifié moteur |
+|---|---|---|---|---|
+| `M1_jab_toji` | ✅ | ✅ `84765772735982` | ✅ (bloc Toji commenté) | ❌ |
+| `M1_cross_toji` | ✅ | ❌ | ❌ | ❌ |
+| `dash_strike_toji` | ✅ | ❌ | ❌ | ❌ |
+| `Dash_demidieu` | ✅ | ❌ | ❌ | ❌ |
+| `devil_fruit_cast_luffy` | ✅ | ❌ | ❌ | ❌ |
+| `M1_palm_gojo` | ✅ | ❌ | ❌ | ❌ |
+
+### BLOCAGE — vérification moteur impossible
+
+Studio a été relancé en cours de session : le process tourne et une place est
+ouverte (195 entrées `builtin_` dans le log), mais **son serveur MCP n'est pas
+activé** — `list_roblox_studios` retourne `{"studios":[]}` et le log ne contient
+aucune trace MCP. L'activer demande un clic dans Assistant, et l'envoi de frappes
+clavier automatisées est refusé (`osascript n'est pas autorisé à envoyer de
+saisies`, erreur 1002 — testé ce tour).
+
+**Tous les chiffres ci-dessus sont des mesures disque (gates déterministes), pas
+des observations en moteur.** Rien n'est déclaré vérifié en jeu.
+
+**Aucune animation livrée ne change de comportement** du fait de ce tour : les
+cinq non uploadées ne le peuvent pas, et `M1_jab_toji` alimente un bloc commenté
+dont le slot est occupé par le kit Demi-Dieu.
+
+### Note d'outillage
+
+Les deux premières tentatives `asphalt sync cloud` ont expiré à 2 min sans rien
+uploader, alors que `--dry-run` voyait bien le fichier. Simple latence Roblox :
+au 3e essai avec une marge large, ça passe. À prévoir pour les 5 uploads
+restants.
+
+### Reste en attente
+
+1. Activation du MCP Studio → vérification moteur de `M1_jab_toji`, puis upload +
+   câblage + vérification des 5 autres.
+2. **`spear_thrust_jinwoo`** — 7e seed affecté (`two_handed_thrust`, 5.40×
+   requis), câblé sur `Skills.lua:Skill3_Launcher` et **actif en jeu**. Toujours
+   hors périmètre, à trancher.
+
+**Commit** : `32154e0`. Tests : 51 verts. Patterns d'origine intacts, seuls les 6
+specs ciblés repointés.
+
+---
+
 ## 2026-08-28 (suite 4) — Audit du bug d'axe sur tout le corpus : 7 seeds touchés, 5 patterns corrigés, rien réautoré
 
 ### Croisement patterns ↔ seeds livrés
