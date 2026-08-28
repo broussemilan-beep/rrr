@@ -172,7 +172,50 @@ Le rendu du viewport reste fortement dégradé même Studio au premier plan
 (session pilotée à distance). Fichier sur disque mais illisible — **non publié
 sur le miroir**, plutôt que de publier une image inutilisable.
 
-**Commit** : `4e65f3b`. Tests : 39 verts.
+**Commit** : `4e65f3b`. Tests : 39 verts sur mes modules.
+
+### 8. Deux tests rouges trouvés dans la suite complète — PAS de moi, mais documentés
+
+La suite complète `scripts/animator_ai/tests/` : **455 passed, 2 failed**
+(11 min 31). Règle du projet : un test rouge n'est jamais « acceptable ».
+
+```
+FAILED test_moving_contact.py::TestTracking::test_gate_passes_on_the_real_face_hit_trajectory
+FAILED test_moving_contact.py::TestTracking::test_joint_solve_dominates_the_sequential_one
+```
+
+**Ce n'est pas causé par mes changements**, prouvé de deux façons :
+1. Fermeture d'imports du test = `{contact_solver, moving_contact, r6_fk}` —
+   aucun de mes modules (nouveaux ou modifiés) n'y est atteignable.
+2. `git log` : ces trois fichiers datent de `14cd216` (2026-08-25) et
+   `70c2196` (2026-08-24) ; mes deux commits n'y touchent pas.
+
+*(Une comparaison en worktree sur le commit d'avant était non concluante : les
+tests s'y **skippent**, car ils dépendent du dump du pack Close Combat, un
+artefact non commité. C'est aussi pourquoi ils ne crient qu'ici.)*
+
+**Ce qu'ils disent, chiffres réels :**
+
+```
+[FAIL] Right Wrist -> victim Head:
+       mean 0.1604 / max 0.2549 studs sur 13 frames (53.8% within 0.25)
+assert joint.coverage == seq.coverage == 1.0   ->   0.5385 == 1.0
+```
+
+Les deux échecs ont **la même racine** : la couverture est de 53.8 % (7 frames
+sur 13) au lieu de 100 %, **en mode joint comme en séquentiel**. Ce n'est donc
+pas « le solveur joint est moins bon » — les deux modes échouent identiquement,
+et le test qui garde la promesse du commit `14cd216` (« solve the whole
+trajectory jointly ») ne tient plus.
+
+**Détail qui interpelle** : le tableau des distances plafonne à ~0.2484 sur de
+nombreuses frames consécutives — **encore une signature de saturation contre une
+limite**, structurellement identique au clamp à ±180° du Right Shoulder trouvé
+au §6. Deux symptômes indépendants de « la valeur se colle à sa borne et y
+reste » dans le même pipeline. À creuser ensemble plutôt que séparément.
+
+Non corrigé (hors du périmètre demandé ce tour), mais tracé ici comme canari,
+pas étouffé.
 
 **Prochain pas évident** : le vrai correctif n'est ni Wang ni l'easing, c'est
 de **replafonner l'amplification** pour qu'elle n'écrase plus la courbe contre
