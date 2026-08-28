@@ -87,6 +87,7 @@ bras a frappé » de « le corps a tourné et le bras a suivi ».
 | `M1_cross_toji` | `115046854915075` | 0.500 s | **1.29 stud** | +0.64 → −0.65 | 9/11 | ✅ |
 | `dash_strike_toji` | `115418436010731` | 0.633 s | **1.24 stud** | +0.61 → −0.63 | 9/11 | ✅ **slot actif** |
 | `Dash_demidieu` | `109116933091807` | 0.433 s | **1.24 stud** | +0.61 → −0.63 | 7/11 | ✅ **slot `PasDivin`, était PENDING_UPLOAD** |
+| `devil_fruit_cast_luffy` | `121861953419707` | 0.767 s | **1.12 stud** (les 2 bras) | +0.54 → −0.58 | — | ✅ **slot actif**, cast symétrique |
 
 ---
 
