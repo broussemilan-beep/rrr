@@ -69,6 +69,24 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite 6) — Vérification moteur des 6 seeds réautorés, un par un
+
+MCP rétabli après fermeture complète + relance de Studio (4 plugins utilisateur
+chargés cette fois : `AnimExport`, `Rojo`, `WeppyRobloxMCP`, `rodeo`).
+
+**Méthode par seed** : charger l'AssetId directement, **attendre que
+`track.Length > 0`** (sans cette attente la piste n'est pas encore streamée et
+le scrub échantillonne la pose de repos — faux négatif rencontré au premier
+essai), puis scruber 11 points et mesurer la position du bras en **repère
+torse**. Le repère torse est le point clé : en monde, on ne distingue pas « le
+bras a frappé » de « le corps a tourné et le bras a suivi ».
+
+| seed | asset | length | course avant | z min → max | poses distinctes | verdict |
+|---|---|---|---|---|---|---|
+| `M1_jab_toji` | `84765772735982` | 0.567 s | **1.27 stud** | +0.63 → −0.64 | 10/11 | ✅ |
+
+---
+
 ## 2026-08-28 (suite 5) — 6 seeds réautorés sur le bon axe ; 1 uploadé, 5 en attente ; RIEN vérifié en moteur
 
 ### Résultats des 6 réautorages
