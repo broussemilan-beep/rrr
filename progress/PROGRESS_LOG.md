@@ -69,6 +69,114 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite 2) — Gate de mouvement construit, clamp dur remplacé, et M1_1 déclaré non réparable par amplification
+
+### 1. Nouveau gate : « le bras bouge-t-il ? » (`strike_motion.py`)
+
+Tous les gates existants mesurent **où le membre arrive**. Aucun ne voit s'il a
+bougé. Un bras qui se téléporte en pleine extension puis se fige les satisfait
+tous — le poignet *est* étendu. C'est ce qui a été livré.
+
+**Deux erreurs de ma part en cours de route, gardées en commentaire dans le code
+parce qu'elles sont instructives :**
+
+1. *Première version : mesurer la position monde du poignet.* Elle **n'a pas
+   détecté le bug** (0.100 s / 20 %, PASS). Raison : le `RootJoint` passe de
+   +7.1° à −118.0° à la frame 6, donc le corps tourne et traîne le poignet dans
+   l'espace pendant que le bras reste soudé au torse. La position monde ne
+   distingue pas « le bras a frappé » de « le corps a pivoté ». Corrigé : on
+   mesure les **angles propres de l'épaule**, relatifs au torse.
+2. *Sélection du « bras le plus actif ».* Elle **ratait aussi le bug** : un bras
+   clampé tourne peu *parce qu'il est clampé*, donc l'heuristique choisissait la
+   main de garde libre et rapportait 0.100 s au lieu des vrais 0.233 s. Corrigé :
+   on juge **le pire des deux bras**.
+
+**Le wrap d'angle est porteur** : le seed écrit −180° puis +180° (même rotation).
+Une différence naïve lit 360° de « mouvement » au moment le plus figé —
+exactement l'inverse d'un détecteur. Les écarts sont ramenés dans [−180, 180].
+
+**Calibration sur les 17 seeds authorés, pas au doigt mouillé :**
+
+| | `longest_static_run_frac` |
+|---|---|
+| seed cassé (M1_1 amplifié) | **47 %** |
+| pire livré (`heavy_finisher_sukuna`) | 34 % |
+| `M1_uppercut_saitama` | 31 % |
+| typique | 20-28 % |
+
+Seuil à **40 %** — dégage des deux côtés. `motion_ratio` est **délibérément non
+gaté**, et le code dit pourquoi : le clip cassé score 40 %, soit **plus** que
+`uppercut_saitama` (34 %) et `Dash_demidieu` (38 %) qui sont livrés et validés.
+Un critère qui crie sur du bon en ratant du mauvais, c'est un gate qu'on apprend
+à ignorer.
+
+**Vérifié comme demandé : 17/17 seeds livrés PASS, le seed cassé FAIL.** Le gate
+est câblé dans `stage4_gate_cascade.run_cascade_frames` (gate n°7).
+
+### 2. `amplify_seed` : clamp dur → saturation douce
+
+Coupable : `nv = max(lo, min(hi, nv))`. Un clamp dur envoie **toutes** les
+valeurs hors bornes sur le même nombre — une série de frames sur-amplifiées
+s'écrase en plateau. C'est le mécanisme exact du bras gelé.
+
+Remplacé par un `soft_limit` en `tanh` : strictement monotone (deux entrées
+distinctes gardent deux sorties distinctes → **aucun plateau ne peut se former**),
+asymptotique à la borne sans jamais l'atteindre, et **identité exacte** sous le
+genou (80 % de la plage) — donc les 17 animations validées ne peuvent pas être
+restylées en silence. L'ancien comportement reste accessible via `soft=False`
+pour reproduire l'existant au bit près.
+
+### 3. BLOCAGE — M1_1 n'est pas réparable par amplification
+
+Balayage de `k` avec la saturation douce, les **deux** gates évalués :
+
+```
+    k     amp   ratio  static  classe  mouvement
+  1.0   0.617   0.824    20%    FAIL      ok
+  3.0   1.591   0.895    20%    FAIL      ok
+  5.0   2.175   0.989    20%    FAIL      ok     <- meilleure amplitude atteignable
+  8.0   1.833   0.710    20%    FAIL      ok
+ 12.0   2.356   0.817    47%     ok      FAIL    <- ce qui est livré aujourd'hui
+```
+
+**Il n'existe aucun `k` où les deux gates passent.** En dessous de k=8 le
+mouvement est sain mais l'amplitude plafonne à **2.175** (plancher 2.25, il
+manque 3.3 %). À k=12 l'amplitude passe **uniquement grâce au plateau du clamp**.
+
+Autrement dit : **l'animation livrée ne passait le gate de classe que comme
+artefact du clamp.** Enlever l'artefact, et le seed n'atteint plus le plancher.
+Le module documente lui-même que l'échelle linéaire d'Euler cesse d'être valide
+au-delà de ~3× ; on tournait à 12×.
+
+**Conclusion : ce seed est trop petit pour être sauvé par mise à l'échelle. Il
+faut le ré-autorer (poses plus amples), pas l'amplifier.** C'est précisément ce
+que le nouveau gate est censé révéler — et il le révèle immédiatement, au lieu
+d'après livraison.
+
+**Rien n'a donc été ré-uploadé** : je ne livre pas une animation qui échoue un
+gate juste après avoir passé la session à construire ce gate. Et je ne bascule
+pas M1_1 sur l'animation Toji de moi-même — c'est une décision d'identité du
+personnage, pas une décision technique.
+
+### 4. Rayon d'action : contenu à M1_1
+
+| animation livrée | static | verdict |
+|---|---|---|
+| M1_1 | 47 % | **FAIL** |
+| M1_2 | 24 % | PASS |
+| M1_3 | 21 % | PASS |
+| M1_4 | 20 % | PASS |
+
+Seul le **premier coup de la chaîne** est mort — celui qu'on sent le plus.
+
+**Commit** : `340efea`. Tests : 51 verts.
+
+**Capture de contrôle** : non tentée ce tour. Le rendu en pilotage à distance
+reste cassé (constat du tour précédent, non résolu), et il n'y avait de toute
+façon rien de nouveau à montrer en jeu puisque rien n'a été uploadé.
+
+---
+
 ## 2026-08-28 (suite) — Provenance tranchée, easing branché, et LA cause racine du punch mou trouvée
 
 ### 1. Provenance de l'asset uploadé — TRANCHÉE, mon soupçon était faux
