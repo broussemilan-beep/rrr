@@ -69,6 +69,119 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite) — Provenance tranchée, easing branché, et LA cause racine du punch mou trouvée
+
+### 1. Provenance de l'asset uploadé — TRANCHÉE, mon soupçon était faux
+
+Méthode valide cette fois : passer les deux sources par **le même
+convertisseur** et hasher la sortie canonique contre le `.lune.json`
+réellement baké. Aucune corrélation statistique, aucune extraction d'Euler.
+
+```
+UPLOADED (baked into the .rbxm)  sha=0894ed0ef172a30c
+M1_1_demidieu.json               sha=a89cd2dbce464648  IDENTICAL=False
+M1_1_demidieu_amplified.json     sha=0894ed0ef172a30c  IDENTICAL=True
+```
+
+**Les 4 M1 ont été bakés depuis la version AMPLIFIÉE.** Le seed faible n'a
+jamais été shippé. Mon soupçon de l'entrée précédente était **faux** — aucun
+ré-upload correctif n'était nécessaire.
+
+### 2. Blocage : le Cmd+S automatisé ne marche PAS
+
+Testé pour de vrai : `osascript n'est pas autorisé à envoyer de saisies (1002)`.
+Lire le processus au premier plan est autorisé, **envoyer des frappes clavier
+est une permission distincte, toujours refusée**. Mon test précédent (« System
+Events répond ») était insuffisant. Vérifié après coup : 0 ligne de sauvegarde
+ajoutée au log Studio. **Politique inchangée : jamais de fermeture sans
+sauvegarde confirmée.**
+
+### 3. Blocage : l'overshoot est IMPOSSIBLE via l'easing
+
+Le bake a planté sur `The enum item 'Sine' does not exist for enum
+'PoseEasingStyle'`. Les poses de KeyframeSequence n'utilisent pas
+`Enum.EasingStyle` (le grand set TweenService) mais **`Enum.PoseEasingStyle`**,
+énuméré via Lune :
+
+```
+PoseEasingStyle: Cubic, Linear, Constant, Bounce, CubicV2, Elastic
+PoseEasingDirection: In, InOut, Out
+```
+
+Ni `Back`, ni `Quint`, ni `Quad`, ni `Sine`. Ma politique d'easing était donc
+**entièrement inimplémentable** — je validais contre le mauvais enum, c'est un
+bug de ma part, corrigé et désormais **verrouillé par un test**.
+
+**Conséquence structurelle** : `Elastic` et `Bounce` sont les *seuls* membres
+capables d'overshoot, et les deux sont bannis pour les frappes (régression de
+dérive latérale du Day 19). **L'overshoot n'est donc pas exprimable en easing.**
+Un vrai follow-through exige des **keyframes supplémentaires**, qui changent les
+valeurs de pose et doivent repasser les gates — c'est une autre technique.
+
+### 4. L'easing atteint enfin le bake (opt-in)
+
+`agent_to_lune_converter` recalculait toujours l'easing depuis la phase et
+**jetait silencieusement** `frame["easing"]` — ce qui rendait tout easing
+authoré en amont sans effet au bake. Corrigé, mais **en opt-in** via
+`metadata.easing_plan` : tous les seeds existants portent déjà des champs
+`easing` qui ne correspondent PAS au mapping par phase, donc les honorer
+inconditionnellement aurait changé le bake de chaque seed et cassé la
+repro bit-à-bit des assets déjà vérifiés en moteur. Vérifié dans les deux sens.
+
+### 5. Passe easing M1_1 livrée bout-en-bout — et elle NE corrige PAS le défaut
+
+Re-gate (bit-identique : ratio 0.792000, amp 2.447000, bounds ok) → bake →
+upload (`rbxassetid://76339372524545`, AssetTypeId=24 vérifié) → câblage
+(ancien id commenté) → vérification moteur.
+
+**Résultat : le hold mort est toujours là.** Scrub du nouvel asset en Play
+Solo : pose identique à t=0.15, 0.20, 0.25 et 0.30.
+
+### 6. LA cause racine — saturation de l'amplification, pas l'easing
+
+En inspectant le canal du bras frappeur image par image :
+
+```
+frame   t       Right Shoulder (rx, ry, rz)
+   3  0.1000  ( -180.00,  91.00,  0.00)
+   4  0.1333  ( -180.00,  91.00,  0.00)
+   5  0.1667  ( -180.00,  91.00,  0.00)
+   6  0.2000  ( -180.00,  91.00,  0.00)
+   7  0.2333  (  180.00,  91.00,  0.00)
+   8  0.2667  (  180.00,  91.00,  0.00)
+   9  0.3000  (  180.00,  91.00,  0.00)
+  10  0.3333  (  180.00,  91.00,  0.00)
+```
+
+**Le Right Shoulder est bloqué à ±180° de t=0.10 à t=0.333** — 0.23 s, presque
+la moitié du clip (−180° et +180° sont la même rotation). `amplify_seed` a
+amplifié la rotation de frappe jusqu'à **saturer contre la borne articulaire de
+180°**, aplatissant toute la frappe en une pose statique.
+
+Aucun easing ne peut interpoler entre deux valeurs identiques — d'où l'échec de
+la passe easing. Et **le gate ne peut pas voir le problème** : la FK mesure le
+poignet *étendu*, ce qu'un bras figé en extension satisfait parfaitement. Le
+gate valide l'amplitude, pas le fait que le bras bouge.
+
+C'est l'explication du punch qui ne lit pas — plus convaincante que le hold
+mort, qui n'en était que le symptôme.
+
+### 7. Capture de contrôle — obtenue sur disque, inexploitable
+
+Le rendu du viewport reste fortement dégradé même Studio au premier plan
+(session pilotée à distance). Fichier sur disque mais illisible — **non publié
+sur le miroir**, plutôt que de publier une image inutilisable.
+
+**Commit** : `4e65f3b`. Tests : 39 verts.
+
+**Prochain pas évident** : le vrai correctif n'est ni Wang ni l'easing, c'est
+de **replafonner l'amplification** pour qu'elle n'écrase plus la courbe contre
+la borne — et d'ajouter au gate un critère « le bras bouge-t-il pendant la
+fenêtre de frappe ? », que la cascade actuelle est structurellement incapable
+de détecter.
+
+---
+
 ## 2026-08-28 — Diagnostic M1 clos (l'anim joue vraiment) + filtre de Wang et easing planner
 
 Pilotage à distance, Milan absent de son PC.
