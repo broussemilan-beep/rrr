@@ -69,6 +69,37 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite 9) — Correction du tortillement : M1_4 traité
+
+Séquence complète, même discipline que les 7 précédents.
+
+**M1_4** — ré-amplifié `k=1.0` via `soft_limit` (pas de réautorage : le pattern
+`overhead_chop` utilise l'axe Y, que `rx` produit correctement — seul le clamp
+était en cause).
+
+| | valeur |
+|---|---|
+| saturation \|≥175°\| | **22 → 0** |
+| saut max source | **360° → 166°** |
+| class amplitude | 2.853 (plancher 2.85) |
+| class ratio | 0.952 (plancher 0.78) |
+| gate mouvement | ok |
+| asset | `rbxassetid://127432679584327` (AssetTypeId=24) |
+| rollback conservé | `87702115873385` |
+
+**Contrôle par articulation en moteur — la preuve demandée :**
+
+| | total pas >45° | RootJoint | R.Ép. | L.Ép. | R.Hanche | L.Hanche |
+|---|---|---|---|---|---|---|
+| avant (clamp dur) | **9** | **3** (54° · **128°** · 55°) | 2 | 1 | 2 | 1 |
+| après (soft limit) | **1** | **0** | 1 | 0 | 0 | 0 |
+
+Le pic restant (129°) est un **pas unique sur l'épaule frappeuse** : c'est le
+snap d'impact voulu, exactement la signature de M1_1 (2 pas, épaule seule, 0
+root). **Le tortillement a disparu, pas seulement les gates qui passent.**
+
+---
+
 ## 2026-08-28 (suite 8) — DIAGNOSTIC : le perso qui se tortille = M1_2 et M1_4
 
 Retour de Milan après la démo : le M1 part bien vers l'avant (fix validé à
