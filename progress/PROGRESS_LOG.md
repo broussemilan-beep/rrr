@@ -69,7 +69,41 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
-## 2026-08-28 (suite 9) — Correction du tortillement : M1_4 traité
+## 2026-08-28 (suite 9) — Tortillement corrigé sur les trois (M1_2, M1_3, M1_4)
+
+**Contrôle final — pas > 45° par articulation, 60 échantillons par clip :**
+
+| | avant | après |
+|---|---|---|
+| **M1_2** | **11** pas / 5 articulations / **3 RootJoint** | **1** / épaule seule / **0 root** |
+| **M1_3** | 3 / 2 articulations / **1 RootJoint** | 3 / **épaule seule** / **0 root** |
+| **M1_4** | **9** / 5 articulations / **3 RootJoint** | **1** / épaule seule / **0 root** |
+
+**Zéro événement RootJoint sur les trois.** Tout ce qui reste est sur l'épaule
+frappeuse : le snap d'impact voulu, signature identique aux 7 déjà corrigées.
+
+**M1_2 et M1_3 ont exigé plus qu'une ré-amplification** — et la mesure l'a dit
+avant toute écriture de code : une fois le clamp remplacé par la limite douce,
+**aucun `k` n'atteint leur plancher** (M1_2 plafonne à 1.708 pour 1.75, M1_3 à
+2.725 pour 2.75). Leurs versions livrées ne passaient donc que comme **artefact
+du clamp**. Deux nouveaux patterns :
+
+- `lead_hook_v2` — jeu de poses v1 trop petit ; espace balayé, pas deviné.
+  amp **2.948** (plancher 1.75), ratio 0.960.
+- `uppercut_v2` — **erreur de signe** : le v1 pilotait le contact à `rx=+100`,
+  or `rx=+90` donne `dx −2.000 / dy +1.000` (deux fois plus de latéral que de
+  montée) sur un coup jugé sur la montée +Y ; `rx=−90` donne `dy +2.000`.
+  v2 finit à `rx=−138` : amp **3.212** (plancher 2.75), ratio 0.975.
+
+Assets : M1_2 `88787651210963`, M1_3 `123966496280637`, M1_4 `127432679584327`.
+Rollbacks conservés. Patterns d'origine intacts.
+
+**Rapport complet** : `artifacts/FIX_TORTILLEMENT_2026-08-28.md`
+**Commit** : `584e3b7`. 51 tests verts.
+
+---
+
+## 2026-08-28 (suite 9a) — Détail M1_4 (première étape)
 
 Séquence complète, même discipline que les 7 précédents.
 
