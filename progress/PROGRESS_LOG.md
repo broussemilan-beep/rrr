@@ -132,11 +132,40 @@ exactement le bug corrigé plus tôt dans la session par `soft_limit`… mais ce
 trois fichiers n'ont **jamais été régénérés** depuis. Le correctif existe, il
 n'a simplement pas été appliqué à eux.
 
+### Mesure 4 — répartition PAR ARTICULATION (la mesure qui tranche)
+
+« Se tortiller dans tous les sens » est une lecture du **corps entier**. Un pas
+violent sur une épaule, c'est un coup ; un pas violent sur le **RootJoint**,
+c'est tout le personnage qui pivote. J'ai donc recompté les pas > 45° par
+articulation.
+
+| animation | RootJoint | R.Épaule | L.Épaule | R.Hanche | L.Hanche | total | événements RootJoint |
+|---|---|---|---|---|---|---|---|
+| M1_1 (réautoré) | **0** | 2 | 0 | 0 | 0 | **2** | — |
+| **M1_2** | **3** | 1 | 4 | 2 | 1 | **11** | 91° @0.22 · 76° @0.23 · 48° @0.36 |
+| M1_3 | 1 | 2 | 0 | 0 | 0 | 3 | 46° @0.25 (limite) |
+| **M1_4** | **3** | 2 | 1 | 2 | 1 | **9** | 54° @0.35 · **128° @0.36** · 55° @0.49 |
+
+**M1_1 est propre** : 2 pas violents, tous sur l'épaule qui frappe, **zéro sur le
+RootJoint**. C'est la signature d'un coup net.
+
+**M1_2 et M1_4 convulsent** : 11 et 9 pas violents répartis sur **5
+articulations chacune**, dont 3 rotations du corps entier et les deux hanches.
+Ce n'est pas un coup, c'est une secousse générale.
+
+M1_3 est en limite basse (3 pas, un seul événement root à 46°) — le même défaut,
+en beaucoup plus discret.
+
 ### Verdict
 
-**Coupables : M1_2 (8 pas violents) et M1_4 (6, dont 128° sur le RootJoint).**
-M1_3 est en limite (3). Ce sont précisément les trois animations que je n'ai
-jamais réautorées — elles n'étaient pas touchées par le bug d'axe (hook et
+**Coupables : M1_2 et M1_4, les deux.** Elles jouaient toutes les deux dans la
+boucle et convulsent toutes les deux sur 5 articulations. Je ne peux pas
+attribuer ce que Milan a vu à une seule des deux, et je ne vais pas le
+prétendre : **M1_4 produit le fouetté le plus violent du corpus** (128° sur le
+RootJoint en une trame), **M1_2 la convulsion la plus soutenue** (11 pas
+violents, le plus haut total). M1_3 porte le même défaut en très atténué (3).
+
+Ce sont précisément les trois animations que je n'ai jamais réautorées — elles n'étaient pas touchées par le bug d'axe (hook et
 uppercut/overhead utilisent des axes que `rx` produit bien), donc elles sont
 passées à travers les 7 corrections.
 
