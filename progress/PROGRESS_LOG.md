@@ -69,6 +69,76 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite 4) — Audit du bug d'axe sur tout le corpus : 7 seeds touchés, 5 patterns corrigés, rien réautoré
+
+### Croisement patterns ↔ seeds livrés
+
+| pattern (sur `rx`) | seeds bakés | ampli requis | poignet désigné |
+|---|---|---|---|
+| `dash_strike` | `Dash_demidieu` | **3.06×** | gauche |
+| | `dash_strike_toji` | **3.05×** | gauche |
+| `front_palm_cast` | `devil_fruit_cast_luffy` | **6.45×** | gauche |
+| `lead_palm` | `M1_palm_gojo` | **7.05×** | gauche |
+| `rear_hand_cross` | `M1_cross_toji` | **3.00×** | gauche |
+| `two_handed_thrust` | `spear_thrust_jinwoo` | **5.40×** | gauche |
+| `rear_hand_straight` (v1) | `M1_jab_toji` | **3.88×** | gauche |
+
+**7 seeds**, pas 6 : `M1_jab_toji` utilise toujours `rear_hand_straight` v1, que
+je n'avais corrigé que pour M1_1 au tour précédent.
+
+**Signature identique sur les 7** : course avant **0.19-0.29 stud** contre
+**1.02-1.56 stud** de latéral (5 à 7× plus de côté que devant), amplification
+requise **3.00× à 7.05× — tous au-delà** de la limite de validité (~3×) que le
+module documente lui-même, et le gate de classe désigne le poignet **gauche**
+sur les sept. Ce dernier point est le révélateur : le bras nominalement frappeur
+ne va nulle part.
+
+**Non affectés** : `lead_hook` (X), `uppercut` / `overhead_chop` (Y),
+`dual_arm_slash` / `wide_open_cast` (classe wide). Ils ont besoin d'axes que
+`rx` produit réellement. Seule la classe *straight* avait besoin de Z.
+
+### Ce que ça implique sur l'histoire du projet
+
+Le constat fondateur « nos seeds font 5.3× moins que le pack commercial », qui
+avait motivé la création d'`amplify_seed`, s'explique très probablement par ce
+bug : **les seeds ne sont pas petits, ils pointent de côté.** L'amplification
+aurait alors toujours été un pansement — et c'est elle qui, poussée à son
+plafond, a fini par produire le bras gelé de M1_1.
+
+### 5 patterns corrigés, en NOUVEAUX fichiers
+
+Même discipline que `rear_hand_straight_v2` : les fichiers d'origine sont
+**intacts** (vérifié via `git status`), donc aucun seed existant ne change.
+
+| nouveau pattern | avant ampli | ratio |
+|---|---|---|
+| `dash_strike_v2` | 2.30 | 0.782 |
+| `front_palm_cast_v2` | 2.73 | 0.929 |
+| `lead_palm_v2` | 2.37 | 0.873 |
+| `rear_hand_cross_v2` | 2.51 | 0.763 |
+| `two_handed_thrust_v2` | 2.30 | 0.891 |
+
+(planchers 2.25 / 0.67 — tous passent **sans aucune amplification**.)
+
+Convention établie et inscrite dans chaque fichier : **`rz` positif = avant sur
+l'épaule droite, `rz` négatif = avant sur l'épaule gauche** (elles se
+mirrorent), `rx` = balayage en travers du corps.
+
+### Rien n'a été réautoré ni re-livré
+
+Comme demandé : les 7 seeds affectés restent tels quels en jeu. Ils sont bakés,
+uploadés et vérifiés en moteur ; les réautorer est une décision par seed, à
+prendre délibérément comme pour M1_1. Ce tour rend seulement les bons patterns
+disponibles et mesure l'ampleur.
+
+Les 4 M1 livrés passent toujours les deux gates (vérifié après coup).
+
+**Capture de contrôle** : toujours non tentée, en attente de Milan devant l'écran.
+
+**Commit** : `f800422`. Tests : 51 verts.
+
+---
+
 ## 2026-08-28 (suite 3) — M1_1 réautoré : le direct était piloté sur un axe qui ne va PAS vers l'avant
 
 ### La vraie cause, enfin
