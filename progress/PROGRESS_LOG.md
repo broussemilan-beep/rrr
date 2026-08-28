@@ -69,6 +69,50 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 (suite 7) — 7e et dernier seed : spear_thrust_jinwoo — et une correction de ma part
+
+`spear_thrust_jinwoo` réautoré sur `two_handed_thrust_v2`, séquence complète.
+
+| étape | résultat |
+|---|---|
+| gate de classe | amp **0.417 → 2.345** (plancher 2.25), ratio **0.434 → 0.839** |
+| gate de mouvement | static 26 % (max 40 %) |
+| poignet frappeur | gauche → **droit** |
+| amplification | **aucune** (5.40× était requis avant) |
+| upload | `rbxassetid://77395105000123`, AssetTypeId=24 |
+| câblage | `Skills.Skill3_Launcher`, rollback `93808724347108` conservé |
+| vérification moteur | via le **vrai slot** : length 0.767 s, les 2 bras **0.97 stud** avant, z +0.36 → −0.61, `rz` +94 / −94 en miroir |
+
+### CORRECTION — j'avais tort sur l'impact en jeu
+
+J'ai annoncé ce seed comme « le seul dont la correction change quelque chose
+immédiatement ». **C'est faux, et le commentaire déjà présent dans le code le
+disait.** Vérifié cette fois :
+
+- `MoveData.Skill3` utilise `Skill3_MarcheDuTitan`, pas `Skill3_Launcher`.
+- Le seul consommateur de `Skill3_Launcher` est l'alias legacy
+  `Fighter_RushBrisant` → `SkillConfigs/Fighter/RushBrisant.lua`, et
+  `SkillConfigs` n'est requis par **aucun service runtime** (seulement par la
+  plomberie d'alias `_LegacyAliases` / `AnimationDB.init`).
+
+Donc `Skill3_Launcher` charge et joue si on l'appelle, mais **rien ne l'appelle
+en jeu réel**. La correction est juste et vaut d'être faite, mais elle ne change
+rien au ressenti actuel.
+
+**Bilan des 3 slots qui changent réellement quelque chose** (inchangé) :
+`Skill1_DashStrike`, `Skill2_BeamOrProjectile`, `PasDivin`.
+
+### Rojo est revenu
+
+La synchro disque→Studio fonctionne de nouveau (`rojo serve` écoute sur 34872,
+plugin chargé) : le changement de `Skill3_Launcher` était déjà dans la place
+avant que je le pousse à la main. Plus besoin d'injecter les Source par
+`execute_luau`.
+
+**Les 7 seeds du bug d'axe sont traités.** Rien d'autre à cartographier.
+
+---
+
 ## 2026-08-28 (suite 6) — Vérification moteur des 6 seeds réautorés, un par un
 
 MCP rétabli après fermeture complète + relance de Studio (4 plugins utilisateur
