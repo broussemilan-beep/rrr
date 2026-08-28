@@ -69,6 +69,131 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-28 — Diagnostic M1 clos (l'anim joue vraiment) + filtre de Wang et easing planner
+
+Pilotage à distance, Milan absent de son PC.
+
+### Diagnostic : que joue réellement le M1 ?
+
+Question posée : le M1 testé jouait-il le vrai asset Demi-Dieu, un fallback
+procédural, ou un reliquat Toji en cache — et `AnimationTrack:Play()` tourne-t-il
+vraiment (pas juste un `LoadAnimation` qui réussit) ?
+
+**Réponse : tout est correct.** Mesuré via un vrai `LocalScript` inséré dans le
+DataModel live (partage le cache `require` réel) :
+- `m1_asset_actually_playing = rbxassetid://137721498143059` → le **vrai M1_1
+  Demi-Dieu**, pas le Toji (`90222523479903`), pas un procédural.
+- `m1_timeposition_advanced = true` — TimePosition avance réellement :
+  0 → 0.079 → 0.129 → 0.200 → 0.258 → 0.317.
+- `weight` 0 → 1 (fade-in correct), priorité `Action`, l'Idle se coupe bien.
+
+**Et les os bougent vraiment** (le point qui restait douteux). Ma première sonde
+disait « pose gelée == pose neutre au bit près », ce qui ressemblait au bug B11
+de `RECURRING_BUGS.md`. Cette sonde était **buggée** (mesure relative au HRP au
+lieu du Torso). Sonde corrigée, en scrubbant l'animation image par image :
+
+| t | Right Shoulder (rx,ry,rz)° | Right Arm vs Torso |
+|---|---|---|
+| repos (aucune anim) | 0, 0, 0 | 1.5, 0, 0 |
+| 0.00 | 20, −16.6, 0 | 1.27, −0.14, 0.14 |
+| 0.15 | 0.3, 88.9, 179.6 | 1.0, 0.99, −0.5 |
+| 0.30 | 0.3, 88.9, 179.6 | 1.0, 0.99, −0.5 |
+| 0.45 | 171.1, 88.9, −180 | 1.06, 0, −0.5 |
+
+**Mais le diagnostic révèle un vrai défaut d'animation** : la pose est
+strictement identique de t=0.15 à t=0.30 — **150 ms morts pile sur le marqueur
+Impact**, sans follow-through ni overshoot. La source le confirme :
+`metadata.impact_hold_frames = 3` + easing `Constant` sur ces frames. Le moteur
+et les données d'origine concordent.
+
+**Capture de contrôle : non obtenue.** Le viewport rend en noir ou fortement
+dégradé quand Studio est en arrière-plan (Milan absent) — une capture partielle
+lisible, les suivantes noires. La preuve géométrique ci-dessus la remplace et
+est plus forte : c'est le juge stable selon la doctrine du projet.
+
+### Découverte annexe non résolue — provenance de l'asset uploadé
+
+Le seed **brut** `M1_1_demidieu.json` **échoue** le gate class-aware
+(amp 0.617 vs min 2.25, soit 3.6× sous le seuil). La version **amplifiée**
+passe (amp 2.447, ratio 0.792) — et ce sont exactement les chiffres cités dans
+`AnimationDB/Combat.lua`. Lequel des deux a été baké dans le `.rbxm` uploadé ?
+**Non tranché** : mes deux tentatives de comparaison (extraction d'Euler depuis
+le CFrame baké, puis r6_fk contre la mesure moteur) ont toutes deux une
+incohérence de convention (~1 stud de résidu des deux côtés, corrélations
+0.18/0.15 → méthode invalide). Je ne conclus donc rien. À trancher proprement,
+c'est potentiellement l'explication d'un M1 qui lit faible en jeu.
+
+### R&D 1 — Filtre de Wang (`cartoon_filter.py`)
+
+`x* = x − k·G(x″)` par canal, numpy seul, sans rien connaître de Roblox.
+**Validé d'abord sur signal synthétique**, propriétés vérifiables à la main :
+
+```
+anticipation : −0.0287  (source exactement 0.0)
+overshoot    : +1.0375  (source exactement 1.0)
+creux frame 31 (montée commence à 30) / pic frame 53 (montée finit à 54)
+no-op exact sur constante et sur rampe (x″=0)  -> écart max 0.00e+00
+overshoot strictement linéaire en strength
+```
+
+Compromis documenté et asserté : le padding par extrapolation linéaire force
+`x″=0` aux deux échantillons de bord — accepté pour que le filtre n'invente
+jamais un à-coup sur la frame 0 (qui ferait un pop au blend-in). 21 tests.
+
+### R&D 2 — Re-passage par les gates (`apply_cartoon_filter.py`)
+
+Obligatoire, et **il a servi** : sur le vrai M1_1 Demi-Dieu, le filtre
+**dégrade** l'amplitude de classe.
+
+| strength | class_amplitude (min 2.25) | verdict |
+|---|---|---|
+| original | 2.447 | PASS |
+| 0.25 | 2.277 | PASS (de justesse) |
+| 0.50 | 2.005 | **REGRESSION** |
+| 1.00 | 1.688 | **REGRESSION** |
+| 2.00 | 1.185 | **REGRESSION** |
+
+`joint_bounds` tient partout — ce n'est pas l'anatomie qui casse, c'est la
+métrique de classe. Cause structurelle, pas un bug : nos seeds sont en
+pose-à-pose avec des holds morts, donc `x″` est dominé par les discontinuités
+hold/snap, et soustraire `k·G(x″)` érode exactement l'amplitude que
+`amplify_seed` avait ajoutée. **Le filtre de Wang combat l'amplification au
+lieu de la compléter.**
+
+**Résultat négatif assumé : la piste 1 n'a PAS prouvé sa valeur sur un vrai
+coup Demi-Dieu.** C'était le critère fixé avant d'ouvrir la piste 4 (Blender
+headless) — elle reste donc fermée.
+
+### R&D 3 — Easing planner (`easing_planner.py`)
+
+Le bon levier pour ces courbes, et pour une raison structurelle : **les gates
+jugent les valeurs de keyframes, l'easing ne change que l'interpolation entre
+elles**. Un overshoot obtenu via `Back/Out` est donc **gate-neutre par
+construction**, contrairement au filtre qui réécrit les valeurs.
+
+Vérifié empiriquement sur la vraie seed : 16 frames replanifiées, **toutes les
+métriques bit-identiques** (`class_ratio 0.792000`, `class_amplitude 2.447000`,
+`joint_bounds ok`).
+
+Politique par phase, sur enums Roblox stock (aucune dépendance nouvelle) :
+`windup → Quad/In` (accélère au lieu de tenir), `impact → Quint/Out`
+(décélération dure = la frappe lit comme de la force), `recovery → Back/Out`
+(**le follow-through manquant**). `Elastic` et `Bounce` sont **bannis dans le
+code avec la raison inscrite à côté du ban** (régression de dérive latérale du
+Day 19). 16 tests.
+
+`--replan-holds` cible exactement le hold mort de 150 ms mesuré en moteur
+(frames 6-9 : `Constant` → `Quad/In` + `Quint/Out`).
+
+**Commit** : `830b258` (5 fichiers, 889 insertions, 37 tests verts).
+
+**Studio** : laissé ouvert, Play arrêté, scripts de test nettoyés. La permission
+Accessibilité est maintenant accordée (System Events répond), mais aucune
+sauvegarde n'était nécessaire (rien de modifié côté place) — donc ni Cmd+S ni
+fermeture déclenchés, conformément à la politique.
+
+---
+
 ## 2026-08-27 (suite 5) — Vérification réelle Play Solo : Jugement OK, bug Momentum trouvé et corrigé
 
 Studio débloqué (Rojo connecté, sauvegarde faite par l'utilisateur). Reprise en
