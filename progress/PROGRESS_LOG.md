@@ -88,6 +88,29 @@ bras a frappé » de « le corps a tourné et le bras a suivi ».
 | `dash_strike_toji` | `115418436010731` | 0.633 s | **1.24 stud** | +0.61 → −0.63 | 9/11 | ✅ **slot actif** |
 | `Dash_demidieu` | `109116933091807` | 0.433 s | **1.24 stud** | +0.61 → −0.63 | 7/11 | ✅ **slot `PasDivin`, était PENDING_UPLOAD** |
 | `devil_fruit_cast_luffy` | `121861953419707` | 0.767 s | **1.12 stud** (les 2 bras) | +0.54 → −0.58 | — | ✅ **slot actif**, cast symétrique |
+| `M1_palm_gojo` | `109793014132139` | 0.433 s | **1.16 stud** | +0.58 → −0.58 | 10/11 | ✅ (non câblé — aucun slot ne le consomme) |
+
+**Les 6 sont vérifiés en moteur.** Tous montrent le même profil sain : le bras
+s'arme en arrière (z positif), traverse jusqu'en extension avant (z négatif),
+`rz` passe du négatif profond au positif franc, et `rx` reste à ~0 — la frappe
+est bien portée par l'axe correct.
+
+**Piège rencontré et corrigé** : au premier essai `track.Length` valait 0 et le
+scrub échantillonnait la pose de repos, donnant un faux résultat. C'est le piège
+documenté du projet (« `LoadAnimation` réussi ≠ animation prête »). Toutes les
+mesures ci-dessus attendent `track.Length > 0` avant d'échantillonner.
+
+### Slots réellement modifiés en jeu
+
+| slot | avant | après |
+|---|---|---|
+| `Skills.Skill1_DashStrike` | `102837166428258` | `115418436010731` |
+| `Skills.Skill2_BeamOrProjectile` | `98944001215922` | `121861953419707` |
+| `Mobility.PasDivin` | `PENDING_UPLOAD_Dash_demidieu` | `109116933091807` |
+
+`M1_jab_toji` et `M1_cross_toji` alimentent les blocs de réversion Toji
+(commentés — le kit Demi-Dieu occupe M1_1/M1_2). `M1_palm_gojo` n'est consommé
+par aucun slot. Anciens ids conservés en rollback dans chaque commentaire.
 
 ---
 
