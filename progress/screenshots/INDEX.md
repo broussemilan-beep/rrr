@@ -5,6 +5,9 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 
 | file | bytes |
 | --- | --- |
+| `2026-08-29_respawn-avant.png` | 2670683 |
+| `2026-08-29_respawn-apres.png` | 3021617 |
+| `2026-08-29_kills-compteur.png` | 2880479 |
 | `2026-08-29_hud.png` | 1283104 |
 | `2026-08-29_hud-play.png` | 2892619 |
 | `2026-08-29_hud-etape6-final.png` | 2868810 |

@@ -69,6 +69,87 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 6) — Respawn (§2) vérifié, compteur de kills (§3) livré
+
+### §2 Respawn — déjà implémenté, donc vérifié plutôt que réécrit
+
+Première chose faite : **lire avant d'écrire**. `ArenaBootstrap.server.lua` fait
+déjà tout ce que la spec demande — `hum.Died:Once` → `task.delay(3)` →
+`LoadCharacter` → placement round-robin sur les pads, face au centre. Aucune
+pénalité nulle part. Rien à construire.
+
+Vérifié aussi qu'il n'y a **pas de respawn concurrent** : `RaceClassService` en
+contient un second, mais `ServiceLoader` est retiré du chemin V1
+(`init.server.lua`), donc il ne tourne pas. Pas de double `LoadCharacter`.
+
+**Vraie mort, vrai cycle** (`Health = 0` côté serveur déclenche `Died` ; jamais
+d'appel direct à `LoadCharacter`), 3 cycles :
+
+| cycle | pad avant | pad après | distance au pad | délai | vie |
+|---|---|---|---|---|---|
+| 1 | Spawn_1 | Spawn_2 | **0.00** | 3.08 s | 100/100 |
+| 2 | Spawn_2 | Spawn_3 | **0.00** | 3.02 s | 100/100 |
+| 3 | Spawn_3 | Spawn_4 | **0.00** | 3.02 s | 100/100 |
+
+Les 8 pads sont bien là, le round-robin avance, le placement est exact.
+
+**Re-bind du HUD sur le vrai cycle** : le HUD courant est lié au 4ᵉ `Humanoid`,
+né d'une vraie mort. Des dégâts serveur lui sont appliqués et la barre suit à
+chaque échantillon — vie 42 → 51, **écart max 0**. Un HUD resté accroché à
+l'ancien `Humanoid` détruit n'aurait pas bougé.
+
+Note de méthode : ma première sonde a renvoyé un « écart 0 » qui ne prouvait
+rien — les dégâts n'étaient pas passés (écouteur armé après le tir). J'ai ajouté
+un drapeau `degats_ont_bien_ete_appliques` avant de croire le chiffre.
+
+### §3 Compteur de kills — session uniquement
+
+Roblox ne transporte aucune attribution : `TakeDamage` ne dit pas qui frappe.
+L'attribution est donc posée à la main **à chaque site qui inflige réellement
+des dégâts** : `DamageService.Apply` (tout le M1) et les 4 modules de skills qui
+tapent en direct sans passer par lui (choix antérieur documenté dans
+`Skill4_Jugement.lua`). Fenêtre de crédit de 8 s, sinon on hériterait d'un kill
+pour un coup porté une minute plus tôt ou pour une chute.
+
+Vérifié par le vrai chemin — `TryM1` en boucle (l'appel exact d'`InputController`
+au clic), dégâts via `CombatService` → `DamageService` :
+
+| essai | mannequin | mort | kills après |
+|---|---|---|---|
+| 1 | TrainingDummy | oui | **1** |
+| 2 | TrainingDummy_1 | oui | **2** |
+| 3 | TrainingDummy_2 | oui | **3** |
+
+Le HUD affiche « 3 KILLS ». Pas de leaderboard, pas de DataStore, pas de
+persistance — le total meurt avec la session, comme demandé.
+
+**Choix assumé** : les mannequins comptent. Dans une arène de combat libre à un
+seul joueur connecté, un compteur qui reste à zéro ne serait ni vérifiable ni
+utile. Une ligne à changer dans `onDied` si ça doit devenir joueurs-seulement.
+
+### Un bug trouvé par la capture
+
+La barre de **momentum à 0 pulsait en rouge** comme une vie mourante : mon seuil
+critique s'appliquait à **toutes** les barres. Or « critique » est une notion de
+vie — un momentum vide est l'état normal. Restreint à la vie
+(`criticalEnabled`). Encore un défaut que seul le fait de regarder l'image
+révèle.
+
+### Fichiers
+
+- `src/server/V1/KillCounterService.lua` — nouveau, attribution + total session
+- `src/server/V1/DamageService.lua` — crédit sur le chemin M1
+- `src/server/Skills/{Skill1,Skill2,Skill3,Ultimate}` — crédit sur leurs dégâts
+- `src/server/V1/ArenaBootstrap.server.lua` — init du service
+- `src/shared/UI/HudView.lua` — compteur + correctif du seuil critique
+- `src/client/UI/HUD.client.lua` — écoute `Remotes/HUD/KillCount`
+
+Captures : `respawn-avant`, `respawn-apres`, `kills-compteur`.
+
+Commit `caa2036`.
+
+---
+
 ## 2026-08-29 (suite 5) — Direction visuelle du HUD implémentée, 6 étapes, capture à chaque
 
 Première fois que le projet itère sur du visuel **en jugeant les images**, étape
