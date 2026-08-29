@@ -69,6 +69,78 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 10) — Les 5 gestes photographiés à leur pic réel
+
+Cinq captures, chacune figée à l'instant le plus lisible du clip, chacune
+ouverte et jugée. Trois défauts de lisibilité trouvés — tous des problèmes de
+**différenciation**, pas d'échec technique : les cinq passent les gates.
+
+### Méthode — viser, pas capturer au hasard
+
+Une capture met 1–2 s à partir : viser 0,244 s au vol est impossible. Le clip
+est donc **figé** (`track:AdjustSpeed(0)` puis `TimePosition`), chargé par le
+vrai slot `AnimationDB`. La pose photographiée est exactement celle du clip.
+
+Deux corrections en cours de route, l'une et l'autre trouvées en regardant :
+
+1. **Angle de caméra faux.** Mon premier offset avait un `+Z`, or l'avant du
+   personnage est `−Z` : la caméra était *derrière* lui et le coup partait loin
+   de l'objectif. Corrigé en vue de profil / trois-quarts avant.
+2. **Instant deviné au lieu d'être mesuré.** J'ai d'abord visé le marqueur
+   `HitConnect` (0.30) — à côté du pic. Les pics ont ensuite été **calculés sur
+   les données du clip** : extrême de `rz` pour un direct, de `rx` pour un
+   overhead.
+
+| geste | pic mesuré | ce qu'il est |
+|---|---|---|
+| Main du Colosse | **0.244 s** | `rz` +90, extension avant maximale |
+| Frappe Céleste | **0.277 s** | `rx` +103, écrasement |
+| Marche du Titan | **0.655 s** | `rz` +92, frappe finale |
+| Jugement | 0.30 s | posture engagée |
+| Descente du Demi-Dieu | **0.583 s** | `rx` +103, écrasement |
+
+### Mon jugement, franchement
+
+**Main du Colosse — lit bien.** Bras à l'horizontale en pleine extension, torse
+engagé, tête derrière le bras. C'est un direct propre et sans ambiguïté.
+
+**Marche du Titan — lit bien, mais quasi identique à Main du Colosse.** Les deux
+sont de classe *straight* (`rear_hand_straight_v2` et `dash_strike_v2`) et leurs
+poses de contact se ressemblent au point qu'on ne les distingue pas à l'arrêt.
+La différence est dans le déplacement, qu'une image fixe ne montre pas — mais en
+combat, au moment du contact, un joueur aura du mal aussi.
+
+**Frappe Céleste — passable, pas « céleste ».** Ça lit comme un coup diagonal
+descendant avec tout le corps qui bascule vers l'avant, pas comme une hache
+verticale venue du ciel. Cause identifiée : sur ce rig `rx = −100` monte le bras
+**et le ramène en travers de la poitrine** (`rx = −90` → `dy +2.000` mais aussi
+`dx +1.000`). L'apex ne met donc jamais le bras au-dessus de la tête. Le gate est
+satisfait (3.213 stud de chute sur Y) — mais le gate mesure une chute, pas une
+verticale.
+
+**Descente du Demi-Dieu — identique à Frappe Céleste.** Même pattern
+`overhead_chop_v2`, même pose au pic. Un ultime qui ressemble à une compétence
+ordinaire rate son travail.
+
+**Jugement — le plus faible.** Ça lit comme des bras qui s'ouvrent vers
+l'extérieur, un haussement d'épaules ou un cast — **pas une garde**. Une posture
+de contre aurait les bras remontés et fermés devant. `wide_open_cast` ouvre vers
+l'extérieur et vers le bas : le gate de mouvement passe (les bras bougent), mais
+le *sens* est faux.
+
+### Ce que ça dit du chantier
+
+Les cinq sont techniquement livrés et vérifiés. Mais **trois sur cinq ne portent
+pas encore leur intention** : deux paires se confondent, et Jugement ne dit pas
+ce qu'il fait. C'est un problème de **vocabulaire de patterns**, pas de
+pipeline : on n'a que trois familles de gestes pour cinq compétences. Il faudra
+des patterns dédiés — une vraie garde fermée, un overhead réellement vertical —
+avant que le kit se lise.
+
+Commit `b633f38`.
+
+---
+
 ## 2026-08-29 (suite 9) — Les 5 slots sortent de PENDING_UPLOAD
 
 `[AnimLoader] All slots uploaded ✓` — plus aucun `PENDING_UPLOAD` dans le kit
