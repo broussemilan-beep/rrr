@@ -69,6 +69,90 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 12) — Gate de différenciation intra-kit, permanent
+
+### 1. `M1_4_demidieu` ↔ `heavy_finisher_sukuna` : coïncidence, pas câblage
+
+Vérifié avant de classer. Les deux specs sont **bien distinctes** — fichiers
+séparés, `move_id` différents, archétypes différents (`demidieu` / `sukuna`),
+durées 0.85 s vs 1.1 s, timings différents, hash MD5 différents. Aucun fichier
+réutilisé, aucun câblage accidentel.
+
+Elles partagent le **pattern** `overhead_chop`, et c'est suffisant pour produire
+la même silhouette, parce que le système d'archétype est bien plus faible qu'il
+n'en a l'air : `_resolve_key_poses` ne met à l'échelle que
+`Right/Left Shoulder.rx`, **uniquement à la phase `contact`**, par un facteur
+`0.70 + 0.30 × amplitude`. Soit 0.955 pour demidieu contre 0.970 pour sukuna —
+et cette mise à l'échelle se voit bien dans les données (`rx` max 90.7 vs 92.2).
+
+Mais le **pic** calculé par la métrique tombe sur l'**apex** (`rx = −75`, bras
+haut), phase que l'archétype ne module **pas du tout** : les valeurs y sont
+reprises verbatim du pattern. D'où **0.000000 stud**, à la précision machine.
+
+**Conclusion : le pattern porte toute l'identité du geste ; l'archétype ne
+différencie rien de visible.** C'est un constat de conception, pas un bug — mais
+il explique pourquoi deux personnages différents peuvent frapper identiquement.
+
+### 2. Le gate est implémenté et permanent
+
+`scripts/animator_ai/kit_differentiation.py` — métrique validée :
+positions d'effecteurs (poignets + tête) au pic **calculé**, en repère Torso,
+distance = **max** des trois écarts, seuil **0.8 stud**, portée **intra-kit**.
+
+Application **automatique**, condition posée :
+`scripts/animator_ai/tests/test_kit_differentiation.py` découvre les kits en
+groupant les specs par `archetype` — **aucun nom de personnage en dur**. Un
+archétype ajouté demain est couvert sans toucher au fichier. Branché dans
+`tests/run_all.sh` : la suite passe de 6 à **7/7**.
+
+Le gate est aussi exposé depuis `stage4_gate_cascade.py` comme gate n°8, avec
+la note expliquant pourquoi il ne peut pas entrer dans `run_cascade(animation)`
+— il est **croisé**, il n'a pas de sens sur une animation isolée.
+
+**Vérifié qu'il crie vraiment** : en retirant une entrée de dette, la suite
+échoue avec le bon message et le bon chiffre. Un gate qui ne peut pas échouer ne
+vaut rien.
+
+### 3. Il a trouvé huit doublons — dont un que je venais de créer
+
+| paire | distance | statut |
+|---|---|---|
+| `M1_2_demidieu` ↔ `Skill3_MarcheDuTitan` | **0.023** | **régression de ma part** |
+| `M1_1_demidieu` ↔ `Skill1_MainDuColosse` | 0.063 | héritée |
+| `Dash_demidieu` ↔ `M1_1_demidieu` | 0.123 | héritée |
+| `M1_cross_toji` ↔ `dash_strike_toji` | 0.130 | héritée |
+| `M1_jab_toji` ↔ `dash_strike_toji` | 0.152 | héritée |
+| `M1_jab_toji` ↔ `M1_cross_toji` | 0.158 | héritée |
+| `Dash_demidieu` ↔ `Skill1_MainDuColosse` | 0.179 | héritée |
+| `M1_4_demidieu` ↔ `heavy_finisher_sukuna` | 0.000 | héritée |
+
+**La première est une régression que j'ai introduite au tour précédent.** En
+sortant Marche du Titan de `dash_strike_v2` pour casser son doublon avec Main du
+Colosse, je l'ai posée sur `lead_hook_v2` — que **M1_2 utilisait déjà**. J'ai
+échangé un doublon contre un autre, parce que je ne comparais que les 5
+compétences et pas le kit entier (chaîne M1 et dash inclus). Le gate l'a attrapé
+à sa toute première exécution.
+
+Les sept autres sont antérieures. **Aucune n'est corrigée ici**, comme demandé :
+elles sont nommées et datées dans `KNOWN_DEBT`, pas masquées en baissant le
+seuil. Un second test, `test_known_debt_is_still_real`, fait échouer la suite si
+une entrée n'est plus un doublon — la liste ne peut pas devenir un cimetière.
+
+### Limite connue, dite plutôt que cachée
+
+Le gate échantillonne **une** frame. Pour un overhead, le pic ainsi défini tombe
+sur l'apex, précisément la phase que l'archétype ne module pas — c'est la raison
+du 0.000000 ci-dessus. Une version ultérieure gagnerait à comparer **deux**
+instants (apex ET contact) et à ne conclure au doublon que si les deux
+coïncident. La version simple attrape déjà tout ce qui a été constaté.
+
+Jugement n'est pas touché : sa pose ne lit pas comme une garde, c'est un
+problème de conception, pas de duplication.
+
+Commit `319031e`.
+
+---
+
 ## 2026-08-29 (suite 11) — Doublons cassés + métrique de différenciation proposée
 
 ### Les deux doublons sont résolus
