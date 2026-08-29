@@ -69,6 +69,73 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — PAUSE — état exact pour la reprise
+
+Arrêt propre au milieu du chantier « Demi-Dieu fini ». Rien n'est à mi-chemin :
+les étapes 1 et 2 sont commitées, uploadées, câblées, vérifiées en moteur et
+publiées. Aucune étape 3 ou 4 n'a été entamée.
+
+### Fait (vérifié par le vrai chemin)
+
+- **Étape 1 — dettes de doublons demidieu : fermées.** Minimum du kit
+  **0.832 stud**, au-dessus du seuil de 0.8. Gate de différenciation vert.
+- **Étape 2 — Jugement : corrigé.** Lit comme une garde (axe de fermeture
+  mesuré, pas deviné). Garde fermée à 230 ms, dans la fenêtre de parade serveur.
+- 4 animations réautorées, uploadées, câblées, `track.Length` mesuré en Play :
+  `PasDivin` 0.433 · `Skill1_MainDuColosse` 0.699 ·
+  `Skill3_MarcheDuTitan` 0.966 · `Skill4_Jugement` 0.566
+- Patterns créés ce tour : `titan_charge`, `guard_cross`.
+- Suite de tests **7/7**, gate intra-kit inclus.
+
+### Reste à faire
+
+- **Étape 3 — outil d'easing par courbe précalculée.** Bézier calculée nous-
+  mêmes, matérialisée en **keyframes denses** (l'enum `PoseEasingStyle` de
+  Roblox est trop pauvre : Cubic / Linear / Constant / Bounce / CubicV2 /
+  Elastic, et les deux seuls à overshoot sont bannis pour les frappes). À
+  **valider sur une seule animation d'abord**, vérifiée en moteur, avant toute
+  généralisation.
+- **Étape 4 — application au kit, ralenti à l'impact, traînée VFX.**
+  Dispatchable en parallèle une fois l'outil éprouvé.
+
+### QUESTION OUVERTE — à trancher à la reprise
+
+**Faut-il inverser l'ordre et faire ralenti + VFX AVANT l'easing ?**
+
+L'argument pour inverser :
+
+- Le **ralenti à l'impact** et la **traînée VFX** ne vivent pas dans
+  l'animation. Le ralenti est piloté au runtime (`HitstopController` et
+  `TimeDilationController` existent déjà et sont audités) ; la traînée vient des
+  packs VFX via `AnimationMarkerRouter`. Ce sont des passes **runtime**, réglées
+  dans les données de marqueurs — **aucun ré-upload**.
+- L'easing, lui, impose de ré-échantillonner et de **ré-uploader tout le kit**.
+  Or `asphalt` a échoué 2 fois sur 3 en polling cette semaine sur un seul
+  fichier. Dix animations × plusieurs itérations de réglage = le poste de risque
+  n°1 du chantier.
+
+Faire d'abord ce qui ne coûte pas d'upload donne un gain de ressenti immédiat et
+garde le risque pour la fin. **Décision non prise — elle appartient à
+l'utilisateur.**
+
+### État de l'environnement
+
+- Studio **ouvert**, Play **arrêté**, datamodel Edit actif. Rien fermé, aucune
+  sauvegarde forcée.
+- Place propre : aucun script temporaire à moi. Seul subsiste
+  `ServerScriptService.__MCP_TestRunner`, qui appartient à l'outillage MCP.
+- `rojo serve` **tourne** sur `127.0.0.1:34872`. Les serveurs HTTP local et
+  rodeo sont arrêtés.
+- **Attention à la reprise** : le plugin Rojo de Studio ne s'est pas reconnecté
+  après le dernier redémarrage de Studio. Les sources ont été poussées dans la
+  place par `GetAsync` depuis un serveur HTTP local. **Vérifier la synchro avant
+  de juger quoi que ce soit** — c'est le piège qui a coûté une régression cette
+  semaine.
+
+Commit `ecb22d0`.
+
+---
+
 ## 2026-08-30 — Kit Demi-Dieu : dettes fermées, garde corrigée (étapes 1-2/4)
 
 Jalon intermédiaire du chantier « Demi-Dieu fini ». Étapes 1 et 2 livrées et
