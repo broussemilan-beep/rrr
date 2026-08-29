@@ -69,6 +69,44 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 7) — Retouches HUD : glyphes F et H, étiquettes de barres
+
+Trois défauts signalés par Milan à l'écran, corrigés et vérifiés en capture.
+
+**Glyphe F (Main du Colosse)** — lisait comme une tache. Un poing se reconnaît à
+trois choses : la masse fermée, les phalanges en dents, l'avant-bras qui part
+derrière. Les trois y sont maintenant. Piège évité au passage : ma première
+version creusait les phalanges avec des barres couleur-de-fond — or la
+désaturation en cooldown repeint **tous** les enfants du glyphe, les creux
+seraient devenus gris au lieu de disparaître. Tout est dessiné en positif.
+
+**Glyphe H (Marche du Titan)** — lisait comme deux points, sans direction. Deux
+empreintes maintenant, semelle + talon détaché chacune, décalées en diagonale et
+inclinées : le pas et son sens.
+
+**Étiquettes de barres** — « rien ne distingue le cyan du violet sans le savoir
+déjà ». `PV` / `STA` / `MOM` dans une gouttière de largeur fixe à gauche des
+pistes, à chasse fixe donc alignées. Pas de texte *sous* la barre : ça aurait
+fait grossir le panneau et serait passé sous les ~11 pt que la direction
+visuelle interdit (§6).
+
+### Une désynchro attrapée avant de conclure
+
+La première capture ne montrait **ni** les étiquettes **ni** les nouveaux
+glyphes. Réflexe du projet : vérifier la synchro avant d'accuser le code.
+`rojo serve` ne tournait plus (Studio avait été redémarré, nouvel id d'instance)
+et le plugin Rojo ne se reconnecte pas tout seul. La source exacte du disque a
+été poussée dans la place via un `GetAsync` sur un serveur HTTP local — pas de
+réécriture, pas d'échappement, 29 158 octets identiques au disque. Vérifié dans
+la place avant de recapturer.
+
+C'est exactement l'erreur de M1_2/3/4 de la semaine dernière, évitée cette fois
+parce que le contrôle de synchro passe avant le jugement.
+
+Commit `390abcc`.
+
+---
+
 ## 2026-08-29 (suite 6) — Respawn (§2) vérifié, compteur de kills (§3) livré
 
 ### §2 Respawn — déjà implémenté, donc vérifié plutôt que réécrit
