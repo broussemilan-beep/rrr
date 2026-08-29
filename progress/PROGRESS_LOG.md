@@ -69,6 +69,72 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Kit Demi-Dieu : dettes fermées, garde corrigée (étapes 1-2/4)
+
+Jalon intermédiaire du chantier « Demi-Dieu fini ». Étapes 1 et 2 livrées et
+vérifiées ; l'outil d'easing (étape 3) est le prochain morceau.
+
+### Étape 1 — les quatre dettes demidieu sont payées
+
+| paire | avant | après |
+|---|---|---|
+| `M1_2` ↔ `Skill3_MarcheDuTitan` | **0.023** | **2.013** |
+| `M1_1` ↔ `Skill1_MainDuColosse` | 0.063 | 2.439 |
+| `Dash` ↔ `M1_1` | 0.123 | 2.550 |
+| `Dash` ↔ `Skill1` | 0.179 | 0.832 |
+
+**Minimum du kit : 0.832 stud**, au-dessus du seuil de 0.8. Le gate est vert sur
+demidieu, et `test_known_debt_is_still_real` a exigé le retrait des quatre
+entrées — la dette est payée, pas masquée.
+
+Attributions : `Dash` → `front_palm_cast_v2`, `Skill1` → `two_handed_thrust_v2`
+(deux mains : le poignet gauche bouge aussi, donc la silhouette change),
+`Skill3` → `titan_charge` (**pattern dédié**).
+
+`titan_charge` a été créé parce que **réutiliser une famille déjà prise dans le
+kit ramène mécaniquement un doublon** — c'est la leçon des trois patterns
+successifs de Marche du Titan : `dash_strike_v2` (doublon avec Main du Colosse),
+`lead_hook_v2` (doublon avec M1_2, ma régression), `dual_arm_slash` (1.411 pour
+un plancher WIDE à 2.00 — pattern jamais utilisé, donc jamais mesuré : la classe
+WIDE se juge sur l'axe X, que `rz` ne produit pas).
+
+### Étape 2 — Jugement lit enfin comme une garde
+
+Première version de `guard_cross` : **échec**, confirmé en capture. Les bras
+partaient en croix. Cause trouvée en **mesurant l'axe** au lieu de le deviner —
+un axe à la fois depuis le repos, la méthode qui avait déjà résolu le bug d'axe
+d'origine :
+
+```
+Right Shoulder rx = +90  ->  dx -2.000   (EN TRAVERS du corps)
+Right Shoulder rz = +90  ->  dz -1.500, dy +1.500   (DEVANT, et haut)
+Right Shoulder ry = +-90 ->  +-0.500     (negligeable)
+```
+
+J'avais mis `rx` **négatif**, ce qui écarte : poignets à `dx ±2.26` du torse.
+Une garde se ferme avec **`rx` positif**. Corrigé à `rz 78 / rx 52` : poignets à
+`dx ±1.07`, `dz −1.48` — devant, hauteur de poitrine, largeur d'épaules.
+
+Timing choisi sur la mécanique, pas sur le gate : garde fermée à **230 ms**,
+donc **dans** la fenêtre de parade de 0.25 s du module serveur. À 300 ms elle se
+fermait après la fenêtre — le gate passait, le jeu était faux.
+
+### Vérification
+
+Les quatre slots résolus depuis `AnimationDB` (jamais un AssetId en dur),
+chargés, `track.Length` mesuré en Play : 0.433 / 0.699 / 0.966 / 0.566 s. Casts
+réels via `DashController.TryDash` et `CombatController.TrySkill`. Suite **7/7**.
+
+### Reste à faire
+
+Étape 3 : l'outil d'easing par courbe précalculée en keyframes denses, à valider
+sur une seule animation en moteur avant généralisation. Étape 4 : application au
+kit, ralenti à l'impact, traînée VFX.
+
+Commit `6d7bf30`.
+
+---
+
 ## 2026-08-29 (suite 12) — Gate de différenciation intra-kit, permanent
 
 ### 1. `M1_4_demidieu` ↔ `heavy_finisher_sukuna` : coïncidence, pas câblage
