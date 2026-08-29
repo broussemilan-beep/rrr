@@ -69,6 +69,100 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 3) — Vérification visuelle autonome : résolue
+
+« Milan regarde à l'écran » n'est plus la seule voie. Procédure répétable,
+scriptée et versionnée : `scripts/visual_check/`.
+
+### Ce qui marche — capture en mode Edit, avec le vrai HUD
+
+Découverte décisive : **un `ScreenGui` parenté à `StarterGui` est rendu dans le
+viewport de l'éditeur**, donc il apparaît dans une capture Edit — laquelle
+fonctionne (contrairement à Play). Le HUD est donc jugeable sans présence
+humaine et sans mode Play.
+
+Pour que l'image vaille quelque chose, elle doit montrer **le vrai HUD**, pas un
+sosie reconstruit dans un harnais. D'où le refactor : tout est bâti par
+`src/shared/UI/HudView.lua`, partagé par les deux appelants —
+`HUD.client.lua` (dans `PlayerGui`, vraies sources serveur) et
+`hud_scene.luau` (dans `StarterGui`, valeurs injectées). Le harnais change les
+**valeurs**, jamais la mise en page, la palette ni la géométrie.
+
+**Refactor revérifié en jeu par le vrai chemin** : écart vie **0** sur deux
+dégâts serveur, 3 barres, 6 chips, cooldown Skill1 réel armé via le remote
+(4,7 s déduites pour 5). Le refactor n'a rien cassé.
+
+Pipeline validé de bout en bout : scène montée → capture → `pull_capture.py` →
+`REELLE, 1 283 104 octets` → rangée dans `artifacts/visual_checks/`.
+
+### Le garde-fou, vérifié dans les deux sens
+
+`pull_capture.py` juge **par la taille du fichier**, jamais par un code de
+retour. Testé : il range une capture Edit (1,28 Mo) et **refuse** une capture
+Play (8 549 octets, exit 1, rien rangé).
+
+Mesures sur cette machine, toutes captures en `2462x1176` :
+
+| | taille |
+|---|---|
+| image réelle | 1,28 – 1,77 Mo |
+| frame noire | **8 549 octets** |
+
+### Une erreur à moi, corrigée — et c'est la leçon du tour
+
+Le 2026-08-27 j'avais publié une « correction » affirmant que l'Enregistrement
+d'écran macOS **était accordé**, sur la seule foi d'un PNG de 8,7 Mo. J'ai refait
+exactement la même erreur ce tour-ci avec un PNG de 9,2 Mo — avant d'ouvrir
+l'image : ce ne sont que **le fond d'écran et la barre de menus, sans aucune
+fenêtre**. C'est précisément ce que macOS produit quand la permission est
+**refusée**.
+
+Confirmé par un test que la taille ne peut pas masquer :
+`screencapture -l <windowID>` sur la fenêtre principale de Studio répond
+`could not create image from window` et n'écrit rien.
+
+La ligne d'origine était donc juste, et ma correction était fausse.
+`artifacts/STUDIO_PLUGINS_DIAG_2026-08-27.md` §5 est rectifié.
+
+**Leçon, la même que pour `pcall(LoadAnimation)` : un proxy qui a l'air bon ne
+vaut pas une vérification du contenu.** Une taille de fichier ne prouve pas
+qu'une image montre quelque chose.
+
+### Les quatre pistes, résultat de chacune
+
+| piste | état | raison |
+|---|---|---|
+| 1. `screencapture` macOS | **bloquée** | permission Enregistrement d'écran refusée à `/Applications/Claude.app`. Une case à cocher humaine la débloquerait. |
+| 2. Mode Run | **non testable** | le MCP n'expose que Play (`is_start`) ; déclencher Run demande l'UI de Studio, inaccessible sans Accessibilité. |
+| 3. Hors viewport | **non nécessaire** | la piste 4 a abouti avant. |
+| 4. **Reconstituer en Edit** | **RETENUE** | fonctionne, et fidèle grâce au module partagé. |
+
+Écarté aussi : `rodeo exec` (le serveur démarre, le plugin Studio ne s'y
+connecte pas, `exec` sort sans rien produire).
+
+Note d'environnement : la fenêtre Studio est bien à l'écran et non minimisée
+(`kCGWindowIsOnscreen = True`, 1440×814) — ce n'était donc pas ça non plus.
+
+### Livrables
+
+- `src/shared/UI/HudView.lua` — construction du HUD, sans source de données
+- `src/client/UI/HUD.client.lua` — n'a plus que le câblage aux autorités
+- `scripts/visual_check/hud_scene.luau` — harnais de mise en scène Edit
+- `scripts/visual_check/pull_capture.py` — récupération + jugement par octets
+- `scripts/visual_check/README.md` — procédure, pièges, et ce qui ne marche pas
+- `artifacts/visual_checks/2026-08-29_hud.png` — première image, publiée
+
+### Limite honnête
+
+C'est une capture **statique en mode Edit**. Elle montre fidèlement la mise en
+page, la palette, la lisibilité et les états demandés. Elle ne montre **pas** le
+mouvement, ni le ressenti d'une transition, ni ce qui n'existe qu'en jeu. Pour
+ça, un œil humain en Play reste nécessaire.
+
+Commit `0151cc8`.
+
+---
+
 ## 2026-08-29 (suite 2) — Capture noire : diagnostic dédié, cause localisée
 
 Deux chantiers d'affilée bloqués sur la vérification visuelle. Diagnostic plutôt
