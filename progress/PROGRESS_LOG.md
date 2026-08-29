@@ -69,6 +69,68 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 9) — Les 5 slots sortent de PENDING_UPLOAD
+
+`[AnimLoader] All slots uploaded ✓` — plus aucun `PENDING_UPLOAD` dans le kit
+Demi-Dieu. Le PlaytestReporter passe de 4–5 avertissements à **0**.
+
+| slot | pattern | gate classe | gate mouvement | `rx range` | longueur moteur |
+|---|---|---|---|---|---|
+| Skill1_MainDuColosse | `rear_hand_straight_v2` | 0.942 / 3.987 | 0.19 | **[0.0, 0.0]** | 0.699 s |
+| Skill2_FrappeCeleste | `overhead_chop_v2` | 0.871 / 3.213 | 0.24 | [−100, 103] | 0.833 s |
+| Skill3_MarcheDuTitan | `dash_strike_v2` | 0.932 / 3.819 | 0.138 | **[0.0, 0.0]** | 0.966 s |
+| Skill4_Jugement | `wide_open_cast` | **exempté** | 0.30 | [14, 86] | 0.666 s |
+| Ultimate_DescenteDuDemiDieu | `overhead_chop_v2` | 0.945 / 3.213 | 0.171 | [−100, 103] | 1.166 s |
+
+`rx range [0.0, 0.0]` sur les deux seeds de classe *straight* : la course avant
+est bien sur `rz`. Le bug d'axe du 2026-08-28 n'est pas réintroduit. Sur les
+overhead, `rx` est l'axe correct (Y) — le contrôle systématique sert justement à
+distinguer les deux cas au lieu de « corriger » par réflexe.
+
+### Deux refus de facilité
+
+**`overhead_chop` donnait 2.853 stud pour un plancher à 2.85** — 0.1 % de marge.
+Ce n'est pas un échec, mais c'est le profil exact des seeds qui ne passaient que
+grâce au clamp dur et ont produit le tortillement. Nouveau pattern
+`overhead_chop_v2` (apex plus haut, contact plus bas, pitch de RootJoint plus
+marqué) : **3.213, soit 12.7 % de marge**. L'original est intact.
+
+**`Skill3` a été REJETÉ par le gate de mouvement** : figé 0.467 s, 48 % du clip
+(max 40 %). Allonger le clip à 1.25 s le faisait passer — et c'était du **gaming
+de métrique** : la demi-seconde morte restait, en absolu, identique. Refusé. La
+vraie cause était la phase `windup → impact` de 500 ms sans pose intermédiaire ;
+`windup_ms` porté de 200 à 520 la supprime pour de bon (**0.133 s**) et colle à
+l'intention : deux pas lourds, puis la frappe qui s'engage tard.
+
+Même levier sur l'ultime, qui passait à **0.400 pile** — la limite exacte, trop
+juste pour être crédible. `windup_ms` 150 → 430, résultat 0.171.
+
+### Jugement — exemption appliquée
+
+Décision actée : `Skill4_Jugement` est une **posture de contre**, pas une
+frappe. Le gate de classe mesure où va le poignet le long d'un axe de frappe ;
+appliqué à une garde il mesure la mauvaise chose — même erreur de catégorie que
+`strike_classes.py` a été écrit pour corriger. **Gate de mouvement seul**, et il
+reste pertinent : une posture doit bouger, sinon c'est une pose figée. PASS à
+0.30.
+
+### Vérification, deux fois par le vrai chemin
+
+1. Slot résolu depuis `AnimationDB` (jamais un AssetId en dur), chargé,
+   `track.Length > 0.1` — un `LoadAnimation` réussi ne prouve rien.
+2. Cast via `CombatController.TrySkill(1..5)`, l'appel exact d'`InputController`.
+   Le runtime a logué `playing:` pour les cinq, avec les bonnes longueurs.
+
+Piège re-confirmé au passage : une tentative de cast via `execute_luau` a donné
+« PAS JOUÉ » sur les cinq — le `require` isolé rend un `CombatController` dont
+`_character` est nil. Seul un vrai `LocalScript` compte.
+
+Les 5 entrées sont dans `verified_assets.json` en `VERIFIED`, avec les preuves.
+
+Commit `449c798`.
+
+---
+
 ## 2026-08-29 (suite 8) — Skill1_MainDuColosse sort de PENDING_UPLOAD (1/5)
 
 Premier des 5 slots d'animation restants passé de bout en bout. La chaîne est
