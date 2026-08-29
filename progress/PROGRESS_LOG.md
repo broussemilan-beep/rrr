@@ -69,6 +69,96 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 2) — Capture noire : diagnostic dédié, cause localisée
+
+Deux chantiers d'affilée bloqués sur la vérification visuelle. Diagnostic plutôt
+qu'un contournement de plus. Rapport complet :
+`artifacts/DIAGNOSTIC_CAPTURE_2026-08-29.md`.
+
+### Verdict
+
+**La capture n'est pas cassée.** Elle marche en **Edit** et rend du noir en
+**Play**, de façon reproductible et réversible — même fenêtre, même viewport, à
+deux minutes d'écart :
+
+| # | mode | résultat |
+|---|---|---|
+| 1 | Edit | **image réelle** |
+| 2 | Play | **noir** |
+| 3 | Play | **noir** |
+| 4 | Edit (après arrêt) | **image réelle** |
+
+### La preuve la plus nette : la signature disque
+
+`~/Library/Roblox/tmp-capture-storage/`, en-têtes PNG lus directement :
+
+```
+wob-...057  2462x1176   1 743 193 o   Edit  — réelle
+wob-...058  2462x1176       8 549 o   Play  — noire
+wob-...059  2462x1176       8 549 o   Play  — noire
+wob-...060  2462x1176   1 766 751 o   Edit  — réelle
+wob-...062  2462x1176       8 549 o   Play  — noire (CaptureService moteur)
+```
+
+Les cinq font **2462×1176** = `1231×588` en Retina 2×. **La surface noire est
+plein-format** : allouée, bien dimensionnée, simplement jamais dessinée. Une
+surface « collapsée » ne produirait pas ça.
+
+### Cinq hypothèses éliminées par la mesure
+
+- **Seuil viewport 600 px** — le viewport est à 588, sous le seuil documenté,
+  mais **Edit réussit à cette exacte taille**. Pas la variable.
+- **Veille écran / économiseur / verrouillage** — `CurrentPowerState = 4`,
+  `UserIsActive = 1`, aucun `ScreenSaverEngine`, et **état identique** entre le
+  succès et l'échec.
+- **Focus / espace macOS** — pilotage distant, Studio n'est pas l'app active, et
+  **les captures Edit réussissent quand même**.
+- **Queue morte pour la session** — Edit réussit **immédiatement après** deux
+  Play noires, sans redémarrage.
+- **Overlay GUI / Lighting / bug de l'outil MCP** — aucun overlay opaque,
+  Lighting normal, et `CaptureService` du **moteur** donne le même noir.
+
+### Une conclusion intermédiaire que j'ai dû corriger
+
+J'avais écrit en cours de diagnostic que `CaptureService` « fonctionne en Play »
+parce que son callback part en 0,41 s. **Faux** : le callback part, l'image est
+noire. Le callback ne prouve rien sur le contenu — même piège que
+`pcall(LoadAnimation)` qui renvoie `ok` sur un AssetId invalide. Vérifier la
+**taille du fichier** (≈8,5 Ko = noir).
+
+### Ce qui est établi
+
+Le moteur **rend normalement** en Play (`RenderCPUFrameTime ≈ 0.0154`, ~65 fps).
+En Play, la vue affichée à l'écran et la surface offerte à la capture ne sont
+donc pas la même chose, et la seconde n'est jamais dessinée.
+
+### Ce que je n'ai pas élucidé — dit clairement
+
+**Pourquoi la régression est apparue.** Les captures Play marchaient le
+2026-08-27 (vérifié, pas supposé : la capture publiée montre le personnage
+joueur et les plaques « Training Dummy » avec barres de vie, GUI de runtime). Or
+rien de local n'a changé après : Studio.app date du **26 août**, tous les
+plugins d'avant le 27. L'outil de capture vit dans l'Assistant intégré à Studio,
+qui s'auto-met à jour et n'est pas datable depuis le disque.
+
+Je m'arrête là plutôt que de continuer à retenter, comme demandé.
+
+**Piste probable, non vérifiée** : un back-buffer Play jamais composé quand
+Studio n'est pas l'app active, là où le chemin Edit sait redessiner à la demande.
+Testable en une manipulation humaine (Studio réellement au premier plan, vue 3D
+visible, Play, puis capture) — impossible pour moi : `osascript` n'a pas l'accès
+d'aide sur cette machine (`-25211`), la même permission qui bloque le Cmd+S.
+
+### Mémoire projet corrigée
+
+La note `captureservice-viewport-bug` portait deux affirmations que ce
+diagnostic réfute par la mesure (seuil 600 px, queue morte pour la session).
+Réécrite avec les faits mesurés.
+
+Commit `ab83848`.
+
+---
+
 ## 2026-08-29 (suite) — Nouveau chantier : HUD V1, vérifié en Play Solo
 
 Premier vrai contenu visible du jeu. Élément 1 sur 3 (HUD → respawn → compteur
