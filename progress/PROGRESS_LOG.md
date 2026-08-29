@@ -69,6 +69,67 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 8) — Skill1_MainDuColosse sort de PENDING_UPLOAD (1/5)
+
+Premier des 5 slots d'animation restants passé de bout en bout. La chaîne est
+prouvée sur un cas réel ; les 4 autres suivent le même rail.
+
+### Chaîne complète, un seed
+
+| étape | résultat |
+|---|---|
+| spec autorée | `hand_keyer/specs/Skill1_MainDuColosse.json`, pattern `rear_hand_straight_v2` |
+| hand_keyer | 22 frames, 0.7333 s — `Right Shoulder rx range [0.0, 0.0]` |
+| gate **classe** (straight) | ratio **0.942** (plancher 0.67), amplitude **3.987 stud** (plancher 2.25) — **PASS** |
+| gate **mouvement** | plage statique **0.19** (max 0.40), rotation totale 290° — **PASS** |
+| bake | `assets/animations/handkeyer/Skill1_MainDuColosse.rbxm`, 3 517 o |
+| upload | asphalt Open Cloud → `rbxassetid://73293100136338` |
+| câblage | `AnimationDB/Skills.lua`, vrai slot |
+| **vérification moteur** | par le **vrai slot**, `track.Length = 0.699 s` |
+| **cast réel** | `[AnimationDriver] playing: Skill1_MainDuColosse (len=0.70)` |
+
+`rx range [0.0, 0.0]` n'est pas cosmétique : c'est la preuve que le bug d'axe
+corrigé le 2026-08-28 sur 7 seeds n'est pas réintroduit. La course avant est bien
+pilotée sur `rz`.
+
+Les marges sont larges (0.942 / 3.987 contre 0.67 / 2.25) : le seed passe par sa
+propre qualité, pas sauvé par une amplification poussée au clamp — c'est
+exactement ce qui avait produit le tortillement de M1_2/3/4.
+
+`[AnimLoader] 4 slot(s) still PENDING` — de 5 à 4, confirmé par le runtime.
+
+### Vérification par le vrai chemin, deux fois
+
+1. Résolution du slot depuis `AnimationDB` (jamais un AssetId en dur), chargement,
+   puis `track.Length > 0.1`. Un `LoadAnimation` qui réussit ne prouve rien —
+   règle du projet, respectée.
+2. Cast via `CombatController.TrySkill(1)`, l'appel exact d'`InputController`
+   sur F. Le runtime a joué l'animation.
+
+### Restent 4, et un cas de conception à trancher
+
+`Skill2_FrappeCeleste` (overhead), `Skill3_MarcheDuTitan` (dash + coup final),
+`Ultimate_DescenteDuDemiDieu` (overhead) entrent dans le moule des gates.
+
+**`Skill4_Jugement` est un vrai cas à part** : c'est une **posture de contre**,
+pas une frappe. Le gate de classe mesure où va le poignet le long d'un axe de
+frappe — appliqué à une garde, il mesure la mauvaise chose. Deux options
+honnêtes : le classer `wide` (« bras qui s'ouvrent depuis neutre », ce qu'une
+garde fait réellement), ou l'exempter du gate de classe et ne lui appliquer que
+le gate de mouvement, qui reste pertinent (la posture doit BOUGER). À trancher
+avant de l'autorer, pas pendant.
+
+### Note d'environnement
+
+Rojo n'était plus lancé et Studio avait redémarré ; le plugin Rojo ne se
+reconnecte pas seul. Les sources sont poussées dans la place par `GetAsync` sur
+un serveur HTTP local, à l'octet près depuis le disque — le disque reste la
+source de vérité.
+
+Commit `b29fc91`.
+
+---
+
 ## 2026-08-29 (suite 7) — Retouches HUD : glyphes F et H, étiquettes de barres
 
 Trois défauts signalés par Milan à l'écran, corrigés et vérifiés en capture.
