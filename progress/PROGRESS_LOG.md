@@ -69,6 +69,101 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite) — Nouveau chantier : HUD V1, vérifié en Play Solo
+
+Premier vrai contenu visible du jeu. Élément 1 sur 3 (HUD → respawn → compteur
+de kills). **En attente du jugement visuel de Milan devant l'écran** avant de
+passer au respawn.
+
+### Le vrai problème à régler d'abord : aucun canal de cooldown n'existait
+
+Trois autorités serveur possèdent les cooldowns aujourd'hui, et aucune ne les
+publiait :
+
+- `CombatService.server.lua` — Skill1..Skill5, via `state.skillCooldowns`
+  contre `MoveData[moveId].serverCooldown`
+- `DashService.server.lua` — Pas Divin, via `DashCooldown`
+- chaque module de `src/server/Skills/` — sa propre constante `COOLDOWN`
+
+Un HUD qui aurait chronométré lui-même aurait été une **quatrième** autorité,
+condamnée à diverger des trois autres. Vérifié au passage : les constantes des
+modules correspondent exactement aux `serverCooldown` (5 / 6 / 10 / 12), donc il
+n'y a pas de contradiction à arbitrer.
+
+Nouveau `src/server/V1/HudFeed.lua` : au moment **exact** où le service
+propriétaire valide le cooldown, le serveur annonce « cette capacité est
+indisponible N secondes ». Le client ne fait que décompter un nombre qu'on lui a
+donné — du rendu, pas de l'autorité. Rien dans le HUD ne peut faire partir ou
+non un coup.
+
+Le remote est **push-only** : rien ne connecte `OnServerEvent`, donc il n'y a
+pas de point d'entrée client à protéger par `RemoteGuard`.
+
+`HudFeed.PushSnapshot` renvoie le **reste** d'un cooldown en cours à chaque
+`CharacterAdded` : rien ne purge `skillCooldowns` à la mort, donc un joueur qui
+meurt pendant un cooldown doit le retrouver en train de s'écouler.
+
+### Vérification — par le vrai chemin, jamais un raccourci
+
+Sondes en vrais `LocalScript` / `Script` insérés (le `require()` d'un
+`execute_luau` isolé donne une copie morte — piège déjà payé cette semaine). Les
+casts passent par `CombatController.TrySkill` / `DashController.TryDash`, c'est-
+à-dire l'appel exact que fait `InputController` sur F/G/H/R/Q, donc le cooldown
+affiché a fait le vrai aller-retour remote.
+
+| élément | source | attendu | mesuré |
+|---|---|---|---|
+| vie | `Humanoid.Health` (écrit serveur) | ratio serveur | **écart max 0** sur 3 dégâts (74/48/22) |
+| stamina | `Stamina.Changed` | module | écart **0.0037** |
+| momentum bas | mirror serveur | 11.9 / tier 0 | barre 0.119, ultime **verrouillé** |
+| momentum plein | mirror serveur | 100 / tier 2 | barre 1.000, ultime **armé** |
+| Pas Divin (Q) | `DashService` | 0.55 s | chip armé, balayage 0.972 |
+| Main du Colosse (F) | `CombatService` | 5 s | 4.9 |
+| Frappe Céleste (G) | `CombatService` | 6 s | 5.9 |
+| Marche du Titan (H) | `CombatService` | 10 s | 9.7 |
+| Jugement (R) | `CombatService` | 12 s | 11.6 |
+| Descente (ultime) | momentum au cap | verrouillé ↔ armé | correct **dans les deux sens** |
+
+Les durées déduites tombent 2–3 % court parce que j'échantillonne le balayage
+une frame après son armement — artefact de mesure, pas erreur du HUD.
+
+**Survie au respawn** testée séparément (mort provoquée côté serveur — poser
+`Health = 0` côté client ne réplique pas) : le `ScreenGui` survit, et le
+re-binding sur le nouveau `Humanoid` fonctionne (barre 1.000 contre ratio
+serveur 1.000, texte « 100 », 6 chips intacts).
+
+### Une divergence signalée, pas maquillée
+
+La spec suppose que `Stamina.lua` est un miroir serveur comme `Momentum.lua`.
+**Il ne l'est pas** : il régénère et dépense localement. Le HUD le lit par le
+même patron `Changed`, donc le HUD n'ajoute aucune autorité client — mais « la
+barre de stamina affiche une valeur serveur » est **faux aujourd'hui**. Rendre
+cela vrai demande une autorité stamina côté serveur, ce qui touche au gating du
+combat : chantier séparé, hors périmètre ici. Signalé plutôt que corrigé en
+douce.
+
+### Fichiers
+
+- `src/server/V1/HudFeed.lua` — nouveau, canal serveur→client des cooldowns
+- `src/server/V1/CombatService.server.lua` — push au commit du cooldown skill
+- `src/server/V1/DashService.server.lua` — push au commit du cooldown dash
+- `src/client/UI/HUD.client.lua` — le HUD (remplace un stub désactivé)
+
+Palette sombre + accents violets/aura, cohérente avec la direction artistique de
+l'Arène Fracturée (§17 interdit explicitement le beige/gris d'arène classique).
+La maquette HTML jamais validée n'a pas été reproduite, conformément au brief.
+
+Tests **6/6**. Commit `cb32d5a`.
+
+### Suite
+
+**Point d'arrêt : le HUD attend le jugement visuel de Milan devant l'écran.**
+La capture est structurellement cassée dans cet environnement (frame noire
+systématique), il n'y a donc pas d'alternative automatisée. Ensuite : respawn
+(§2), puis compteur de kills (§3).
+
+---
+
 ## 2026-08-29 — Les deux derniers bugs mécaniques de Demi-Dieu : fermés
 
 Périmètre : cancels (3/8) et Marche du Titan (dérive). Un à la fois, chacun
