@@ -69,6 +69,154 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 — Les deux derniers bugs mécaniques de Demi-Dieu : fermés
+
+Périmètre : cancels (3/8) et Marche du Titan (dérive). Un à la fois, chacun
+vérifié par **le vrai chemin d'exécution du jeu** — vrai `CombatController`,
+vrai `MoveData`, vrai `AnimationDB`, vrai `Skill3.Execute` — pas d'AssetId en
+dur, pas de mesure isolée sur les données. Prérequis vérifiés avant toute
+conclusion : `rojo serve` écoute sur `127.0.0.1:34872`, et les valeurs
+mesurées sont relues depuis la place, pas depuis le disque.
+
+### Deux pièges de méthode rencontrés, et corrigés
+
+1. **`execute_luau` obtient son propre cache `require()`.** Ma première sonde
+   lisait un `CombatController` isolé dont `_character` est nil : `TryM1()`
+   sortait en silence et les 4 lignes renvoyaient `0`. Toutes les sondes
+   suivantes passent par un **vrai `LocalScript`/`Script` inséré**, qui partage
+   le cache réel. Même piège sur le miroir Momentum côté client et sur
+   `MomentumService` côté serveur.
+2. **`ComboResetTime = 1.0`.** Ma deuxième sonde espaçait les swings de ~1,3 s,
+   donc `_comboStep` repassait à 1 : les quatre lignes mesuraient toutes M1_1
+   sans le dire. Corrigé en chaîne continue.
+
+### Bug 1 — Cancels : deux mécanismes distincts, un seul est un bug
+
+La fenêtre annoncée est `CANCEL_WINDOW_SECONDS = 0.2`, mais elle s'ouvre **au
+marqueur Impact** et `TryCancelIntoDash` exige `_busy`, que le timer de
+`recovery` libère. La fenêtre réellement utilisable vaut donc
+`recovery − Impact`. Mesuré en jeu sur deux cycles complets :
+
+| move | Impact | recovery | fenêtre réelle | frames @60 |
+|---|---|---|---|---|
+| M1_1 | 0.30 | 0.34 | **47 ms** | 2.8 |
+| M1_2 | 0.3333 | 0.34 | **13–19 ms** | 0.8–1.1 |
+| M1_3 | 0.3667 | 0.42 | 65–67 ms | 3.9 |
+| M1_4 | 0.4667 | 0.52 | 65–68 ms | 4.0 |
+
+Vérification que le chemin de repli n'était plus en cause : **0 `WARN marker
+fallback` sur 12 swings** — le correctif `901213b` a bien réglé ça.
+
+Puis test de cancel réel, sondage frame-parfait, par palier de Momentum :
+
+- **tier 2 (surchargé)** : 12/12 puis 11/12. M1_1 **6/6**, M1_4 **6/6**.
+  L'unique raté est M1_2, celui dont la fenêtre tient sous une frame.
+- **tier 1 (chargé)** : **3/12** — M1_1 0/3, M1_2 0/3, M1_3 3/3, M1_4 0/3.
+
+Ce 3/12 reproduit exactement le 3/8 historique et le sépare en deux :
+
+- **M1_1 et M1_4 ne sont pas un bug.** La règle d'éligibilité
+  `tier >= 2 or (tier >= 1 and (step == 2 or step == 3))` les exclut
+  délibérément au tier 1. Au tier 2 ils passent 6/6.
+- **M1_2 est un vrai bug** : éligible sur le papier, 6,7 ms de marge nominale,
+  inattrapable en pratique.
+
+**Correctif** : `MoveData.M1_2.recovery` 0.34 → 0.39 (~57 ms, aligné sur M1_3
+et M1_4). Même classe de correctif que `901213b`, non détectée alors parce que
+la marge de M1_2 était positive au lieu d'être négative.
+
+**Re-test après resync, par le vrai chemin** (`m1_2_recovery_live = 0.39` relu
+depuis la place) : M1_2 **0/3 → 3/3**, total tier 1 **3/12 → 6/12**, soit
+**100 % des étapes éligibles**.
+
+### Bug 2 — Marche du Titan : ce n'était pas une dérive latérale
+
+Le HRP du joueur est **network-owned par le client** (`owner = milou_158`).
+Toutes les mesures précédentes de ce bug étaient prises côté **serveur**, donc
+sur une copie répliquée et corrigée par le lag — c'est de là que venaient les
+« ~7 studs de dérive latérale ». Remesuré sur le pair qui possède réellement la
+simulation, la dérive latérale réelle vaut **0,3 à 1,9 stud**, négligeable
+contre une hitbox de 5 studs de large.
+
+Isolation demandée, une impulsion à la fois, 4 répétitions, yaw épinglé et gate
+de stabilisation :
+
+| impulsions | latéral | balayage yaw |
+|---|---|---|
+| **1** | **−0.01** | **0.0°** |
+| 2 | 0.25 – 1.08 | 15.6° – 108.7° |
+| 3 | 0.38 – 0.98 | 67.4° – 117.6° |
+
+**La dérive est purement un effet de composition** : absente de la première
+impulsion, elle apparaît dès la deuxième. Et elle est **rotationnelle**, pas
+latérale. Ce n'est pas `AutoRotate` : à `AutoRotate = false` le balayage est
+identique, donc le couple est physique (le zéro brutal de la vitesse
+horizontale en fin de pas, sur une assemblée Humanoid en contact au sol).
+
+`finalStrike` calcule sa hitbox depuis `hrp.CFrame` à l'instant exact où elle
+part. Erreur de visée mesurée à cet instant :
+
+| pas | erreur de visée |
+|---|---|
+| 2 | **−25° à −79°** |
+| 3 | **−83° à −112°** |
+
+À 83–112° d'écart, la hitbox 7×5 pointe presque de côté. **C'est ça qui faisait
+rater le coup**, pas la dérive latérale.
+
+**Correctif** : `beginFacingLock` — un `AlignOrientation` rigide posé pour toute
+la durée du cast, dont la cible suit `Humanoid.MoveDirection`. Le couple
+parasite est annulé, et « orientable pendant le déplacement » (l'en-tête du
+fichier) devient vrai en pratique au lieu d'être décidé par le bruit physique.
+
+**Vérification bout-en-bout par le vrai `Skill3.Execute`, contre un vrai
+mannequin, avec dégâts réels** (mannequin réépinglé entre chaque essai — le
+premier run avait un raté dû au mannequin qui dérivait encore du knockback
+précédent) :
+
+| essai | erreur de visée | avance | dégâts | touché |
+|---|---|---|---|---|
+| 1 | 0.0° | 15.4 | 35 | oui |
+| 2 | 0.0° | 17.5 | 35 | oui |
+| 3 | 0.0° | 15.4 | 35 | oui |
+| 4 | −0.1° | 16.3 | 35 | oui |
+
+**4/4.** L'avance retombe à 15,4–17,5 studs pour 16,5 promis — le dépassement
+d'environ 20 % constaté avant le correctif disparaît lui aussi.
+
+### Un test rouge réparé, pas contourné
+
+`test_combat_modules` criait : `JugementWindow.lua — no COOLDOWN constant`.
+`JugementWindow` est un helper d'état pur, factorisé hors de
+`Skill4_Jugement.lua` (qui déclare bien son `COOLDOWN`) : il n'a ni `Execute`
+ni cooldown. Le test identifiait les skills par appartenance au dossier. Il les
+identifie désormais par leur **contrat** (exposer `Execute`). Vérifié : le
+critère mord toujours sur les **10** vrais skills, seul le helper est exempté.
+Suite complète **6/6**.
+
+### Fichiers
+
+- `src/shared/V1/MoveData.lua` — `M1_2.recovery` 0.34 → 0.39
+- `src/server/Skills/Skill3_MarcheDuTitan.lua` — `getStepAttachment`,
+  `beginFacingLock`, appel dans `Execute`
+- `tests/test_combat_modules.luau` — skills détectés par contrat
+
+Commit `37a6dd1`. Rapport détaillé :
+`artifacts/DEMIDIEU_DERNIERS_BUGS_2026-08-29.md`.
+
+### Non fait, volontairement
+
+Le chantier expressivité (« corrects mais fades ») et les animations des 4
+compétences Demi-Dieu (5 slots encore `PENDING_UPLOAD` :
+`Skill1_MainDuColosse`, `Skill2_FrappeCeleste`, `Skill3_MarcheDuTitan`,
+`Skill4_Jugement`, `Ultimate_DescenteDuDemiDieu`) restent ouverts. Demi-Dieu
+s'arrête ici ; la suite est le pivot HUD / méta-jeu.
+
+Capture de contrôle : toujours pas publiée — les frames rendues restent noires
+(10724 octets), et rien d'illisible n'est publié sur le miroir.
+
+---
+
 ## 2026-08-28 (suite 9) — Tortillement corrigé sur les trois (M1_2, M1_3, M1_4)
 
 **Contrôle final — pas > 45° par articulation, 60 échantillons par clip :**
