@@ -69,6 +69,83 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 4) — Enregistrement d'écran accordé : première capture en jeu
+
+Milan a coché la permission. Elle a pris effet **sans redémarrer Claude** —
+contrairement à ce que je craignais.
+
+### Aucune boîte de dialogue : macOS ne la repropose jamais
+
+Les trois déclencheurs ont échoué avant l'octroi manuel :
+
+| tentative | résultat |
+|---|---|
+| `screencapture -x -o -l 90` | `could not create image from window`, aucun fichier |
+| `CGWindowListCreateImage` | `None` |
+| `CGRequestScreenCaptureAccess()` — l'API explicite | **`False`**, sans rien afficher |
+
+Une demande déjà présentée et refusée une fois n'est jamais reproposée. Il
+fallait passer par Réglages Système, comme pour l'Accessibilité.
+
+### Vérifié par le contenu, pas par la taille
+
+`CGPreflightScreenCaptureAccess()` → **`True`**.
+
+Puis capture de la fenêtre Studio, **ouverte et regardée** : on y voit la barre
+de titre « MyAnimeMMORPG — Roblox Studio », le ruban Home, le panneau Explorer,
+la barre de commande et le viewport 3D. C'est bien la fenêtre, pas un fond
+d'écran.
+
+C'est le contrôle que j'avais sauté deux fois. Cette fois il est fait.
+
+### Première vérification visuelle dynamique du projet
+
+Capture en **mode Play, jeu en train de tourner** — onglets Client/Server,
+bordure Play, HUD par-dessus l'arène avec des valeurs vivantes
+(vie 85, stamina 100, momentum 21, Jugement à « 2 » en cooldown).
+
+`artifacts/visual_checks/2026-08-29_hud-play.png`, publiée sur le miroir.
+
+### Nouvel outil : `scripts/visual_check/capture_window.py`
+
+Voie **A**, désormais la voie par défaut : capture la fenêtre Studio au niveau
+macOS, donc **en Play**, contournant entièrement `CaptureService`. La voie Edit
+livrée au tour précédent devient le repli.
+
+Le script ne juge **pas** par la taille du fichier. Il s'appuie sur une
+propriété plus forte : `screencapture -l <windowID>` ne compose que la fenêtre
+demandée — permission refusée, il échoue franchement et n'écrit rien, il ne
+peut pas retomber sur le fond d'écran. Il vérifie en plus que les dimensions
+correspondent à la fenêtre. Et il imprime, à chaque run, que **le seul contrôle
+qui compte est d'ouvrir l'image**.
+
+### Ce que je vois moi-même sur la capture en jeu
+
+- **Le balayage de cooldown est trop peu contrasté** — confirmé en jeu, pas
+  seulement sur la maquette Edit. Le chiffre porte toute l'information ; le
+  remplissage sombre-sur-sombre ne se lit pas.
+- **Deux UI Roblox par défaut polluent l'écran** : la barre supérieure (logo,
+  menu, chat) en haut à gauche, et surtout **la barre de vie verte native en
+  haut à droite**, qui double la nôtre et se voit plus qu'elle. À désactiver
+  (`StarterGui:SetCoreGuiEnabled`).
+- **Le HUD est petit à l'échelle réelle** ; les libellés à 9 pt sont limites.
+- Le contraste violet du HUD tient bien sur l'arène bleu/violet.
+- **Le momentum retombe vite** : 100 → 21 le temps de quelques casts. C'est
+  correct (skill dans le vide = −10, puis décroissance 8/s), mais c'est un sujet
+  de ressenti à trancher.
+
+Rien de tout ça n'est corrigé : ce tour portait sur l'outil de vérification.
+
+### Dépendance ajoutée
+
+`~/.cache/myanimerpg/capture-venv` — venv isolé avec `pyobjc-framework-Quartz`,
+hors du Python système, uniquement pour trouver l'ID de fenêtre et interroger la
+permission. Supprimable ; les scripts disent comment le recréer.
+
+Commit `f74aebc`.
+
+---
+
 ## 2026-08-29 (suite 3) — Vérification visuelle autonome : résolue
 
 « Milan regarde à l'écran » n'est plus la seule voie. Procédure répétable,
