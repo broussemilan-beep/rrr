@@ -7,6 +7,12 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | --- | --- |
 | `2026-08-29_hud.png` | 1283104 |
 | `2026-08-29_hud-play.png` | 2892619 |
+| `2026-08-29_hud-etape6-final.png` | 2868810 |
+| `2026-08-29_hud-etape5.png` | 2829018 |
+| `2026-08-29_hud-etape4.png` | 2761134 |
+| `2026-08-29_hud-etape3.png` | 2802338 |
+| `2026-08-29_hud-etape2.png` | 2882993 |
+| `2026-08-29_hud-etape1.png` | 2849731 |
 | `2026-08-27_demidieu-m1-capture-2.jpg` | 281436 |
 | `2026-08-27_demidieu-m1-capture-1.jpg` | 276412 |
 | `2026-08-26_capture-ring-from-under.jpg` | 163526 |

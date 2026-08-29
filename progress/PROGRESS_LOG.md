@@ -69,6 +69,84 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 5) — Direction visuelle du HUD implémentée, 6 étapes, capture à chaque
+
+Première fois que le projet itère sur du visuel **en jugeant les images**, étape
+par étape, sans attendre personne. Sept captures en jeu, toutes ouvertes et
+regardées, toutes publiées.
+
+### Ce que chaque étape a donné
+
+**1 — Couper l'UI native.** Barre de vie verte, liste de joueurs et chat :
+**partis**. Reste le bouton Roblox/menu : `SetCore("TopbarEnabled", false)` est
+accepté (le pcall réussit, aucun avertissement) mais **n'a plus aucun effet** —
+la topbar est toujours là sur la capture. Roblox impose ce bouton. Documenté
+dans le code pour qu'on n'y revienne pas en croyant à un bug.
+
+**2 — Contraste inversé sur les chips.** Avant : le chip était allumé et une
+ombre le mangeait. Maintenant : le chip s'éteint et un **liseré violet vif
+grandit le long du bord bas**. Sur la capture, on lit d'un coup d'œil quelles
+compétences sont prêtes — c'était le défaut n°1, constaté deux fois. Plus flash
+blanc-violet + pop d'échelle (1 → 1.08 → 1) au retour à disponible.
+
+**3 — Libellés supprimés, glyphes + grosse lettre.** Les noms complets à 9 pt
+disparaissent. Six silhouettes géométriques (traits de vitesse, poing, chevron
+au sol, appuis, losange, double chevron) construites **en Frames** : le projet
+interdit d'inventer un AssetId, donc pas d'icônes en image. Lettre de touche
+18 → 22 px.
+
+**4 — Aura de Momentum en bord d'écran.** Quatre bandes à dégradé + particules
+montantes au cap, `ZIndex 0` derrière le HUD. Tier 0 = rien et **immobile**.
+Première version trop discrète (l'arène est elle-même bleu/violet), renforcée,
+puis **resserrée en étape 6** parce qu'elle lavait l'écran au lieu de le cadrer.
+
+**5 — Vie physique.** Éclat d'impact (0,12 s, plus court que le fantôme à
+0,35 s), pointe chaude en dégradé sur les trois barres, seuil critique sous 25 %
+avec contour rouge pulsant. Capture prise à 8 PV : le contour rouge et l'éclat
+sont tous deux visibles.
+
+**6 — Harmonisation.** Un seul rayon, une seule épaisseur, un seul accent.
+Chiffres en `RobotoMono` (chasse fixe) pour que le HUD ne tremble pas au
+décompte. Aura resserrée. Éclat d'impact reparenté au remplissage.
+
+### Deux bugs trouvés *par* les captures
+
+- **Le HUD mentait** : la barre affichait « 100 » à 99,6 (arrondi) pendant que
+  le test d'armement de l'ultime utilise `>= max` — chip verrouillé, barre à
+  100. Corrigé en `math.floor`. Repéré uniquement parce que j'ai regardé
+  l'image.
+- **L'éclat d'impact blanchissait toute la piste**, y compris la portion vide,
+  rendant la barre illisible au moment où elle compte le plus. Reparenté au
+  remplissage.
+
+### Réserve honnête sur la direction
+
+La **coupe diagonale** demandée au §5 n'est pas implémentée : Roblox ne sait pas
+découper un polygone arbitraire sans masque en image, et le projet interdit
+d'inventer un AssetId. Ce qui est unifié l'est sur ce qui est réellement
+contrôlable — rayon, épaisseur, accent. La coupe demandera une vraie texture
+uploadée et vérifiée.
+
+### Mon jugement sur l'image finale
+
+Ce qui marche : les liserés de disponibilité se lisent sans lire, les décomptes
+monospace ne gigotent plus, l'aura cadre l'écran au lieu de le laver, le seuil
+critique est net.
+
+Ce qui reste faible : le glyphe **poing** (F) lit comme une tache, le glyphe
+**appuis** (H) comme deux points — ce sont les deux moins reconnaissables des
+six. Et les trois barres n'ont aucune étiquette : un joueur neuf ne sait pas
+laquelle est la stamina.
+
+Le HUD reste du **rendu pur** : aucune autorité ajoutée, la règle §1 est intacte.
+
+Captures : `artifacts/visual_checks/2026-08-29_hud-play.png` (avant) puis
+`hud-etape1` à `hud-etape6-final`.
+
+Commit `dfeac2b`.
+
+---
+
 ## 2026-08-29 (suite 4) — Enregistrement d'écran accordé : première capture en jeu
 
 Milan a coché la permission. Elle a pris effet **sans redémarrer Claude** —
