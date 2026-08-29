@@ -69,6 +69,64 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-29 (suite 11) — Doublons cassés + métrique de différenciation proposée
+
+### Les deux doublons sont résolus
+
+| paire | avant | après |
+|---|---|---|
+| Frappe Céleste ↔ Descente du Demi-Dieu | **0.000 stud** | **1.257** |
+| Main du Colosse ↔ Marche du Titan | **0.148 stud** | **2.034** |
+
+**Marche du Titan → `lead_hook_v2`.** Un crochet balaie latéralement : silhouette
+franchement différente d'un direct, et « coup final orientable » s'accommode
+mieux d'un arc que d'une ligne. Gates : classe hook 0.892 / 3.016, mouvement
+0.138. `rx range [-72, 97]`.
+
+**Frappe Céleste → `overhead_chop_planted`** (pattern créé). Gates : classe
+overhead 0.891 / 3.241, mouvement 0.20. `rx range [-100, 103]`.
+
+### Une voie essayée, mesurée, abandonnée
+
+J'ai d'abord tenté un **écrasement à deux mains symétrique** (`two_handed_slam`).
+Il plafonne à **2.27 stud** d'amplitude pour un plancher à 2.85, et la cause est
+structurelle : le chop simple tire son amplitude de la **rotation du torse**, et
+c'est précisément ce qu'un geste symétrique supprime. Remettre la rotation
+restaure l'amplitude (3.016) mais casse la verticalité (ratio 0.698 pour 0.78,
+`FAIL_SHAPE`). Le geste est coincé entre les deux — mesuré sur sept variantes,
+pas supposé.
+
+D'où `overhead_chop_planted` : le bras **droit** garde le chop qui passait déjà,
+seuls le bras **gauche** (qui descend et s'ancre au lieu de rester en garde) et
+le pitch changent. Suffisant, puisque la métrique mesure les **effecteurs** et
+que le poignet gauche en est un.
+
+Correction en cours de route, trouvée en ouvrant l'image : un pitch de
+`RootJoint` à −42 faisait basculer tout le corps de 45° — ça lisait comme une
+**chute en avant**, pas un écrasement. Ramené à −26.
+
+### La métrique proposée (à valider — non implémentée)
+
+Voir le rapport de ce tour. En bref : **distance au pic entre positions
+d'effecteurs, dans le repère du Torso**, seuil proposé **0.8 stud**, portée
+**intra-kit**.
+
+Calibrage sur le corpus réel (16 animations) :
+
+- doublons constatés : 0.000 (Frappe Céleste ↔ ultime), 0.148 (Main du Colosse
+  ↔ Marche du Titan), et **deux autres déjà présents** que personne n'avait
+  vus : `M1_4_demidieu` ↔ `heavy_finisher_sukuna` à **0.000**, `M1_jab_toji` ↔
+  `M1_cross_toji` à **0.158** ;
+- paire légitime la plus serrée **dans un même kit** : `M1_3` ↔ `M1_4` à
+  **1.107**.
+
+Le seuil à 0.8 attrape les quatre doublons et laisse 1.107 tranquille avec 27 %
+de marge. La fenêtre est large, ce n'est pas un réglage au millimètre.
+
+Commit `d4e8fcf`.
+
+---
+
 ## 2026-08-29 (suite 10) — Les 5 gestes photographiés à leur pic réel
 
 Cinq captures, chacune figée à l'instant le plus lisible du clip, chacune

@@ -19,9 +19,11 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-08-29_hud-etape2.png` | 2882993 |
 | `2026-08-29_hud-etape1.png` | 2849731 |
 | `2026-08-29_anim-marchedutitan.png` | 2873573 |
+| `2026-08-29_anim-marchedutitan-v2.png` | 3061069 |
 | `2026-08-29_anim-mainducolosse.png` | 2874029 |
 | `2026-08-29_anim-jugement.png` | 2721395 |
 | `2026-08-29_anim-frappeceleste.png` | 2886173 |
+| `2026-08-29_anim-frappeceleste-v2.png` | 2951360 |
 | `2026-08-29_anim-descentedudemidieu.png` | 2886428 |
 | `2026-08-27_demidieu-m1-capture-2.jpg` | 281436 |
 | `2026-08-27_demidieu-m1-capture-1.jpg` | 276412 |
