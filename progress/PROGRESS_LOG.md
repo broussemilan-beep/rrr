@@ -69,6 +69,86 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Chaîne M1 complète, issue des packs, vérifiée en moteur (étape 2, 4/10)
+
+Les **quatre coups de la chaîne M1** viennent maintenant de vraies animations des
+packs, sont passés par toute la cascade, et **jouent en moteur par de vrais
+clics** aux durées exactes de la spec (0.55 / 0.60 / 0.65 / 0.85 s).
+
+| Pièce | Source | Gate de classe | Impact | Asset |
+|---|---|---|---|---|
+| M1 #1 Frappe du Pilier | `Heavy Punch` (CC) | straight PASS, ratio 0.889, amp 3.233 | 0.2711 (49 %) | `117138533574102` |
+| M1 #2 Croisé Céleste | `Slow Punch (Mirrored)` (CC) | hook PASS, ratio 0.848, amp 2.893 | 0.3500 (58 %) | `126944593524961` |
+| M1 #3 Élévation | `[3] Uppercut` (BG) | uppercut PASS, ratio 0.897, amp 3.069 | 0.2520 (39 %) | `92465446339583` |
+| M1 #4 Chute Divine | `[3] Downslam V2` coupé 0-55 % (BG) | overhead PASS, ratio 0.982, amp 4.118 | 0.3643 (43 %) | `110631484952872` |
+
+Différenciation intra-kit (kit mixte : 4 pièces packs + 6 encore hand-keyées) :
+**0 collision**, minimum 0.832 — la paire pré-existante Dash ↔ Main du Colosse,
+toutes deux encore hand-keyées et à remplacer.
+
+### Deux défauts trouvés par la mesure, que les gates ne voyaient pas
+
+1. **`Downslam V2` entier a un long temps mort.** La frappe tombe à 23 % du clip,
+   puis le poignet reste quasi immobile (−0.7 à −0.9 stud) de 20 % à 60 %. Le gate
+   de mouvement passait quand même, parce qu'il lit les angles articulaires et
+   que torse et jambes continuent de bouger. **Coupé à 0-55 %** : l'impact
+   remonte à 43 %, dans la grammaire de phase, amplitude inchangée.
+2. **`Full Body Swing 1` est une fioriture, pas une frappe.** Trace verticale qui
+   oscille (−1.3, +0.4, +0.7, −1.3, +0.9) et trois pics de vitesse. C'est le
+   risque « se tortille dans tous les sens » déjà payé. Remplacé par
+   `Slow Punch (Mirrored)` : un seul temps fort, durée native 0.60 s = la cible
+   exacte donc aucune distorsion, et **4.071 stud** de distance à M1 #1 contre
+   2.233 pour l'autre candidat.
+
+### Outillage
+
+- **`pack_assembler.py`** (nouveau) — retiming, découpe par `span`, raccord
+  multi-clips en fondu croisé, et **miroir**. Le pack livre des variantes
+  `(Mirrored)` pour une partie de ses clips seulement ; quand la spec demande le
+  bras opposé, on miroite. Transformation **vérifiée par la mesure** : les
+  chiffres s'échangent exactement entre poignets (3.40 / latéral 2.85 / t=0.375
+  passe de droite à gauche), amplitudes et instants préservés.
+- Contrôle de non-régression : l'outil rejoue M1 #1 au chiffre près
+  (0.889 / 3.233 / 0.2113 / contact 0.2944) — aucun écart introduit.
+- **`bake_seed.py --from-json`** — les animations issues des packs passent par
+  **exactement la même chaîne de bake** que les seeds générés. Deux chemins de
+  bake séparés, ce serait deux endroits où un écart peut se glisser.
+
+### Le marqueur Impact a changé de définition — et c'est important
+
+Première approche : l'extension maximale sur l'axe de la classe. Elle a demandé
+**trois rustines successives** et restait fausse : pour un crochet, le
+déplacement latéral maximal est la **fin du swing** (81 % du clip), pas l'impact ;
+pour un coup vers le sol, le maximum vertical désigne **l'apex du bras levé**,
+c'est-à-dire l'armement. Chaque classe redemandait une exception.
+
+Règle retenue, unique : **l'instant de vitesse maximale du poignet frappeur**.
+C'est le sens physique d'un impact et c'est vrai quelle que soit la classe. Les
+quatre impacts tombent alors entre 39 % et 58 %, tous dans la grammaire de phase,
+et le poignet désigné correspond à la spec (droit pour #1, **gauche** pour #2).
+Ce marqueur pilote la détection de touche : mal placé, le coup touche à côté de
+ce que le joueur voit.
+
+### Écarts assumés, pas maquillés
+
+- M1 #2 : amplitude **2.893** contre une cible de 3.9.
+- M1 #3 : amplitude **3.069** contre une cible de 4.2, et le clip **n'anime pas
+  les jambes**.
+- M1 #4 : cible **5.5 stud inatteignable** — maximum absolu des deux packs 4.66.
+
+Ces trois écarts sont candidats à la passe d'amplification/easing (étape 3) ou à
+l'étape 4.
+
+### Suite
+
+Étape 2 continue, une pièce à la fois : dash Pas Divin, puis les 4 compétences,
+puis l'ultime. Consigne enregistrée pour l'étape 4 : avant tout génératif,
+**repasser les 6 autres dumps de packs** (`free`, `mixed`, `movesets`,
+`premium_r6`, `sprint`, `virtualvogue`), y compris ceux écartés au premier
+passage, et documenter pack + clip pour chaque trou comblé ainsi.
+
+---
+
 ## 2026-08-30 — Bascule sur les packs : sélection des clips sources (étape 1/4)
 
 **Nouvelle stratégie** (licence commerciale confirmée sur Battleground et Close
