@@ -69,6 +69,63 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Aura étendue à Jugement et à l'Ultime : 100 % sur les cinq
+
+**Décision de style actée :** on garde le **feu / embrasement**. Poussière et
+fracture au sol séparées abandonnées. Les débris `GroundChunks` et le plafond de
+lisibilité ne sont plus un manque à combler — sujet clos.
+
+### Constat qui simplifie le travail
+
+`InputController` route **R vers `TrySkill(5)`** quand `IsUltimateReady()` : les
+deux pièces gelées passaient donc **déjà** par `TrySkill`, où l'aura client avait
+été posée au tour précédent. Il n'y avait rien à ajouter — seulement le doublon
+serveur à retirer. Vérifié : **plus aucun module serveur ne déclenche l'aura.**
+
+### Preuve chiffrée en moteur
+
+```
+Skill4_Jugement              anim 0.57 s | apparait 0.000 s | disparait 0.602 s | COUVERTURE 100%
+Ultimate_DescenteDuDemiDieu  anim 4.50 s | apparait 0.000 s | disparait 4.545 s | COUVERTURE 100%
+```
+
+**Le point sensible de l'ultime est réglé :** l'aura dure **4,545 s** pour une
+animation de 4,50 s. Si la durée était restée sur une constante (0,75 s), la
+couverture serait tombée à ~17 %. Elle suit donc bien `track.Length`.
+
+Les cinq pièces sont maintenant à 100 % : Skill1 (0,70 s), Skill2 (0,83 s),
+Skill3 (0,97 s), Jugement (0,57 s), Ultime (4,50 s).
+
+### Cast rejeté — la garde tient
+
+Point soulevé après mon erreur du tour précédent (insertion passée avant la
+vérification du momentum). Le déclenchement serveur ayant été retiré, il ne peut
+plus partir sur un rejet serveur. Côté client, l'aura suit l'animation : `R` avec
+momentum à 0 a produit **Jugement**, pas l'ultime — le routage
+`IsUltimateReady()` empêche l'aura d'ultime sur un cast non prêt. Observé dans la
+même session : une ligne Jugement avant la charge de momentum, une ligne Ultime
+après.
+
+Réserve honnête : si un cast passait la garde client et était rejeté **côté
+serveur**, l'aura jouerait quand même — mais l'animation aussi. C'est le
+comportement de la prédiction client, antérieur à ce travail, pas une régression.
+
+### Deuxième limite trouvée dans mon outil vidéo
+
+`inspect_video.py` déclare une « queue morte » sur le clip de l'ultime. Vérifié :
+c'est un artefact du **seuil relatif**. Un clip qui démarre très lumineux (l'aura)
+fait monter le pic et relève donc la barre pour la queue — même geste, queue à 5
+pour un pic de 60 avec l'aura, contre 9 pour un pic de 46 sans. **La fin n'est pas
+plus morte, le début est plus vif.** La mesure moteur tranche dans l'autre sens
+(TimePosition 4,545 / 4,50, couverture 100 %). Limite documentée dans l'outil, qui
+reste un contrôle secondaire.
+
+Piège de synchro attrapé encore une fois : rojo ne synchronise toujours pas depuis
+le redémarrage de Studio ; les 3 fichiers ont été poussés depuis la source exacte
+et vérifiés avant mesure.
+
+---
+
 ## 2026-08-30 — Aura de cast : couverture 33-41 % → 100 %, et j'avais mal diagnostiqué
 
 **Correction préalable de mon propre rapport.** Milan a regardé les deux vidéos :
