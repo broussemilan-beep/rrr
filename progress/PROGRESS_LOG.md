@@ -69,6 +69,94 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Main du Colosse / Frappe Céleste : ma recommandation précédente était fausse
+
+**Correction d'abord.** J'avais annoncé « 0,15 s et 0,28 s de geste jamais vus » et
+recommandé d'aligner `recovery`. C'était de l'**arithmétique sur le fichier**
+(`recovery` ÷ durée d'animation). La mesure en moteur dit autre chose, et elle
+invalide la recommandation.
+
+### Ce que le moteur montre réellement
+
+| | longueur | TimePosition max | vu | arrêt | Idle reprend |
+|---|---|---|---|---|---|
+| Main du Colosse | 0,700 s | 0,675 s | **96 %** | 0,589 s | 0,676 s |
+| Frappe Céleste | 0,830 s | 0,696 s | **84 %** | 0,574 s | 0,699 s |
+
+Le geste va bien plus loin que le rapport `recovery`/durée ne le laissait croire :
+le fondu de sortie laisse la piste avancer après l'arrêt logique. Relation mesurée,
+utile pour projeter : **TimePosition max ≈ recovery + 0,13 s**.
+
+### Où est le mouvement, et ce que la coupe coûte vraiment
+
+Profil de vitesse du membre meneur, part cumulée du mouvement :
+
+```
+Main du Colosse (0,700 s, poignet gauche)
+  0.0-0.1   2.9 %      0.4-0.5   80.7 %  ######################
+  0.1-0.2  13.2 %      0.5-0.6   96.0 %  ######
+  0.2-0.3  20.3 %      0.6-0.7  100.0 %  #
+  0.3-0.4  38.8 %  #####################
+  pic d'extension a t=0.438 s (63 % du clip)
+
+Frappe Celeste (0,830 s, poignet droit)
+  0.0-0.1   5.2 %      0.5-0.6   96.0 %  #########
+  0.1-0.2  35.9 %      0.6-0.7   98.4 %  ##
+  0.2-0.3  49.4 %      0.7-0.8   99.7 %
+  0.3-0.4  61.4 %      0.8-0.9  100.0 %
+  0.4-0.5  89.3 %  ######################
+  pic d'extension a t=0.415 s (50 % du clip)
+```
+
+**Aux points de coupe mesurés, la perte est de 0,9 % et 1,8 % du mouvement total.**
+Et dans les deux cas, après la coupe, l'extension du poignet **décroît**
+(1,67 → 1,64 stud et 2,14 → 2,00) : ce qui est perdu est un **retour au repos**,
+pas le coup. Les deux gestes ont déjà frappé — pic d'extension à 63 % et 50 % du
+clip — et sont entièrement lisibles.
+
+C'est l'inverse du cas de l'ultime, où la coupe tombait à 31 % et amputait la
+chute et le relevé, soit le cœur du geste.
+
+### Options, avec leur coût réel
+
+Cooldowns actuels : Main du Colosse **5 s**, Frappe Céleste **6 s**. La recovery
+n'est donc pas le facteur limitant du rythme — elle représente 11 % et 9 % du
+cycle. Ce qu'elle change, c'est le temps d'**immobilisation après le cast**, donc
+la fenêtre où l'on est punissable.
+
+**Main du Colosse** (animation 0,700 s)
+
+| recovery | geste vu | immobilisation | ce que ça change |
+|---|---|---|---|
+| **0,55 s (actuel)** | 0,675 s — **96 %** | 0,55 s | Rien de perceptible n'est perdu : le 4 % restant est le bras qui retombe. |
+| 0,58 s | 0,700 s — 100 % | +0,03 s (+5 %) | Achète les 0,9 % de mouvement restants pour presque rien. |
+| 0,70 s | 100 % | +0,15 s (+27 %) | Aucun gain visuel sur 0,58 s, mais 27 % de vulnérabilité en plus. |
+
+**Frappe Céleste** (animation 0,830 s)
+
+| recovery | geste vu | immobilisation | ce que ça change |
+|---|---|---|---|
+| **0,55 s (actuel)** | 0,696 s — **84 %** | 0,55 s | Perd 1,8 % du mouvement, uniquement du retour au repos. |
+| 0,62 s | ~0,75 s — 90 % | +0,07 s (+13 %) | Compromis : le bras redescend plus complètement avant la reprise. |
+| 0,70 s | 0,830 s — 100 % | +0,15 s (+27 %) | Geste entier, mais on paie 27 % de vulnérabilité pour du retour au repos. |
+
+### Ma recommandation révisée
+
+**Ne rien changer sur Main du Colosse** (96 % vu, la perte est nulle en pratique).
+
+**Frappe Céleste : au plus 0,62 s si la coupure se voit à l'œil.** À 84 %, le bras
+est encore un peu haut quand l'idle reprend, ce qui peut produire un léger
+« snap ». Mais 1,8 % de mouvement ne justifie pas 27 % de vulnérabilité en plus
+sur une compétence utilisée toutes les 6 secondes.
+
+**Le juge utile ici, c'est l'œil, pas la mesure** : la question n'est plus « le
+geste est-il tronqué » — il ne l'est pas — mais « la transition vers l'idle
+est-elle visible ». Je peux capturer les deux en vidéo si tu veux trancher dessus.
+
+**Rien touché.**
+
+---
+
 ## 2026-08-30 — Hitstop, camera shake et VFX : les trois câblages réparés et mesurés
 
 ### 1. Hitstop — de 0-2 ms à 114-136 ms, et c'est désormais un vrai gel visuel
