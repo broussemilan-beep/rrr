@@ -69,6 +69,83 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Kit Demi-Dieu 100 % issu des packs, 10/10 vérifiées en moteur (étape 2 close)
+
+**Les dix pièces du kit viennent maintenant de vraies animations des packs** et
+jouent toutes en moteur par leur vraie touche.
+
+| Pièce | Source(s) | Gate | Asset |
+|---|---|---|---|
+| Dash Pas Divin | `[1] Run`[20-46 %] + `[3] Forward Dash`[69-88 %] | mouvement PASS | `127412008145310` |
+| S1 Main du Colosse | `Full Body Swing 2` | hook PASS, ratio 0.880, amp 2.932 | `99300918116652` |
+| S2 Frappe Céleste | `[3] Downslam V1`[0-60 %] | overhead PASS, ratio 0.880, amp 3.024 | `103887769975169` |
+| S3 Marche du Titan | `[1] Walk`[0-55 %] + `Forward Lean Punch`[30-100 %] | mouvement PASS | `130595931365611` |
+| S4 Jugement | `Blocking`[0-35 %] + `Elbow Jab` | mouvement PASS | `118989104127601` |
+| ULT Descente | `Stylized Jump/Vault`[0-75 %] + `Downslam V1` + `Get Hit (Knocked Down)`[55-100 %] | mouvement PASS | `116622760603992` |
+
+**Différenciation : le kit 100 % packs sort à 0 collision, minimum 1.408 stud** —
+contre 0.832 pour le kit hand-keyé qu'il remplace, soit **69 % de marge en plus
+sur la paire la plus serrée**.
+
+### Vérification moteur, par les vraies touches
+
+`DESYNC total = 0` sur les 10 slots avant de juger. Puis, en Play :
+Q → `PasDivin len=0.4500` · F → `Skill1 len=0.7000` · G → `Skill2 len=0.8300` ·
+H → `Skill3 len=0.9700` · R → `Skill4 len=0.5700`. La console montre la chaîne
+complète `[SKILL CAST CLIENT]` → `[SKILL CAST SERVER]` → dispatch du module.
+
+Pour l'ultime, R ne route vers lui que si `IsUltimateReady()`, donc momentum à
+100. Momentum monté **par le vrai chemin du service** (`OnAttackResolved`), pas
+en écrivant dans son état interne → `momentum = 100/100 tier=2`, puis
+R → **`ULTIME Descente len=4.5000`**.
+
+Au passage : mon premier script de charge passait les arguments dans le mauvais
+ordre et rendait `momentum = 0`. Signature réelle :
+`OnAttackResolved(player, result, moveId, isM1ChainComplete)`.
+
+### Le dash : le clip que son nom désignait était le mauvais
+
+Mesure de `[3] Forward Dash` : **appui du pied à −0.24 seulement**, et sa poussée
+de torse arrive à **83 % du clip**, donc *après* le déplacement — l'inverse de la
+catapulte demandée. `[1] Run` a le seul vrai appui du corpus (**−2.46**) mais une
+inclinaison constante, sans poussée. Le vault (torse à −86°) et le backdash
+(salto, ±179°) ne sont pas des dash au sol.
+
+Assemblage retenu : phase d'appui de `Run` puis queue de `Forward Dash`, coupée à
+88 % pour supprimer le temps mort où le pied reste parqué. **Appui 2.97 contre
+0.24**, ordre appui-puis-poussée respecté.
+
+**C'est la correspondance la plus faible du kit** : l'amplitude de torse ne
+monte qu'à 13.6°, le corps pousse moins que la spec ne le demande. **À repasser
+en priorité au second passage sur les autres packs** — `movesets`, `sprint` et
+`premium_r6` contiennent probablement un vrai dash. Les 8 studs de déplacement
+viennent du code, ce point-là est tenu (les dumps ne portent aucune translation).
+
+### Écarts assumés sur l'ensemble du kit
+
+| Pièce | Écart |
+|---|---|
+| M1 #2 | amplitude 2.893 vs cible 3.9 |
+| M1 #3 | amplitude 3.069 vs cible 4.2, et le clip n'anime pas les jambes |
+| M1 #4 | cible 5.5 stud inatteignable (max des deux packs : 4.66) |
+| Dash | poussée de torse 13.6° seulement |
+| S1 | amplitude 2.932 pour une compétence dite « énorme » |
+
+Tous candidats à la passe d'amplification/easing (étape 3) ou au second passage
+sur les autres packs (étape 4).
+
+### Divergence toujours ouverte
+
+Aura **dorée/blanche** demandée par la spec, HUD **violet**
+(`src/shared/UI/HudView.lua:38`). À trancher avant la passe VFX.
+
+### Suite
+
+Étape 3 : passe d'easing (outil déjà validé en moteur) + VFX cohérente. Puis
+étape 4 : second passage sur les 6 autres dumps avant tout génératif.
+
+---
+
 ## 2026-08-30 — Chaîne M1 complète, issue des packs, vérifiée en moteur (étape 2, 4/10)
 
 Les **quatre coups de la chaîne M1** viennent maintenant de vraies animations des
