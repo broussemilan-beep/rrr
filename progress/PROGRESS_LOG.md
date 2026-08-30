@@ -69,6 +69,95 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Hitstop, camera shake et VFX : les trois câblages réparés et mesurés
+
+### 1. Hitstop — de 0-2 ms à 114-136 ms, et c'est désormais un vrai gel visuel
+
+Deux corrections, parce qu'il y avait deux problèmes distincts :
+
+- `HitStopService` gèle maintenant la **vitesse de lecture des animations**
+  (`AdjustSpeed(0)` sur les pistes en cours, restaurée à leur vitesse d'origine).
+  Un blocage de déplacement n'est pas un hitstop : ce qui transmet l'impact,
+  c'est le gel de l'image.
+- `MovementController` réassignait `WalkSpeed` **à chaque frame** et écrasait le
+  zéro en une frame. Il consulte désormais `HitStopService.isActive` avant
+  d'écrire.
+
+Mesure en Play, par les vraies touches :
+
+| compétence | gel animation | gel WalkSpeed | attendu |
+|---|---|---|---|
+| Skill1 | **127,3 ms** | 127,3 ms | 100 ms |
+| Skill2 | **114,8 ms** | 114,8 ms | 100 ms |
+| Skill3 | **136,4 ms** | 136,4 ms | 133 ms |
+
+Constat de départ : **0-2 ms**. Le léger dépassement vient de la boucle d'attente
+à 0,01 s du service.
+
+### 2. Camera shake — de 0,16 à 1,0-1,4 stud, et l'échelle veut enfin dire quelque chose
+
+Cause de la compression, mesurée : `math.noise` n'atteint quasiment jamais ses
+extrêmes. Sur **32 080 échantillons** tels que le module les prélève : min −0,737,
+max +0,806, **|moyenne| 0,198**. Une amplitude de 1.0 ne produisait donc que
+~0,20 stud typique — d'où « ×25 d'intensité pour ×11 de déplacement ».
+
+`CameraShake` divise désormais par cette moyenne : **l'amplitude s'exprime en
+studs**. Les intensités sont reposées sur cette échelle (M1 0,25 · Skill1 0,70 ·
+Skill2 0,80 · Skill3 1,10 · Jugement 1,30 · **ultime 2,20** · dash 0).
+
+Mesure en Play, en soustrayant le suivi du personnage pour isoler le shake :
+**0,996 / 1,425 / 1,247 stud** sur Skill1/2/3. Constat de départ : **0,16 stud**.
+
+### 3. VFX — troisième câblage manquant de la même famille
+
+Les cinq modules de compétence demandent des kinds (`DemiDieu_Skill1_Impact` …
+`DemiDieu_Ultimate_Impact`) qui **n'étaient enregistrés nulle part** :
+`RecipeRegistry.get` rendait nil et **aucun VFX ne jouait**. Même famille que les
+marqueurs absents et le kit manquant dans les tables de game-feel.
+
+Cinq recettes enregistrées en **palette dorée / blanche** — identité Demi-Dieu
+tranchée ; le violet reste celle de l'arène et du HUD, contraste voulu.
+
+Choix technique assumé : **atomes procéduraux, pas d'émetteurs de pack**. Les
+recettes existantes référencent des émetteurs par nom (`"Heavy Slashes II"`…) qui
+doivent exister dans les packs importés, ce que je ne peux pas vérifier depuis le
+dépôt — un nom erroné échouerait en silence, exactement la panne qu'on vient de
+passer la journée à débusquer. On s'en tient donc à ce que `VFXLibrary` implémente
+réellement (Impact, SlashTrail, Afterimage, SpeedLines, GroundChunks, SetAura) et
+au flash d'écran.
+
+Vérifié en moteur — les cinq se résolvent :
+
+```
+total de recettes enregistrees : 39
+DemiDieu_Skill1_Impact     RESOLU — 3 atomes, shake 0.70, flash RGB(255,236,179)
+DemiDieu_Skill2_Impact     RESOLU — 2 atomes, shake 0.80, flash RGB(255,252,240)
+DemiDieu_Skill3_Impact     RESOLU — 3 atomes, shake 1.10, flash RGB(255,236,179)
+DemiDieu_Skill4_Counter    RESOLU — 3 atomes, shake 1.30, flash RGB(255,252,240)
+DemiDieu_Ultimate_Impact   RESOLU — 4 atomes, shake 2.20, flash RGB(255,252,240)
+```
+
+Erreur de sonde corrigée au passage : mon premier test interrogeait
+`RecipeRegistry.resolve`, qui n'existe pas — l'API est `get`. Il rendait donc nil
+pour tout le monde, y compris les recettes qui marchaient déjà.
+
+Suite de tests : **7/7**, dont `test_vfx_recipes` (18 assertions).
+
+### 4. Limite trouvée dans mon propre outil, documentée
+
+Le critère de **couverture** suppose UNE action continue. Un clip enchaînant
+plusieurs casts séparés de pauses sort mécaniquement bas (mesuré : 50 % sur un
+clip de trois compétences) sans que rien ne soit cassé. Pour juger un geste, il
+faut cadrer sur UN geste. Le critère de **queue morte**, lui, reste valable dans
+les deux cas.
+
+### Non touché, en attente d'arbitrage
+
+`recovery` de Skill1 (0,55 s pour 0,70 s d'animation) et Skill2 (0,55 s pour
+0,83 s) — proposition faite, décision de Milan attendue.
+
+---
+
 ## 2026-08-30 — Ultime réparé et vérifié, outil durci, et l'audit trouve 6 autres coupures
 
 ### 1. `recovery` alignée sur la durée réelle — choix assumé
