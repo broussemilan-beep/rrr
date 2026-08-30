@@ -69,6 +69,100 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Ultime réparé et vérifié, outil durci, et l'audit trouve 6 autres coupures
+
+### 1. `recovery` alignée sur la durée réelle — choix assumé
+
+`MoveData.Skill5.recovery` : **1.40 → 4.50 s**. Le joueur est désormais immobilisé
+pendant toute la durée de l'ultime. Les iFrames ne couvrent que la partie aérienne
+(1,25 s), donc les **~3,2 s de relevé sont punissables** — c'est le prix d'un
+ultime engagé, et c'est voulu.
+
+L'ancienne valeur était dimensionnée sur la cinématique du module serveur (montée
+0,35 + suspension 0,50 + chute 0,30 = 1,15 s), pas sur l'animation.
+
+### 2. Vérifié en Play — l'animation va enfin au bout
+
+```
+ULT Play() — len=4.500
+  dt=0.30 TP=0.329 w=1.00 play=true pose=8.82
+  dt=1.03 TP=1.058 w=1.00 play=true pose=14.81
+  dt=2.26 TP=2.025 w=1.00 play=true pose=10.52
+  dt=3.52 TP=3.283 w=1.00 play=true pose=7.11
+  dt=4.28 TP=4.046 w=1.00 play=true pose=9.80
+  dt=4.55 TP=4.312 w=0.85 play=false pose=7.46
+RESULTAT : TimePosition max=4.483 / 4.500 (100%) | coupure=AUCUNE
+```
+
+`TimePosition` atteint **100 %**, le poids tient à 1.00 jusqu'au fondu final, et la
+pose varie sur toute la durée. Mouvement du personnage par tranche de 0,5 s,
+avant / après :
+
+```
+avant : 6  33  45  32  11   2   0   0   0     (mort a partir de 2,5 s)
+apres : 3  41  37  46  23  16  10   6   9  5  (vivant jusqu'au bout)
+```
+
+Réserve honnête : ma sonde signale « Idle prématuré à 0.00 s ». C'est un artefact
+de son propre test — à dt=0 le poids de l'ultime est encore à 0 et `Idle` tient
+encore, ce qui est le fondu d'entrée normal.
+
+### 3. `inspect_video.py` durci — il aurait dû attraper ça
+
+L'ancien outil jugeait sur le **pic** de mouvement. Il a validé un clip où
+l'animation était coupée à 31 % : le pic était élevé (42,9, comparable aux clips
+sains) mais tout tenait dans la première moitié. **Faux positif signalé par un
+humain, pas par la mesure** — exactement ce qu'un outil de vérification doit
+éviter.
+
+Deux critères ajoutés :
+- **répartition** : fraction des tranches réellement animées (minimum 60 %) ;
+- **queue morte** : le dernier tiers doit encore bouger. C'est ce critère qui
+  discrimine, la répartition seule ne suffisait pas (60 % pour le clip fautif
+  contre 80 % pour le bon, avec un seuil à 60 % : le fautif passait d'une tranche).
+
+Contrôle sur les quatre cas réels :
+
+| clip | queue | verdict |
+|---|---|---|
+| ancien ultime (coupé) | `1 0 0` | **ÉCHEC — queue morte** |
+| ultime corrigé | `3 9 12` | OK |
+| dash | `52 2 0` | OK |
+| Marche du Titan | `16 4 3` | OK |
+
+**Limite mesurée et documentée :** sur le **cadre entier**, la discrimination ne
+marche pas — le mouvement tardif du personnage est noyé (petite part des pixels)
+alors que le pic global est gonflé par les VFX du début. Vérifié à trois
+résolutions (200, 320, 640 px) : profil identique. Ce n'est pas une question de
+finesse mais de cadrage, d'où l'option `--crop` à pointer sur le sujet.
+
+### 4. Audit `recovery` vs durée d'animation — 6 autres coupures
+
+**Rien corrigé, ce sont des choix de jeu.**
+
+| move | animation | recovery | animation vue |
+|---|---|---|---|
+| M1_1 | 0,55 s | 0,34 s | **62 %** |
+| M1_2 | 0,60 s | 0,39 s | **65 %** |
+| M1_3 | 0,65 s | 0,42 s | **65 %** |
+| M1_4 | 0,85 s | 0,52 s | **61 %** |
+| Skill1 Main du Colosse | 0,70 s | 0,55 s | **79 %** |
+| Skill2 Frappe Céleste | 0,83 s | 0,55 s | **66 %** |
+| Skill3 Marche du Titan | 0,97 s | 1,10 s | OK |
+| Skill4 Jugement | 0,57 s | 1,30 s | OK |
+| Skill5 Ultime | 4,50 s | 4,50 s | OK (corrigé) |
+
+**Distinction importante entre les deux groupes.** Pour les **M1**, une coupure
+n'est pas forcément un défaut : la chaîne est faite pour que le coup suivant
+interrompe le précédent, et une recovery courte est ce qui rend le combat
+réactif. Le tronçon perdu ne se voit que si le joueur **ne poursuit pas** la
+chaîne — et là, le personnage saute à l'idle à 62 % du geste.
+
+Pour **Skill1 et Skill2**, l'argument ne tient pas : une compétence ne s'enchaîne
+pas comme un M1, et 0,15 s et 0,28 s de geste ne sont jamais vus.
+
+---
+
 ## 2026-08-30 — L'ultime est COUPÉ à 31 % de sa durée — Milan avait raison
 
 Milan a signalé que l'ultime ne montre aucun mouvement sur toute sa durée. Il ne
