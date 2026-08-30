@@ -69,6 +69,93 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Rangs 1 et 2 livrés : marqueurs prouvés, et DEUX nouveaux blocages mesurés
+
+### Rang 1 — les marqueurs firent enfin. Preuve inverse obtenue.
+
+Constat de départ : `marqueurs QUI ONT FIRE: AUCUN` sur toutes les pièces.
+Après correction, en Play, par les vraies touches :
+
+```
+M1_1      marqueurs=Whoosh,Impact
+Skill1    marqueurs=Whoosh,HitConnect
+Skill2    marqueurs=Whoosh,HitConnect
+Skill3    marqueurs=Whoosh,FinalImpact
+PasDivin  marqueurs=Whoosh,Plant
+```
+
+**Cause racine, plus profonde que « marqueurs non bakés » :** nommer une
+`Keyframe` **ne crée pas un marqueur**. Le runtime écoute via
+`GetMarkerReachedSignal`, qui ne répond qu'à des instances **`KeyframeMarker`
+enfants** de la Keyframe ; le nom de la Keyframe n'alimente que
+`KeyframeReached`, que personne ne consomme ici (vérifié : `MarkerService` et
+`AnimationService.BindMarker` utilisent tous deux `GetMarkerReachedSignal`).
+`lune_kfs_writer.luau` crée désormais le `KeyframeMarker` en plus du nom.
+
+Les 10 pièces re-bakées, ré-uploadées, recâblées. Marqueur d'impact placé à la
+vitesse maximale du membre meneur, snappé sur une frame réelle — un temps
+théorique ne tombant sur aucune keyframe serait perdu silencieusement.
+
+### Rang 2 — le kit ajouté aux tables de game-feel
+
+`HITSTOP_PER_SKILL` et `SHAKE_INTENSITY` couvrent maintenant les 5 compétences
+et l'ultime, calibrés sur l'échelle **déjà établie** dans le fichier plutôt
+qu'inventés : Skill1/2 à 3/30, Skill3 à 4/30 (palier AnnihilationLite), Jugement
+à 5/30 (palier HeavyFinisher), **ultime à 8/30 et shake 0.50**. Dash à 0 — un
+dash ne doit pas figer le personnage.
+
+Le wire reconnaît aussi le vocabulaire gameplay (`HitConnect`, `FinalImpact`),
+qu'il ignorait : une Keyframe ne portant qu'UN nom, étendre le wire évitait de
+baker deux marqueurs à 16 ms d'écart pour contourner le problème.
+
+Correction d'une erreur à moi au passage : j'avais indexé les tables sur des
+identifiants de seed (`M1_1_demidieu`) alors que le wire résout depuis
+`track.Name`, mesuré à `M1_1` / `Skill1_MainDuColosse` / `PasDivin_Track`. Des
+clés qui n'auraient jamais matché.
+
+### MAIS — deux blocages en aval, mesurés, qui annulent le bénéfice
+
+**1. Le hitstop est écrasé en 0-2 ms.**
+Chronométré sur les fronts de `WalkSpeed` : `hitstop mesure : 0 ms, 1 ms, 2 ms`
+là où Skill1 attend 100 ms et Skill3 133 ms. Cause racine confirmée :
+`HitStopService` agit en posant `Humanoid.WalkSpeed = 0`, et
+`src/client/V1/MovementController.lua` **réassigne `WalkSpeed` à chaque frame**
+dans sa boucle. Le zéro est clobberé en une frame.
+
+À noter aussi : ce « hitstop » est un **blocage de déplacement**, pas un gel
+visuel. Il ne fige pas l'animation, alors que c'est le gel de quelques frames
+qui transmet l'impact dans le genre.
+
+**2. Le camera shake est ~20× trop faible pour être perçu.**
+Mesuré en isolant le module (il déplace la caméra, il ne la fait pas tourner —
+ma première sonde mesurait la rotation et concluait à tort) :
+
+| intensité | déplacement caméra |
+|---|---|
+| 0.20 (Skill1) | **0.070 stud** |
+| 0.50 (ultime) | **0.160 stud** |
+| 5.00 (test) | 0.796 stud |
+
+À 0.07 stud, la caméra ne bouge pas visiblement. L'échelle est en plus très
+compressée : ×25 sur l'intensité ne donne que ×11 sur le déplacement.
+
+### Mon avis sur le rang 3
+
+**Le rang 3 (recouper les charges) doit attendre.** La mesure montre que la
+chaîne de sensation reste coupée en aval des marqueurs : le hitstop dure 2 ms et
+le shake est invisible. Tant que ces deux-là ne fonctionnent pas, on ne peut même
+pas juger si le timing d'animation est le problème — la fadeur resterait dominée
+par l'absence de retour d'impact, et on retoucherait des poses sans savoir si
+c'était nécessaire.
+
+Deux corrections courtes, sans toucher une seule pose, devraient précéder :
+faire respecter le hitstop par `MovementController` (ou le faire agir sur la
+vitesse de lecture plutôt que sur `WalkSpeed`), et recalibrer l'échelle de shake.
+On remesure ensuite, et **c'est là seulement** qu'on saura si le rang 3 est
+encore nécessaire.
+
+---
+
 ## 2026-08-30 — Analyse comparative avant V2 : deux bugs de câblage priment sur l'easing
 
 Rapport complet : `artifacts/DEMIDIEU_ANALYSE_COMPARATIVE_2026-08-30.md`.
