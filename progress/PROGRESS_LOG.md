@@ -69,6 +69,64 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Vidéos réelles du dash, de Marche du Titan et de l'ultime
+
+Trois **vidéos** (pas des images fixes) capturées en vrai Play Solo, déplacement
+physique actif, déclenchées par les **vraies touches**. Publiées en GIF animé sur
+le miroir — le format MP4 n'est pas accepté par le pipeline de publication, qui
+n'autorise que `jpg|png|gif|webp`.
+
+| Clip | Durée | Frames | Mouvement (pic) | Preuve du geste |
+|---|---|---|---|---|
+| Dash Pas Divin | 6,60 s | 198 | 55,5 | speedlines + déplacement visibles à l'image |
+| Marche du Titan | 4,20 s | 126 | 25,1 | sonde : **11,90 studs** de déplacement mesurés |
+| Ultime Descente | 4,43 s | 133 | 42,9 | momentum consommé, cooldown de l'ultime actif |
+
+### Ce qui a marché, et ce qui n'a pas
+
+**Piste 1 — `screencapture -v` : retenue.** Permission Enregistrement d'écran
+accordée (`CGPreflightScreenCaptureAccess = true`). Deux limites mesurées :
+`-l <windowID>` est **ignoré en mode vidéo** (la sortie fait toujours l'écran
+entier, 2880×1800 en retina) — on recadre donc après coup sur le viewport ; et la
+durée réelle est un peu inférieure à `-V` (5,4 s mesurés pour `-V6`).
+
+**Piste 2 — `studiomcp_capture_animated.py` : ne convient pas.** Lu avant de
+réinventer, comme demandé : ce script pilote un mannequin frame par frame et
+capture des **images fixes** de chaque pose. Il ne filme pas le jeu qui tourne,
+donc il ne peut pas montrer un déplacement ressenti.
+
+**Piste 3 — `ffmpeg`/avfoundation : pas nécessaire.** Disponible (`Capture
+screen 0` listé) mais non utilisée, la piste 1 ayant suffi.
+
+### Le vrai obstacle n'était aucune des trois
+
+**L'injection clavier du MCP arrive avec ~14 s de retard.** Premier essai : la
+vidéo était parfaitement lisible mais le personnage immobile — l'action tombait
+*après* la fin de l'enregistrement (dash horodaté à t=14,83 s pour un
+enregistrement de 6,35 s). Deux conséquences traitées :
+
+1. On enregistre **long** (30-50 s) puis on **découpe autour du pic de mouvement
+   mesuré**, au lieu de parier sur une fenêtre courte.
+2. Pour l'ultime, le momentum (décroissance 8/s) retombait à 0 avant l'arrivée
+   du `R` — constaté sur le HUD, barre MOM vide. Un script serveur le **maintient
+   au maximum** pendant la fenêtre, toujours via le vrai chemin du service.
+
+Piège annexe corrigé : une sonde écrivant dans un `StringValue` du `PlayerGui`
+disparaît au respawn. `ResetOnSpawn` n'existe que sur `ScreenGui` — la sonde y
+est désormais logée.
+
+### Outillage ajouté
+
+- `scripts/visual_check/record_play.sh` — enregistrement, avec les limites de
+  `screencapture -v` documentées sur place.
+- `scripts/visual_check/inspect_video.py` — **refuse de valider une vidéo sans
+  mouvement**. Il ne vérifie pas que la durée et la luminance, il mesure la
+  différence image à image : une vidéo lisible mais figée ne montre pas le geste
+  demandé et compte comme un échec. C'est lui qui a attrapé les deux premiers
+  essais ratés.
+
+---
+
 ## 2026-08-30 — Rangs 1 et 2 livrés : marqueurs prouvés, et DEUX nouveaux blocages mesurés
 
 ### Rang 1 — les marqueurs firent enfin. Preuve inverse obtenue.
