@@ -69,6 +69,118 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Outil d'easing bézier, validé en moteur sur M1_1 (étape 3/4)
+
+**Jalon : l'outil d'easing existe, il est mesuré, et il est vérifié en moteur sur
+UNE animation — la condition posée avant tout ré-upload en masse.**
+
+### Le problème que ça règle
+
+`Enum.PoseEasingStyle` n'offre que Cubic, Linear, Constant, Bounce, CubicV2 et
+Elastic. Les deux seuls capables de **dépasser** une cible sont Bounce et
+Elastic, tous deux bannis pour les frappes (ils font rebondir un poing, ce qui
+lit comme une erreur). **L'overshoot n'est donc pas exprimable** avec l'enum.
+
+La courbe est maintenant calculée en Python (`scripts/animator_ai/bezier_easing.py`,
+bézier cubique dont les ordonnées peuvent sortir de [0,1]) et **matérialisée en
+frames denses**. Les poses émises portent `Linear` : le moteur ne fait plus que
+relier des points qu'on a placés.
+
+### Ce que ça change, mesuré
+
+Sur M1_1 (`easing_profile: "aaa"`, 30 → 60 fps, 16 → 33 frames), canal
+`Right Shoulder.rz` :
+
+| | sans profil | avec profil |
+|---|---|---|
+| approche du contact | `-80 → 90` **en une seule frame** (170° en 33 ms) | `71 → 86 → 93.1 → 95.1 → 93.7 → 90` |
+| pic | 90.00 (= la cible, jamais dépassée) | **95.12** puis retour sur 90 |
+| gate mouvement (static run) | 20 % | **18.75 %** |
+| gate classe (straight) | ratio 0.953 / amp 4.004 | ratio 0.943 / amp 3.973 — PASS |
+| différenciation intra-kit | 0.832 stud | **0.832 stud, inchangé** |
+
+### Vérifié en moteur, pas sur le JSON
+
+1. `.rbxm` relu après bake (pas le JSON source) : pic **96.89°**, retour et
+   maintien à **91.73°**.
+2. Upload asphalt Open Cloud du premier coup, aucun blocage :
+   `rbxassetid://94946682382565`, **AssetTypeId=24** confirmé par l'API.
+3. Câblage du **vrai slot** `AnimationDB/Combat.lua → M1_1` (ancien id conservé
+   en commentaire pour réversion), synchro rojo vérifiée **avant** de juger : la
+   place porte bien `94946682382565` / `EASING_BEZIER_2026-08-30`.
+4. `[AnimationDriver]` en Play : `M1_1  OK  len=0.53s`.
+5. **Vrai clic souris** → `InputController` → `CombatController` → sonde
+   écouteuse : `rbxassetid://94946682382565 len=0.5333 match=true`.
+6. Échantillonnage du **Motor6D réel** pendant la lecture : pic **95.49° à
+   t=0.2487**, puis **91.73° à t=0.299** — soit exactement la valeur de la pose
+   de contact relevée dans le `.rbxm`. Le dépassement existe donc bien dans le
+   moteur, pas seulement dans nos données.
+
+### Ce que l'outil ne fait PAS — à dire plutôt qu'à laisser croire
+
+Le pic tombe **67 ms AVANT** la pose de contact. C'est un **overshoot-and-settle**
+(le poing dépasse, revient sur la pose de contact et la tient), **pas** un
+follow-through post-impact.
+
+Cause mesurée, pas supposée : l'`impact_hold` de 3 frames épingle la pose de
+contact, ce qui interdit structurellement tout dépassement après l'impact. La
+variante testée (`impact=snap` + `recovery=wind_back`) donne un pic à **90.00
+pile**, c'est-à-dire aucun dépassement du tout. Il y a donc une tension réelle
+entre le « snap hold » de l'archétype et le follow-through ; elle est ouverte.
+
+### Deux bugs latents attrapés en chemin
+
+- `_densify` calculait le temps des frames avec un `/30.0` **en dur** alors que
+  `fps` était piloté par le spec partout ailleurs : un spec à 60 fps aurait joué
+  à moitié vitesse. Corrigé.
+- `agent_to_lune_converter` **jette** l'easing authoré sauf opt-in
+  `metadata.easing_plan`. Sans cet opt-in, la bézier aurait été re-lissée en
+  Cubic par-dessus les frames denses et le pic arrondi. Le keyer stampe
+  désormais la clé — **uniquement** quand un profil est réellement actif, pour
+  ne pas changer le bake des seeds déjà vérifiés en moteur (contrôlé : M1_2
+  ne la porte pas).
+
+### Nouveau : `scripts/animator_ai/bake_seed.py`
+
+La chaîne spec → `.rbxm` existait en trois morceaux qu'il fallait rappeler de
+tête. Trois étapes rejouées à la main, c'est trois occasions d'en sauter une —
+et on a déjà payé ce prix (des `.rbxm` périmés uploadés pendant qu'on mesurait
+le JSON). Le driver garantit que le `.rbxm` sort du spec courant.
+
+**Constat au passage :** les `.rbxm` d'`assets/animations/handkeyer/` ne
+reflètent PAS ce qui est en moteur. `M1_2_demidieu.rbxm` date du 27 à 23h36
+alors que son spec a été corrigé le 28 (commit 584e3b7). Ce ne sont que des
+reliquats ; le driver les réaligne désormais.
+
+### Tests
+
+Suite `animator_ai` : **480 passés**. Trois rouges traités :
+
+- `test_load_spec_M1_jab_toji_has_required_fields` — **réparé**. Il épinglait le
+  nom de pattern en dur (`rear_hand_straight`) et a rougi à la migration rx→rz
+  qui a fait passer les seeds en `_v2`. Il vérifie maintenant la **famille** de
+  patterns et que le pattern **existe**, ce qui est la propriété utile et ne
+  rerougira pas à la prochaine révision.
+- `test_moving_contact.py::TestTracking` (2 rouges) — **NON réparés, et je ne
+  les classe pas « acceptables »**. Mesure : `Right Wrist → Head`, couverture
+  **53.8 %** (7/13 frames), écart max **0.2549** contre une tolérance de 0.25.
+  Les deux modes (`joint` et `sequential`) sont à 53.8 %, donc aucun des deux
+  solveurs n'atteint la tête sur ~46 % des frames. `contact_solver.py` et
+  `r6_fk.py` n'ont pas bougé depuis le 2026-08-25 (commits 14cd216 / 0c6cb35) et
+  l'arbre de travail d'aujourd'hui ne touche que le keyer, le spec M1_1 et son
+  test — ces rouges **précèdent** ce tour de travail. **Décision à prendre :**
+  soit on répare le solveur de contact, soit on assume qu'il n'atteint sa cible
+  qu'une frame sur deux. Je ne l'ai pas tranché seul parce que ça sort du rail
+  en cours.
+
+### Suite
+
+Étape 4 : appliquer le profil au reste du kit Demi-Dieu (M1_2→M1_4, dash, 4
+skills, ultimate), puis hitstop + VFX. La différenciation intra-kit devra rester
+verte à chaque seed.
+
+---
+
 ## 2026-08-30 — PAUSE — état exact pour la reprise
 
 Arrêt propre au milieu du chantier « Demi-Dieu fini ». Rien n'est à mi-chemin :
