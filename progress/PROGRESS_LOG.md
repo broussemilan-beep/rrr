@@ -69,6 +69,112 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — VFX : l'écart mesuré, le blocage des packs levé, et un QUATRIÈME câblage mort
+
+Synchro vérifiée d'abord (Studio avait redémarré, nouvel identifiant d'instance) :
+`DESYNC total = 0` sur `recovery` ultime, `recovery` Skill1, recettes VFX,
+normalisation du shake et gel du hitstop.
+
+### 1. Ce que les recettes produisaient RÉELLEMENT — l'écart, chiffré
+
+| compétence | atomes | ce qui apparaissait |
+|---|---|---|
+| Skill1 | Impact(3.0), SlashTrail, GroundChunks(size 2.0) | 2 Parts + 1 PointLight ; **SlashTrail ne rendait RIEN** (exige un `part`, aucune recette n'en fournissait) ; 8 débris (le `size` passé était **ignoré** — GroundChunks lit `count`/`radius`) |
+| Skill2 | Impact(3.6), GroundChunks | idem, **aucune aura** |
+| Skill3 | Impact(4.0), GroundChunks, Afterimage | **aucune aura** |
+| Skill4 | Impact(3.2), SetAura(1, 0.6 s), SlashTrail | aura à **Rate 20** — le minimum du clamp [20,200] — et déclenchée **à l'impact** |
+| ULT | Impact(6.0), GroundChunks, SetAura(1, 1.6 s), SpeedLines | idem |
+
+**Écart face à l'ambition demandée :**
+- **Poussière : 0 émetteur.** `GroundChunks` lance des cubes solides, ce n'est pas
+  de la poussière.
+- **Fractures au sol : 0.** Rien ne marque le sol.
+- **Aura pendant tout le geste : absente sur 3/5**, et sur les 2 autres elle
+  démarre **à l'impact**, à la cadence minimale.
+- **Frame d'impact :** un flash de 2 Parts + un PointLight. Aucun émetteur,
+  aucune onde.
+- **Et le VFX ne partait que dans `if hitTarget and hitPosition`** — donc
+  uniquement à l'impact ET uniquement si le coup **touche**. Un cast dans le vide
+  n'affichait strictement rien.
+
+### 2. Blocage des packs : levé, et pour une raison que je n'avais pas vue
+
+J'avais écarté les émetteurs de pack faute de pouvoir vérifier leurs noms.
+Énumération dans la place : **16 621 émetteurs**, dont **15 749 sous
+`ServerStorage`** — exactement les deux racines que `findVFXByName` explore
+(`_SAFE_PACKS` puis `_WORKSPACE_ARCHIVE_2026-05-11`). **`ReplicatedStorage` en
+contient 0.**
+
+Ce n'était donc pas qu'un problème de noms : les émetteurs sont **invisibles au
+client**. Mais `vfx_layers` est résolu **côté serveur** et les clones se
+répliquent — c'est précisément pour ça que ce chemin existe. Et `SpawnVFXLayer`
+**avertit** quand un nom est introuvable : l'échec n'est pas silencieux.
+
+Noms retenus, **énumérés et non devinés**, en ne prenant que des effets unitaires
+(1 à 8 émetteurs — les conteneurs de premier niveau en portent jusqu'à 2 751) :
+
+| besoin | émetteur | vérifié en moteur |
+|---|---|---|
+| impact | `"Impact Burst"` | archive, 8 émetteurs |
+| poussière | `"Dust"` | _SAFE_PACKS, 4 émetteurs |
+| fracture au sol | `"Big-Crack-01"` | archive, 4 émetteurs |
+| onde au sol | `"GroundSmash"` | _SAFE_PACKS, 12 émetteurs |
+
+### 3. Ce qui a été construit
+
+- **`vfx_layers` ajoutés aux 5 recettes** avec ces noms vérifiés.
+- **Deux bugs de paramètres corrigés** : `GroundChunks` reçoit enfin `count` et
+  `radius` (14 à 34 selon la compétence, au lieu du défaut 8) ; les `SlashTrail`
+  sans `part` ont été retirés plutôt que laissés inertes.
+- **Aura de cast** : nouvelle recette `DemiDieu_Cast_Aura` (intensity 3.5 → Rate
+  140 au lieu de 20) et **déclenchement au début du geste** ajouté dans les 5
+  modules, après les gardes de rejet.
+
+Tests : **7/7**.
+
+### 4. QUATRIÈME câblage mort — trouvé, PAS corrigé
+
+Vérification en moteur de l'aura de cast : **delta +0 émetteur sur le personnage**.
+Elle ne part pas. Cause remontée :
+
+`CombatFXBroadcaster.Fire` envoie le payload aux clients, `CombatFXReceiver`
+l'écoute bien et le passe à `dispatch`. Mais `dispatch` traite le hitstop, le
+`camera_kit`, `flash`, `posture`, le FOV, la dilatation temporelle et l'audio —
+**et jamais `procedural_atoms`**. Un commentaire du fichier le dit au futur :
+« VFXLibrary.Play integration **will** use the same registry ».
+
+**Conséquence : tous les atomes procéduraux sont inertes, pour TOUTES les
+recettes, pas seulement les miennes.** Impact, GroundChunks, SetAura, SlashTrail,
+Afterimage, SpeedLines : rien de tout ça n'est joué par qui que ce soit. Ça
+explique l'aura à +0.
+
+Soupçon supplémentaire non confirmé : `dispatch` lit `payload.flash`, alors que
+les recettes écrivent `screen_flash`. À vérifier.
+
+**Je n'ai pas câblé `VFXLibrary` dans `dispatch`.** C'est la correction évidente,
+mais je n'avais plus le budget pour la faire ET la vérifier, et livrer une
+modification non vérifiée sur le chemin que je viens de passer la journée à
+fiabiliser serait exactement la faute qu'on essaie d'éviter.
+
+### État honnête de la preuve visuelle
+
+- `vfx_layers` : chemin **serveur vérifié** (les 4 noms se résolvent), mais **pas
+  encore vu à l'écran** — dans mon enregistrement le mannequin était hors de
+  portée, donc aucun impact n'a été résolu et le VFX d'impact ne part que sur
+  touche.
+- `procedural_atoms` : **prouvé inerte**.
+
+Aucune vidéo VFX publiée : il n'y avait rien de probant à montrer, et publier un
+clip sans VFX en le présentant comme une preuve serait pire que de le dire.
+
+### Suite immédiate
+
+1. Câbler `VFXLibrary` dans `CombatFXReceiver.dispatch` (le vrai déblocage).
+2. Vérifier `screen_flash` vs `flash`.
+3. Refaire la capture **au contact du mannequin**, pour que l'impact se résolve.
+
+---
+
 ## 2026-08-30 — PAUSE (3) — note de reprise
 
 **Rien n'est en vol.** Play arrêté, Studio laissé ouvert en Edit, balayage des
