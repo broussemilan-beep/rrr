@@ -69,6 +69,99 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — L'ultime est COUPÉ à 31 % de sa durée — Milan avait raison
+
+Milan a signalé que l'ultime ne montre aucun mouvement sur toute sa durée. Il ne
+s'agit pas d'un geste peu spectaculaire : **l'animation est stoppée à 1,383 s sur
+4,500 s.**
+
+### Mesure en moteur, par le vrai chemin
+
+Sonde pendant le cast — ce ne sont ni le `LoadAnimation`, ni un callback, mais
+`TimePosition`, le poids et les os :
+
+```
+ULT Play() appele — len=4.500 prio=Action4
+  dt=0.00 TimePosition=0.000 weight=0.00 playing=true  poseSum=0.00
+  dt=0.29 TimePosition=0.300 weight=1.00 playing=true  poseSum=7.68
+  dt=0.59 TimePosition=0.600 weight=1.00 playing=true  poseSum=7.14
+  dt=0.89 TimePosition=0.900 weight=1.00 playing=true  poseSum=3.72
+  dt=1.14 TimePosition=1.150 weight=1.00 playing=true  poseSum=4.32
+  dt=1.40 TimePosition=1.383 weight=1.00 playing=true  poseSum=7.44
+  dt=1.67 TimePosition=1.383 weight=0.00 playing=false poseSum=0.00
+  ... (fige jusqu'a la fin)
+VARIATION DE POSE = 12.414 rad
+pistes en fin de cast : Idle(w=1.00,p=Idle)
+```
+
+`Play()` **est** appelé, `TimePosition` **avance** bien, le poids est à 1.00 et les
+os bougent réellement (12,4 rad de variation). Puis, net : `weight=0.00`,
+`playing=false`, `TimePosition` figé, et `Idle` reprend la main.
+
+### Cause racine
+
+**`MoveData.Skill5.recovery = 1.40`** — pour une animation de **4,50 s**.
+
+Le client fait `task.delay(move.recovery, ...)` puis `cc:onSkillRecover()`, qui
+bascule la FSM `Combat.SkillCast → Locomotion.Idle` ; la piste d'ultime est
+arrêtée et `Idle` prend le relais. L'animation coupée à 1,383 s correspond à la
+dernière mesure avant l'échéance de 1,40 s.
+
+C'est un reliquat de l'ancien ultime (`Ultimate_LimitBreaker`, 1,83 s). La
+nouvelle animation suit la spec (§6 : élévation, suspension, chute, impact,
+relevé, ≈4,5 s) mais **la fenêtre de jeu est restée 3,2× plus courte**.
+
+### Ce que valait mon propre outil de vérification — vérifié
+
+Milan a demandé si le « pic 42,9 » ne venait pas du HUD et des VFX. Mesure par
+région sur le clip :
+
+| région | pic | frames animées |
+|---|---|---|
+| **personnage (centre)** | **45,37** | **40/132** |
+| HUD barres | 22,44 | 32/132 |
+| chips compétences | 38,20 | 33/132 |
+| cadre entier | 42,57 | 34/132 |
+
+Le personnage bouge donc **réellement** — l'outil ne validait pas une image morte.
+Mais il bouge sur **40 frames sur 132, soit 30 % du clip**, ce qui correspond
+exactement aux 31 % d'animation jouée. Profil temporel du personnage seul :
+
+```
+  t=0.0-0.5s  pic  6.35   ###
+  t=0.5-1.0s  pic 33.48   ################
+  t=1.0-1.5s  pic 45.37   ######################
+  t=1.5-2.0s  pic 32.25   ################
+  t=2.0-2.5s  pic 10.55   #####
+  t=2.5-3.0s  pic  1.74
+  t=3.0-3.5s  pic  0.29
+  t=3.5-4.0s  pic  0.09
+  t=4.0-4.5s  pic  0.08
+```
+
+Les deux observations étaient justes et se réconcilient : il y a bien du
+mouvement, mais **56 % de ce mouvement tient dans les 1,5 premières secondes**, et
+les 2 dernières secondes sont strictement figées. À l'œil, sur un clip de 4,4 s,
+ça se lit comme « rien ne bouge ».
+
+**Leçon pour l'outil :** `inspect_video.py` juge sur le pic global. Un pic élevé
+concentré au début passe pour un succès alors que l'essentiel du clip est mort.
+Il faudrait qu'il juge aussi la **répartition** du mouvement, pas seulement son
+maximum.
+
+### Correction proposée, NON appliquée
+
+Aligner `MoveData.Skill5.recovery` sur la durée réelle de l'animation (≈4,5 s).
+Ce n'est pas un simple ajustement de données : cela immobilise le joueur 4,5 s au
+lieu de 1,4 s, donc c'est un **choix de jeu** (fenêtre de vulnérabilité après
+l'ultime). La spec §6 décrit bien un ultime long et engagé, mais je ne modifie pas
+l'équilibre du combat sans accord.
+
+Alternative si 4,5 s est jugé trop long : raccourcir l'animation en recoupant les
+segments sources — au prix des trois temps du §6.
+
+---
+
 ## 2026-08-30 — Vidéos réelles du dash, de Marche du Titan et de l'ultime
 
 Trois **vidéos** (pas des images fixes) capturées en vrai Play Solo, déplacement
