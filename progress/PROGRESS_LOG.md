@@ -69,6 +69,94 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — PAUSE (3) — note de reprise
+
+**Rien n'est en vol.** Play arrêté, Studio laissé ouvert en Edit, balayage des
+sondes fait côté Client ET côté Serveur ET côté Edit — aucune résiduelle (un
+`__MCP_TestRunner` traînait côté serveur, retiré). Studio **n'a pas été sauvegardé
+et n'a pas été fermé** : la source de vérité est le disque + rojo, donc rien à
+perdre, mais la décision de sauver reste à Milan.
+
+État vérifié dans la place après l'arrêt : `recovery` ultime = 4.50, hitstop qui
+gèle l'animation = true, shake normalisé en studs = true, 7 occurrences de
+`DemiDieu_` dans les recettes VFX.
+
+Dernier commit : `b9a21a4`. Arbre propre.
+
+### Fait aujourd'hui
+
+**Kit Demi-Dieu 100 % issu des packs, 10/10 vérifiées en moteur.** Sélection
+mesurée sur les 61 clips des deux packs, assemblages (retiming, découpe, raccord
+en fondu, miroir), cascade complète, et vérification par les vraies touches.
+
+**Trois câblages morts trouvés et réparés**, tous de la même famille — le code
+demandait quelque chose qui n'existait nulle part :
+1. **Marqueurs** — nommer une `Keyframe` ne crée pas de marqueur ; le runtime
+   écoute `GetMarkerReachedSignal`, qui exige des `KeyframeMarker`. Aucun ne
+   firait. Corrigé, prouvé en Play.
+2. **Tables de game-feel** — les 5 compétences et l'ultime n'y figuraient pas et
+   retombaient sur le défaut d'un jab. Ajoutées et calibrées.
+3. **Recettes VFX** — les 5 kinds `DemiDieu_*` n'étaient enregistrés nulle part,
+   donc aucun VFX ne jouait. 5 recettes ajoutées en palette dorée/blanche.
+
+**Game-feel mesuré, preuve inverse obtenue à chaque fois :**
+
+| | constat de départ | après |
+|---|---|---|
+| gel du hitstop | 0-2 ms | **114-136 ms** (et c'est un vrai gel visuel) |
+| camera shake | 0,16 stud | **1,0-1,4 stud** |
+| marqueurs qui firent | AUCUN | Whoosh, Impact, HitConnect, FinalImpact, Plant |
+| ultime joué | 31 % (coupé à 1,383 s) | **100 %** (TimePosition 4,483/4,500) |
+
+**Outil de vérification durci** : `inspect_video.py` jugeait sur le seul pic de
+mouvement et avait validé le clip d'ultime coupé. Il juge maintenant la
+répartition et surtout la **queue morte** — le critère qui discrimine. Deux
+limites mesurées et documentées : le cadre entier noie un sujet petit (d'où
+`--crop`), et la couverture suppose une action continue (un clip multi-casts sort
+bas sans défaut réel).
+
+### Ce qui reste
+
+1. **Preuve visuelle des VFX dorées.** J'ai vérifié que les 5 recettes se
+   **résolvent**, pas que chaque atome produit une particule à l'écran. Un clip
+   cadré sur l'impact reste à capturer.
+2. **Étape 3 du plan V2 : la passe d'easing** (outil bézier construit et validé en
+   moteur sur M1_1, jamais appliqué au reste du kit).
+3. **Étape 4 : second passage sur les 6 autres dumps de packs** (`free`, `mixed`,
+   `movesets`, `premium_r6`, `sprint`, `virtualvogue`) avant tout génératif —
+   priorité au **dash**, la correspondance la plus faible du kit (poussée de torse
+   13,6° seulement).
+4. Écarts d'amplitude assumés : M1 #2 2,893 (cible 3,9) · M1 #3 3,069 (cible 4,2)
+   et clip sans jambes · M1 #4 cible 5,5 inatteignable · S1 2,932.
+
+### Décisions ouvertes
+
+**1. `recovery` de Frappe Céleste — demande un jugement À L'ŒIL.**
+La mesure a tranché ce qu'elle pouvait : le geste n'est **pas** tronqué (84 % vu,
+et ce qui manque est un retour au repos, 1,8 % du mouvement). Ce qu'elle ne peut
+pas dire, c'est si la transition vers l'idle produit un **snap visible** — le bras
+est encore un peu haut quand l'idle reprend.
+
+| recovery | geste vu | immobilisation |
+|---|---|---|
+| 0,55 (actuel) | 84 % | 0,55 s |
+| 0,62 | ~90 % | +0,07 s (+13 %) |
+| 0,70 | 100 % | +0,15 s (+27 %) |
+
+Mon avis : **au plus 0,62**, et seulement si le snap se voit. 1,8 % de mouvement
+ne vaut pas +27 % de vulnérabilité sur une compétence lancée toutes les 6 s.
+**Main du Colosse : ne rien changer** (96 % vu).
+
+**2. Les M1 coupés à ~62 %.** Défendable — la chaîne est faite pour que le coup
+suivant interrompe le précédent, et une recovery courte est ce qui rend le combat
+réactif. Mais si le joueur ne poursuit pas, le personnage saute à l'idle à 62 % du
+geste. Jamais arbitré.
+
+**3. `test_moving_contact::TestTracking`** — 2 rouges antérieurs au 25/08,
+couverture 53,8 %. Réparer le solveur de contact, ou l'assumer par écrit.
+
+---
+
 ## 2026-08-30 — Main du Colosse / Frappe Céleste : ma recommandation précédente était fausse
 
 **Correction d'abord.** J'avais annoncé « 0,15 s et 0,28 s de geste jamais vus » et
