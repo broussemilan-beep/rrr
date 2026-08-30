@@ -69,6 +69,89 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Analyse comparative avant V2 : deux bugs de câblage priment sur l'easing
+
+Rapport complet : `artifacts/DEMIDIEU_ANALYSE_COMPARATIVE_2026-08-30.md`.
+
+**Décision d'identité, gravée :** aura Demi-Dieu **dorée et blanche**, violet
+conservé pour l'arène et le HUD. Le contraste décor violet / personnage doré est
+**voulu** — ce n'est pas une incohérence, et la divergence signalée
+précédemment est close.
+
+### Ce que je n'ai PAS pu mesurer, et que je n'invente pas
+
+Les valeurs internes de TSB et Jujutsu Shenanigans (durée de hitstop, magnitude
+de shake, densité de keyframes) ne sont pas accessibles : ni décompilation, ni
+instrumentation. **Aucun chiffre de ce rapport ne leur est attribué.** Le proxy
+mesurable retenu est le pack `battleground_animation_pack_v1_0_1`, vendu pour ce
+genre précis, donc composé par un animateur pour ce type de jeu.
+
+### Ce que les packs pros font, mesuré
+
+**~60 keyframes/seconde, easing `Linear`** (Battleground 61,5 kf/s et 100 %
+Linear ; Close Combat 51,9 kf/s et 99,1 %). La courbe est matérialisée dans les
+données, pas confiée au moteur — exactement la technique de `bezier_easing.py`.
+Cette mesure la valide indépendamment.
+
+**Notre densité : 69,3 kf/s.** Sur ce critère nous sommes déjà au niveau.
+Ce n'est pas là qu'est l'écart.
+
+### La découverte structurante : « fait pour un jeu » ≠ « vitrine »
+
+| | Réf JEU (BG) | Réf VITRINE (CC) | Nos M1 |
+|---|---|---|---|
+| anticipation | **0,067 s** | 0,225 s | **0,298 s** |
+| impact | **23 %** du clip | 60 % | **46 %** |
+| recovery | **67 %** du clip | 25 % | 47 % |
+
+Une animation de battlegrounds **frappe tôt et récupère longtemps** — c'est ce
+qui la rend réactive. Nos M1 sont du côté vitrine : anticipation **4,4× trop
+longue**, impact **2× trop tardif**. Mécanique : 6 pièces sur 10 viennent de
+Close Combat, et le retiming a conservé la proportion de charge.
+
+### Deux défauts bloquants, vérifiés en moteur ET dans les assets
+
+**1. Aucun marqueur n'existe dans aucune de nos animations.**
+Sonde en Play sur les vraies pistes : `marqueurs QUI ONT FIRE: AUCUN` sur M1_1,
+Skill1, Skill2, PasDivin. Confirmé sur les `.rbxm` relus : **0 keyframe nommée**
+sur 72, 41 et 33. Cause : `agent_to_lune_converter` nomme les keyframes depuis
+`agent_output["markers"]`, tableau qu'aucun de nos seeds ne porte.
+**Le jeu tourne donc sans hitstop et sans camera shake, sur toutes les pièces.**
+C'est l'explication la plus probable du « corrects mais fades » du playtest.
+La table `markers` de l'AnimationDB reste utile comme délai de repli pour
+`BindMarker` — les dégâts tombent au bon moment — mais c'est de la métadonnée
+Lua, pas un marqueur d'animation.
+
+**2. Le kit Demi-Dieu est absent des tables de game-feel.**
+`HITSTOP_PER_SKILL` et `SHAKE_INTENSITY` sont indexées sur les anciens noms
+(`Skill1_DashStrike`, `Ultimate_LimitBreaker`…). Les 5 compétences Demi-Dieu et
+l'ultime retombent sur le défaut `1/30 s` et `0,05`. Même marqueurs réparés,
+**l'ultime aurait le poids d'un jab** au lieu de ses 8/30 s prévus.
+
+### Écarts classés par impact ressenti
+
+1. **Aucun hitstop ni shake** — 0 marqueur baké sur 10/10 pièces
+2. **Kit absent des tables de game-feel** — 0 entrée sur 5 compétences + ultime
+3. **M1 trop lents à partir** — anticipation 0,298 s vs 0,067 s, impact 46 % vs 23 %
+4. **Recovery trop courte** — 47 % vs 67 %
+5. Amplitudes sous cibles (M1#2 2,893 / M1#3 3,069 / S1 2,932)
+6. Dash sans poussée (torse 13,6°)
+7. Double source de timing (MoveData vs AnimationDB, jusqu'à 180 ms d'écart)
+
+**Les rangs 1 et 2 ne sont pas de l'animation** : ce sont deux bugs de câblage,
+corrigeables sans retoucher une seule pose, et ce sont eux qui changeront le plus
+la sensation. **Une passe d'easing appliquée à l'aveugle ne les aurait pas
+touchés.** Le rang 3 demande de recouper les sources (`span`), pas de l'easing
+non plus.
+
+### Nouvel outil
+
+`scripts/animator_ai/feel_profile.py` — profil de sensation mesuré sur la
+vitesse du membre meneur : anticipation, action, impact, follow-through,
+recovery, densité, nombre de temps forts.
+
+---
+
 ## 2026-08-30 — Kit Demi-Dieu 100 % issu des packs, 10/10 vérifiées en moteur (étape 2 close)
 
 **Les dix pièces du kit viennent maintenant de vraies animations des packs** et
