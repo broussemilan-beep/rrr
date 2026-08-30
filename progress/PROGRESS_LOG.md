@@ -69,6 +69,81 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Bascule sur les packs : sélection des clips sources (étape 1/4)
+
+**Nouvelle stratégie** (licence commerciale confirmée sur Battleground et Close
+Combat) : au lieu de générer les animations Demi-Dieu, on part des **vraies
+animations des deux packs**, assemblées si besoin, puis polies. La Bible
+`Bible_Pouvoirs_Animations_Roblox_V1.docx` étant introuvable sur la machine
+(recherche dépôt + compte + Spotlight + historique git : rien), Milan a fourni
+une spec de remplacement qui fait foi.
+
+### Ce qui a été fait
+
+Les **61 clips** des deux packs ont été **mesurés**, pas triés au nom
+(`scripts/animator_ai/pack_corpus.py`, nouveau) : course du poignet meneur dans
+le repère du Torso, axe dominant, excursion verticale complète, rotation du
+RootJoint, amplitude des hanches, plage statique.
+
+Sélection complète des 10 pièces, avec justification chiffrée pièce par pièce :
+`artifacts/DEMIDIEU_SOURCE_SELECTION_2026-08-30.md`.
+
+### Le gate de différenciation a payé avant même le premier assemblage
+
+Mesuré sur le corpus candidat, **2 paires de sources sont des doublons entre
+elles** malgré des noms différents :
+
+- `Full Body Swing 2` == `Slow Punch` → **0.077 stud**
+- `Forward Lean Punch` == `Charged Punch 1` → **0.114 stud**
+
+C'est exactement le risque annoncé : piocher dans deux packs communs pour dix
+pièces. Conséquence directe — `Charged Punch 1` étant pris pour Main du Colosse,
+`Forward Lean Punch` devient interdit partout ailleurs.
+
+**Sur la sélection retenue : 45 paires, 0 collision, minimum 1.182 stud** — 48 %
+au-dessus du seuil, contre 0.832 (4 %) pour le kit hand-keyé qu'on remplace.
+
+### Corrections de méthode en cours de route
+
+La première table lisait la frame de course **maximale**. Pour un downslam, cette
+frame est l'apex du bras levé, pas le point bas : on aurait classé un coup vers
+le sol comme un coup vers le haut, et choisi de travers. Mesure refaite sur
+l'excursion verticale complète.
+
+Autre nuance à ne pas oublier : les dumps ne portent **aucune translation HRP**,
+uniquement des rotations. Les 8 studs du dash (§7) viennent donc du code, pas du
+clip.
+
+### Trous déjà visibles
+
+1. **M1 #4 : cible 5,5 studs inatteignable** — maximum absolu des deux packs
+   4.66, déjà réservé à Main du Colosse ; le meilleur « vers le sol » plafonne
+   à 3.07.
+2. **Aucun clip ne descend vraiment** (−1.01 au mieux, relatif au Torso).
+3. **Les M1 de Battleground n'animent pas les jambes** (`jambes = 0.0` sur M1_1
+   à M1_4 et Uppercut), alors que le §7 exige bassin et déplacement.
+4. **M1 #3 sous sa cible de 19 %** (3.42 vs 4.2).
+
+### Divergence signalée, NON tranchée
+
+Le §1 demande une aura **dorée/blanche**. Le HUD est **violet** :
+`src/shared/UI/HudView.lua:38` → `momentum = Color3.fromRGB(168, 112, 246)`.
+Soit le HUD passe en doré, soit le §1 est révisé — à décider avant la passe VFX.
+
+Écart de convention noté aussi : le §7 cite « médiane 3,91 / plage 3,09-4,59 »
+sur Battleground, ma mesure donne **médiane 3.42 / plage 3.07-4.20**. Même ordre
+de grandeur, convention différente ; mes chiffres sont ceux qu'utilisent les
+gates.
+
+### Suite
+
+Étape 2, **une pièce à la fois** (règle §9 : ne pas paralléliser) : assemblage →
+gates classe + mouvement → différenciation → bake → upload → vrai slot →
+vérification moteur. Puis étape 3 (easing + VFX), puis étape 4 (liste des trous
+pour le génératif).
+
+---
+
 ## 2026-08-30 — PAUSE (2) — note de reprise
 
 **Rien n'est en vol.** Play arrêté, Studio laissé ouvert en Edit, aucune sonde
