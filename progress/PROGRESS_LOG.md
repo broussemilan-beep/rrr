@@ -69,6 +69,71 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Aura de cast : couverture 33-41 % → 100 %, et j'avais mal diagnostiqué
+
+**Correction préalable de mon propre rapport.** Milan a regardé les deux vidéos :
+les impacts sont de vrais embrasements de particules, pas des flashs. J'avais
+sous-vendu le résultat en le qualifiant de « partiel » sur la seule base que la
+poussière n'était pas lisible au cadrage que j'avais choisi.
+
+### Le diagnostic que j'avais annoncé était faux
+
+J'avais écrit que l'aura ne couvrait que 33-41 % du geste parce que son
+`lifetime` (0,75 s) était trop court, et que le fondu d'entrée la faisait démarrer
+en retard. **Les deux étaient faux.** Chronométrage :
+
+```
+Skill1  anim 0.70 s | aura apparait a 0.509 s | disparait a 1.297 s | duree 0.788 s
+Skill2  anim 0.83 s | aura apparait a 0.490 s | disparait a 1.295 s | duree 0.805 s
+Skill3  anim 0.97 s | aura apparait a 0.556 s | disparait a 1.358 s | duree 0.802 s
+```
+
+La durée était **conforme** (0,79-0,81 s). Le problème était le **départ, 0,50 s
+trop tard** — et pas à cause du fondu : le client n'envoie la requête serveur
+qu'au **marqueur d'impact** (`fallbackImpactTime` ≈ 0,44 s). Le module de
+compétence, et l'aura avec lui, ne s'exécutait donc qu'**à l'impact**.
+
+**Rallonger le `lifetime`, comme je l'avais proposé, aurait allongé la queue sans
+combler le début nu.** C'est la mesure qui a évité la fausse correction.
+
+### La correction réelle
+
+L'aura est désormais déclenchée **côté client, dans `CombatController.TrySkill`,
+à l'instant exact où l'animation part** — plus de round-trip serveur. Sa durée est
+calée sur `track.Length`, donc sur la longueur **réelle de chaque animation**,
+pas sur une valeur unique.
+
+Le déclenchement serveur, devenu redondant et mal placé, a été retiré des trois
+compétences testées.
+
+### Preuve chiffrée
+
+```
+Skill1  anim 0.70 s | apparait 0.000 s | disparait 0.748 s | COUVERTURE 100%
+Skill2  anim 0.83 s | apparait 0.000 s | disparait 0.872 s | COUVERTURE 100%
+Skill3  anim 0.97 s | apparait 0.000 s | disparait 0.990 s | COUVERTURE 100%
+```
+
+Constat de départ : **33-41 %**. L'aura s'éteint juste après la fin de chaque
+geste, sans traîner.
+
+Piège de synchro attrapé une fois de plus : rojo ne synchronise toujours pas
+depuis le redémarrage de Studio. Les 4 fichiers ont été poussés depuis la source
+exacte et vérifiés avant toute mesure.
+
+### Gelé en attente de l'arbitrage de Milan
+
+Le style actuel est du **feu / embrasement**, pas de la **poussière / fracture au
+sol**. Tant que Milan n'a pas dit si ce style lui convient :
+
+- **`Skill4_Jugement` et `Ultimate_DescenteDuDemiDieu` ne sont pas touchés** : ils
+  gardent leur aura serveur, tardive, plutôt que de propager un choix qui pourrait
+  changer.
+- **Le plafond de lisibilité et les débris `GroundChunks` ne sont pas touchés**
+  non plus (`debris 0` reste ouvert).
+
+---
+
 ## 2026-08-30 — Le quatrième câblage réparé : les VFX apparaissent enfin, mais deux manques restent
 
 ### Piège de synchro attrapé d'abord
