@@ -69,6 +69,72 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Le quatrième câblage réparé : les VFX apparaissent enfin, mais deux manques restent
+
+### Piège de synchro attrapé d'abord
+
+Après le redémarrage de Studio, **rojo n'avait rien synchronisé** : les 7 fichiers
+du chantier VFX étaient périmés dans la place, y compris ceux du tour précédent.
+Poussés via la source exacte servie en local (`MANQUANTS = 0` après contrôle).
+Sans ce contrôle, j'aurais mesuré l'ancien code et conclu à tort.
+
+### 1. `VFXLibrary` câblé dans `CombatFXReceiver.dispatch`
+
+`dispatch` traitait hitstop, `camera_kit`, `flash`, posture, FOV, dilatation et
+audio — jamais `procedural_atoms`. Les atomes sont désormais joués, **pour tous
+les clients** et pas seulement l'attaquant local : une aura portée par le
+personnage doit se voir par l'adversaire, sinon elle ne sert à rien en PvP.
+
+### 2. Soupçon `screen_flash` vs `flash` — CONFIRMÉ
+
+`dispatch` ne lisait que `payload.flash`, alors que **toutes** les recettes
+écrivent `screen_flash`, et `merge` ne fait aucune correspondance entre les deux.
+Le flash d'impact des recettes n'était donc jamais déclenché. Corrigé.
+
+Au passage : `ImpactFrameController.Flash()` ne prend **aucun argument**, alors
+que le receiver lui en passait deux — ignorés en silence.
+
+### 3. La preuve inverse, chiffrée
+
+Le premier essai n'a rien prouvé : le mannequin était à **43 studs** pour une
+portée de 8, donc aucun coup ne touchait et les couches d'impact ne partaient
+pas. Personnage replacé au contact (mise en place scriptée ; le chemin de combat
+reste entièrement réel). Preuve que ça touche : **mannequin 500 → 458 PV**.
+
+| | aura sur le perso | émetteurs à l'impact |
+|---|---|---|
+| Main du Colosse | +1, sur **41 %** du geste | **+32** |
+| Frappe Céleste | +1, sur 35 % | **+55** |
+| Marche du Titan | +1, sur 34 % | **+22** |
+
+Constat de départ : **+0 partout**.
+
+### 4. Face à l'ambition demandée — franchement
+
+| attendu | état | preuve |
+|---|---|---|
+| **Vraie frame d'impact visible** | ✅ **atteint** | la scène entière vire à l'or sur la frame d'impact, avec un éclat au torse |
+| **Poussière et fractures au sol** | ⚠️ **partiel** | 22 à 55 émetteurs apparaissent réellement, mais ils **ne se voient pas** au cadrage capturé |
+| **Aura pendant TOUT le geste** | ❌ **non atteint** | +1 émetteur seulement, présent sur **33-41 %** du geste |
+
+Deux manques identifiés, non corrigés :
+- **`GroundChunks` ne produit aucun débris** (`debris 0` mesuré) alors qu'il
+  reçoit maintenant `count` 14 à 34. Piste : le plafond de lisibilité de
+  `VFXLibrary` (light 2 / medium 4 / heavy 6 / ultimate 8) compte les couches ET
+  les atomes, et pourrait écarter les atomes en surnombre.
+- **L'aura ne couvre que ~40 % du geste.** Son `lifetime` est fixé à 0,75 s alors
+  que les gestes durent 0,70 à 0,97 s, et elle démarre après le fondu d'entrée.
+
+### État honnête
+
+Le chemin est réparé et le prouve chiffré : on passe de « rien du tout » à des
+dizaines d'émetteurs et une vraie frame d'impact dorée. Mais **l'habillage n'est
+pas encore au niveau demandé** : la poussière au sol n'est pas lisible à l'écran
+et l'aura n'accompagne pas le geste de bout en bout. Je le dis plutôt que de
+présenter les +32/+55 comme une réussite complète.
+
+---
+
 ## 2026-08-30 — VFX : l'écart mesuré, le blocage des packs levé, et un QUATRIÈME câblage mort
 
 Synchro vérifiée d'abord (Studio avait redémarré, nouvel identifiant d'instance) :
