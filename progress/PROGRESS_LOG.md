@@ -69,6 +69,81 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — PAUSE (2) — note de reprise
+
+**Rien n'est en vol.** Play arrêté, Studio laissé ouvert en Edit, aucune sonde
+résiduelle (balayage fait côté Client ET côté Edit, pas supposé). La place porte
+bien `rbxassetid://94946682382565` sur `M1_1`. Studio **n'a pas été sauvegardé et
+n'a pas été fermé** — la source de vérité est le disque + rojo, donc rien à
+perdre, mais la décision de sauver reste à Milan.
+
+Dernier commit : `83ded7a`.
+
+### Fait
+
+**Étape 3 close — l'outil d'easing bézier est validé EN MOTEUR sur M1_1.**
+La courbe est calculée en Python (`scripts/animator_ai/bezier_easing.py`) et
+matérialisée en frames denses ; les poses portent `Linear`, le moteur ne fait
+plus que relier nos points. Vérifié par le vrai chemin de bout en bout : `.rbxm`
+relu → upload Open Cloud (AssetTypeId=24) → vrai slot `AnimationDB` câblé →
+synchro rojo vérifiée avant de juger → vrai clic souris (`len=0.5333 match=true`)
+→ Motor6D échantillonné pendant la lecture (pic 95.49° à t=0.2487, retour à
+91.73° à t=0.299). Détail complet dans l'entrée du dessous.
+
+Livré au passage : `scripts/animator_ai/bake_seed.py` (chaîne spec → `.rbxm` en
+une commande), plus deux bugs latents corrigés (le `/30.0` en dur dans `_densify`,
+et l'opt-in `metadata.easing_plan` sans lequel la bézier était re-lissée en Cubic).
+
+### Reste à faire
+
+1. **Étape 4a — les 9 autres animations du kit Demi-Dieu** : M1_2, M1_3, M1_4,
+   Dash (Pas Divin), Skill1 Main du Colosse, Skill2 Frappe Céleste, Skill3 Marche
+   du Titan, Skill4 Jugement, Ultimate Descente du Demi-Dieu. Pour chacune :
+   `easing_profile: "aaa"` + fps 60 dans le spec → gates classe + mouvement →
+   gate de différenciation intra-kit → bake → upload → câblage du vrai slot →
+   vérification moteur. **La différenciation doit rester verte** (kit à 0.832
+   stud aujourd'hui) : l'easing ne doit pas ramener de doublon.
+2. **Étape 4b — hitstop par coup + VFX trails**, seulement APRÈS l'animation
+   (séquencement tranché par Milan : l'animation passe avant).
+
+Point d'attention pour la reprise : `asphalt` est passé du premier coup cette
+fois, mais il a déjà échoué 2 fois sur 3 en polling par le passé. Si le
+ré-upload en masse le fait redevenir le goulet d'étranglement → **le dire tout
+de suite**, ne pas insister en silence.
+
+### Les DEUX décisions ouvertes (elles changent ce qu'on fait ensuite)
+
+**1. Overshoot-and-settle, ou vrai follow-through ?**
+Ce que l'outil produit aujourd'hui : le pic tombe **67 ms AVANT** la pose de
+contact. Le poing dépasse (95.49° mesuré en moteur), revient sur la pose de
+contact (91.73°) et la tient. C'est un overshoot-and-settle — une technique
+d'animation légitime, mais **pas** un follow-through post-impact.
+
+Cause mesurée, pas supposée : l'`impact_hold` de 3 frames de l'archétype épingle
+la pose de contact, ce qui interdit structurellement tout dépassement après
+l'impact. Variante testée (`impact=snap` + `recovery=wind_back`) : pic à **90.00
+pile**, donc aucun dépassement du tout — la piste évidente ne marche pas.
+
+→ Soit on accepte l'overshoot-and-settle et on applique tel quel aux 9 restants,
+soit on attaque l'`impact_hold` lui-même, ce qui touche un comportement
+d'archétype partagé par tous les kits et demande sa propre vérification.
+
+**2. Le solveur de contact à 53,8 %.**
+`test_moving_contact::TestTracking` — 2 rouges. `Right Wrist → Head` : couverture
+**53.8 %** (7 frames sur 13), écart max **0.2549** pour une tolérance de 0.25.
+Les DEUX modes (`joint` et `sequential`) sont à 53.8 %, donc aucun des deux
+solveurs n'atteint la tête sur ~46 % des frames.
+
+Ces rouges **précèdent** ce travail : `contact_solver.py` et `r6_fk.py` n'ont pas
+bougé depuis le 2026-08-25 (commits 14cd216 / 0c6cb35), et l'arbre de travail du
+jour ne touchait que le keyer, le spec M1_1 et son test. Ils ne sont pas classés
+« acceptables » pour autant — la règle du projet l'interdit.
+
+→ Soit on répare le solveur de contact, soit on assume explicitement qu'il
+n'atteint sa cible qu'une frame sur deux et on l'écrit noir sur blanc.
+
+---
+
 ## 2026-08-30 — Outil d'easing bézier, validé en moteur sur M1_1 (étape 3/4)
 
 **Jalon : l'outil d'easing existe, il est mesuré, et il est vérifié en moteur sur
