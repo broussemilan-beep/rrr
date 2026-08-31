@@ -69,6 +69,90 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — Licence levée, et le `Beam` répond enfin sur la traînée
+
+### Licence : deux statuts, désormais séparés dans l'audit
+
+Milan confirme l'usage commercial sur **SoulShroud V1.7**, **Blood Engine V1.4** et
+**Ultimate RPG Combat & Loot V1.3**. `artifacts/safe_packs_recovered.md` distingue
+maintenant explicitement :
+
+- **SÉCURITÉ** (`vérifié`) = pas de script malveillant. Ne dit **rien** sur le droit
+  d'usage.
+- **LICENCE COMMERCIALE** (`confirmée`) = droit d'exploiter.
+
+La confusion des deux a coûté un aller-retour complet. `15+ HQ Aura VFX` reste
+**hors périmètre** (licence non confirmée, statut sécurité litigieux), avec la
+correction factuelle : sa description « DUPE de Close Combat » est fausse pour le
+fichier actuel — 16 groupes de vrais émetteurs — mais la mention « arnaque » porte
+sur la transaction, que je ne peux pas vérifier, et reste en place.
+
+### Remesure demandée : le cadrage n'a pas suffi
+
+Traînée activée contre désactivée, même chaîne de 4 M1, **à la nouvelle distance
+de caméra (8,5 stud et non plus 13,2)** :
+
+| | pale médiane | pale pic |
+|---|---|---|
+| sans traînée | 1 475 | 6 086 |
+| traînée seule | 1 527 *(+3,5 %)* | 7 384 *(+21 %)* |
+
+Le `Trail` contribue, mais il reste **marginal même au nouveau cadrage**. Sa
+largeur est bornée par le bras qui le porte : **2,2 stud**. Le rapprochement de la
+caméra n'a donc pas résolu le problème à lui seul — l'hypothèse du `Beam` tient.
+
+### Le `Beam` : la médiane double
+
+Un `Beam` a une largeur **propre**, indépendante du membre. Le pack l'exploite avec
+un profil **10 → 0** — large à la racine, fuselée à la pointe.
+
+| | pale médiane | pale pic |
+|---|---|---|
+| sans traînée | 1 475 | 6 086 |
+| traînée seule | 1 527 | 7 384 |
+| **traînée + Beam** | **3 922** | 6 755 |
+
+**+157 % de médiane** contre la traînée seule. C'est le chiffre qui compte : une
+médiane qui double veut dire que l'arc est présent **pendant tout le geste**, pas
+seulement à un pic. La traînée n'avait déplacé que le pic.
+
+Vérifié par le vrai chemin — devices réellement créés :
+```
+Trail sur Right Arm   couleur (255,205,92)
+Beam  sur Right Arm   larg 4.00 -> 0.40  couleur (255,205,92)  tex 6706234595
+```
+
+**Ce qu'on prend du pack** : la texture et le profil de largeur. **Ce qu'on garde** :
+notre doré-blanc validé, pas le rouge d'origine. Et on **double** la traînée au lieu
+de la remplacer — on ne jette pas un acquis mesuré.
+
+### Ce que je ne survends pas
+
+À l'œil, sur capture, le coup a désormais un **champ doré large et structuré** là
+où il n'avait qu'un éclat ponctuel. Mais il lit comme un **impact plus plein**, pas
+encore comme un **arc balayé distinct** : le Beam se fond dans la gerbe. Le gain
+mesuré est réel et net ; la lecture « trait de sabre » ne l'est pas encore.
+
+### Outils : trois pièges des `.rbxm` de pack
+
+1. Les `.rbxl` sont **binaires** — une lecture texte ne rend rien.
+2. **Adresser par chemin, pas par nom** : trois nœuds de SoulShroud s'appellent
+   `Shockwave`, et le premier trouvé est un `MeshPart` **nu**. Ma première
+   extraction a sorti une coquille vide.
+3. Le séparateur est `>` et non `/` : un groupe s'appelle littéralement
+   `Auras/Humanoid Fx`, slash inclus.
+4. Mode `devices` : les groupes de démonstration embarquent un **rig complet**
+   (Humanoid, BodyColors, 12 Part). On ne veut pas d'un personnage fantôme.
+
+### Les deux autres devices : extraits, pas encore câblés
+
+- `shockwave.rbxm` — 12 émetteurs + 22 `PointLight` (poussière/fracture au sol)
+- `aura.rbxm` — 34 `Beam` + 63 émetteurs, élagué du rig de démonstration
+
+**Ils sont extraits et caractérisés, mais NON câblés ni vérifiés.** Je préfère le
+dire que les brancher à la va-vite en fin de course sans les mesurer — c'est
+exactement la leçon de cette semaine sur les itérations à l'aveugle.
+
 ## 2026-09-01 — JALON B : la caméra, dans l'ordre des prérequis
 
 ### 1. L'écart FOV élucidé — ce n'était pas un mystère, c'était un conflit de constantes
