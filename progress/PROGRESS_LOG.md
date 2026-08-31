@@ -69,6 +69,82 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — Analyse VFX complète, bug rouge corrigé, M1 différenciés (étapes 1-4)
+
+### 1. Inventaire du réel — ce qui tire sur chaque pièce
+
+| pièce | recette | déclencheur | émetteurs | couleur |
+|---|---|---|---|---|
+| M1 #1 | `M1_1` **(ancienne)** | hit M1, via `CombatService.MOVE_FX` | `Blood Hit Impact` | **rgb(255,80,80)** |
+| M1 #2 | `M1_2` **(ancienne)** | hit M1 | `Blood Splatter I` | **rgb(255,60,60)** |
+| M1 #3 | `M1_3` **(ancienne)** | hit M1 | `Stike Impact` | **rgb(255,70,70)** + CRIMSON_BRIGHT |
+| M1 #4 | `M1_4` **(ancienne)** | hit M1 | `Heavy Slashes I` | **rgb(220,40,40)** + CRIMSON_DEEP |
+| Main du Colosse | `DemiDieu_Skill1_Impact` | hit (module) | Impact Burst + Dust + Big-Crack-01 | doré |
+| Frappe Céleste | `DemiDieu_Skill2_Impact` | hit (module) | GroundSmash + Dust + Big-Crack-01 | blanc/doré |
+| Marche du Titan | `DemiDieu_Skill3_Impact` | hit (module) | **identique à Skill1** | doré |
+| Jugement | `DemiDieu_Skill4_Counter` | contre (module) | Impact Burst + Dust | blanc |
+| Ultime | `DemiDieu_Ultimate_Impact` | impact (module) | Impact Burst + GroundSmash + Dust + Big-Crack-01 | blanc/doré |
+| les 5 compétences | `DemiDieu_Cast_Aura` | **départ du geste** (client) | atomes seuls | doré |
+
+### 2. Ce que les packs contiennent déjà — énuméré, pas inventé
+
+| besoin | effets unitaires disponibles |
+|---|---|
+| pression / air | `Wind` (6 ém.), `WindV2` (6), `Wind-01` (6), `Wind Flare` (5) |
+| onde / anneau | `Magic Circle` (7), `Light Wave Impact` (6), `Hit Impact ShockWaves III` (5), `Shockwave Impact V` (4), `Impact Wave` (1) |
+| poussière / sol | `Ground Skill` (6), `Dust` (4), `Big-Crack-01` (4), `Dirt Specs` (2), `Smoke` (2), `CraterDust` (1), `Cracks` (1) |
+
+**Aucune recette n'a eu à être inventée** : les 12 noms retenus ont été vérifiés un
+par un en moteur avant écriture.
+
+### 3. Bug rouge — source exacte trouvée et corrigée
+
+`CombatService.MOVE_FX` routait `M1_1`..`M1_4` vers les **anciennes recettes
+cramoisies**, avec des émetteurs de sang. Ce n'était pas « certains hits » : **les
+quatre** étaient rouges, du rgb(220,40,40) au rgb(255,80,80).
+
+Quatre recettes dorées créées et le routage recâblé.
+
+**Preuve inverse, mesurée en moteur** — couleur réelle de chaque émetteur apparu
+pendant une chaîne M1 complète au contact (mannequin 500 → 468 PV, donc les 4
+coups touchent) :
+
+```
+BILAN sur 14 emetteurs apparus : ROUGES=0 | dore/blanc=14 | autres=0
+```
+
+### 4. Différenciation — le hit n'était pas « similaire », il était identique
+
+`DemiDieu_Skill1_Impact` et `DemiDieu_Skill3_Impact` avaient **exactement** les
+mêmes 3 émetteurs et les mêmes 3 teintes ; seules les magnitudes de caméra
+différaient. Marche du Titan reçoit désormais sa propre signature — onde de choc
+et effet de sol, là où Main du Colosse est un éclat frontal. Même palette.
+
+Chaque M1 a aussi sa signature, plutôt qu'une recette recyclée :
+
+```
+M1_1 direct    [Impact Burst]
+M1_2 crochet   [Light Wave Impact]              onde laterale, pas un point
+M1_3 uppercut  [Wind + Wind Flare]              air qui monte
+M1_4 finisher  [GroundSmash + CraterDust + Crack-01]   cratere
+Skill1         [Impact Burst + Dust + Big-Crack-01 + Wind]
+Skill3         [Shockwave Impact V + Ground Skill + CraterDust]
+Skill4         [Impact Burst + Dust + Light Wave Impact]
+```
+
+### 6 (partiel). Couche secondaire ajoutée EN PLUS du doré
+
+`Wind` sur Main du Colosse (pression d'air d'une frappe ample), `Light Wave
+Impact` sur Jugement (onde de déflexion d'un contre), `CraterDust` sur Marche du
+Titan et M1 #4. Le style feu/embrasement est conservé, rien n'a été remplacé.
+
+### Reste à faire
+
+**Étape 5** : capture dédiée de l'Ultime pour juger si son VFX noie le geste
+réparé — et l'alléger si oui, plutôt que d'ajouter dessus. Non commencée.
+
+---
+
 ## 2026-08-30 — Aura étendue à Jugement et à l'Ultime : 100 % sur les cinq
 
 **Décision de style actée :** on garde le **feu / embrasement**. Poussière et

@@ -10,6 +10,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-08-30_ultime-descente.gif` | 2802439 |
 | `2026-08-30_ultime-complet.gif` | 2810976 |
 | `2026-08-30_marche-du-titan.gif` | 4056099 |
+| `2026-08-30_m1-chaine-doree.gif` | 3217651 |
 | `2026-08-30_hitstop-shake.gif` | 2167798 |
 | `2026-08-30_dash-pas-divin.gif` | 3568188 |
 | `2026-08-30_aura-ultime.gif` | 3541710 |
