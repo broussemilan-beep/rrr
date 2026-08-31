@@ -69,6 +69,93 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 — Étape 2 : les traînées sont réveillées (elles étaient inertes depuis toujours)
+
+### « Ne pas recréer, améliorer » — cas d'école
+
+`CombatVFX.SlashTrail` existait, était câblé dans `VFXLibrary`, et **n'avait
+jamais rien rendu** : il exige un `part` (ou `ctx.attackPart`), et **aucune
+recette ni aucun appelant n'en fournissait**. Zéro ligne de VFX à écrire — il
+fallait juste alimenter un paramètre.
+
+### Le membre frappeur est MESURÉ, pas deviné
+
+Vitesse de pointe du poignet, par pièce :
+
+```
+M1_1  Right Arm  (1.358 contre 1.058, ratio 1.28)
+M1_2  Left Arm   (1.574 contre 1.450, ratio 1.09)   <- serre
+M1_3  Right Arm  (1.136 contre 0.868, ratio 1.31)
+M1_4  Left Arm   (2.126 contre 1.863, ratio 1.14)   <- serre
+S1    Left Arm   (3.332 contre 2.498, ratio 1.33)
+S2    Right Arm  (1.236 contre 1.160, ratio 1.07)   <- serre
+S3    Right Arm  (1.257 contre 1.256, ratio 1.00)   <- serre
+S4    Right Arm  (1.342 contre 1.223, ratio 1.10)   <- serre
+ULT   Left Arm   (5.024 contre 4.729, ratio 1.06)   <- serre
+```
+
+**6 pièces sur 10 ont les deux bras à vitesse quasi égale.** Y mettre une seule
+traînée serait arbitraire : ces pièces en déclarent **deux**. Le champ
+`attack_limbs` est porté par la recette et résolu côté client sur le modèle de
+l'attaquant.
+
+### Preuve en moteur
+
+```
+au repos : 0 Trail sur le personnage
+BILAN : pic 1 Trail (base 0, donc +1) | portes par : Right Arm
+```
+
+De **zéro à une traînée vivante**, attachée au bon bras.
+
+### Limite trouvée, non corrigée : le plafond d'atomes
+
+Une seule traînée apparaît là où les pièces « serrées » en déclarent deux. Cause :
+le plafond de lisibilité de `VFXLibrary` (light 2 / medium 4 / heavy 6) compte la
+traînée comme un atome. Sur une recette `light` — les M1 — `Impact` + 2 traînées
+font 3 atomes pour un plafond de 2, donc une est écartée.
+
+Ce plafond avait été mis de côté au tour précédent (sujet des débris). Il bloque
+maintenant une fonctionnalité validée. **Non touché** : c'est un arbitrage.
+
+### Corrigé en passant
+
+`scripts/visual_check/play_scene_server.luau` cherchait `TrainingDummy`, disparu.
+Il accepte désormais les deux noms, pour rester utilisable sur une place non
+encore mise à jour.
+
+---
+
+### CORRECTION d'un de mes propres signalements
+
+J'avais écrit que la réaction `Knockback` ne se déclenchait jamais, « le coup le
+plus fort faisant 22 dégâts ». **C'était faux** : je n'avais regardé que les M1 et
+Skill1/2. Chiffres complets :
+
+| pièce | dégâts | réaction déclenchée |
+|---|---|---|
+| M1 #1 / #2 | 6 | Light |
+| M1 #3 | 8 | Light |
+| M1 #4 (finisher) | 12 | **Light** |
+| Main du Colosse | 20 | Heavy |
+| Frappe Céleste | 22 | Heavy |
+| Marche du Titan | 35 | Heavy |
+| **Ultime** | **50** | **Knockback ✓** |
+
+Seuils actuels : Knockback ≥ 40, Heavy ≥ 15, Light sinon. **Le seuil de 40 est
+donc atteignable — par l'ultime, et par lui seul.** C'est défendable comme
+design : la projection est réservée au coup ultime.
+
+**Le vrai défaut est ailleurs** : M1 #4, le **finisher** de la chaîne, ne fait que
+12 dégâts et déclenche donc la même réaction légère qu'un jab à 6. Pour une
+identité « coups lourds », le quatrième coup mérite une réaction distincte.
+
+**Recommandation :** abaisser le seuil Heavy de **15 à 10**, ce qui fait passer
+M1 #4 en Heavy sans toucher au reste. Un seul nombre, effet net sur la lecture de
+la chaîne. Décision à Milan.
+
+---
+
 ## 2026-08-31 — Rig de test : cible R6 immortelle qui se réancre seule (étape 1/4)
 
 ### Audit AVANT retrait, comme demandé
