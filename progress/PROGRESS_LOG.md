@@ -69,6 +69,75 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — Marche du Titan touche enfin, et elle marche toujours
+
+Reprise. Machine, plugin MCP, Play et synchro rojo verifies avant toute mesure ;
+**aucune sonde residuelle** (Client, Serveur, Edit) — un seul ecart de synchro,
+`AssetVerifier`, resynchronise.
+
+### Le balayage demandé : le schéma existe ailleurs, mais il n'est pas seul en cause
+
+Six modules déplacent le personnage **et** frappent sur un délai fixe :
+`Skill1_DashStrike`, `Skill1_MainDuColosse`, `Skill2_FrappeCeleste`,
+`Skill2_TorrentCarnassier`, `Skill3_MarcheDuTitan`, `Ultimate` (déjà corrigé).
+
+Mais Skill1 et Skill2 **touchent** (20 et 22 dégâts mesurés) : le schéma seul
+n'est pas le défaut. Le critère qui discrimine est **le trajet parcouru pendant
+le délai contre la portée du coup** :
+
+| module | portée | trajet | verdict |
+|---|---|---|---|
+| Skill3_MarcheDuTitan | 7,0 | **24,8 stud** | dépasse sa portée de 3,5× |
+| Ultimate | 14,0 | 14,0 | limite — son défaut était vertical, corrigé |
+
+*(Ma première version du balayage a raté Marche du Titan : `finalStrike` est
+appelée via une fonction, le corps du `task.delay` ne contient pas la frappe. J'ai
+corrigé l'heuristique pour résoudre un niveau d'indirection avant de m'y fier.)*
+
+### La mesure, avant correction
+
+```
+t=0.05  distance  2.05  cible DEVANT et a portee
+t=0.12  distance  4.79  cible DERRIERE
+t=0.86  distance 23.99  la marche s'arrete
+t=1.05                  finalStrike part enfin
+```
+
+La fenêtre utile dure **0,12 s** ; le coup partait **8,75× trop tard**, et la
+cible n'était pas seulement loin, elle était **derrière**.
+
+### Trois corrections, chacune corrigeant la précédente
+
+1. **Arrêt au contact.** Marche → touche. Mais mesure à 8 stud : le coup partait
+   *avant* que le personnage bouge, la hitbox étant une boîte centrée en avant qui
+   mord déjà à cette distance. **La Marche du Titan ne marchait plus.** Corriger un
+   défaut de portée en supprimant l'identité du coup n'est pas une correction.
+2. **Découplage** frapper / s'arrêter : le coup part au contact, le pas en cours va
+   au bout, seuls les pas restants sont annulés.
+3. **Premier pas inconditionnel et synchrone.** Le guet gagnait la course contre
+   le `task.delay(0)` du pas 1 et annulait *tous* les pas.
+
+### Vérifié à trois distances, par le vrai chemin
+
+| départ | trajet réel | dégâts |
+|---|---|---|
+| 20 stud | 20 → 2 stud | **35** |
+| 8 stud | 8 → 2,84 stud | **35** |
+| 5 stud | 5 → 1,86 stud | **35** (+35 au compteur cumulatif) |
+
+Elle marche à chaque distance, et elle touche à chaque distance.
+
+### Une erreur de mesure à consigner
+
+Deux relevés intermédiaires m'ont fait conclure « le personnage ne bouge pas ».
+**C'était faux, deux fois, pour deux raisons différentes :**
+- une sonde à fenêtre de 3 s expirait avant l'injection clavier MCP (retard
+  variable) — je relisais des lignes périmées ;
+- `AssemblyLinearVelocity` lit **0** côté serveur pendant qu'une `LinearVelocity`
+  pilote la position. Il faut guetter **la contrainte**, pas la vitesse.
+
+À retenir pour toute mesure de déplacement piloté par contrainte.
+
 ## 2026-08-31 — NOTE DE REPRISE (pause demandée)
 
 À lire en premier à la reprise. Pause posée par l'utilisateur ; le second passage
