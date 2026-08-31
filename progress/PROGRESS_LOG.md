@@ -69,6 +69,69 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 (suite 3) — Second passage packs : deux blocages, et une piste chiffrée pour le dash
+
+### Deux blocages à signaler avant tout
+
+1. **Trois des six autres dumps sont R15** — `free` (104 clips), `movesets` (120),
+   `virtualvogue` (50). C'est le mauvais rig, et c'est exactement ce dont on vient
+   de sortir avec les réactions. Inutilisables tels quels.
+2. **La licence commerciale n'est confirmée que sur Battleground et Close
+   Combat.** Les six autres dumps n'ont pas d'autorisation documentée dans le
+   dépôt. Rien de ce qu'ils contiennent ne peut partir en production sans que
+   Milan tranche.
+
+Le second passage utile s'est donc porté sur ce qui est actionnable : les
+**229 clips des deux packs licenciés**, dont Close Combat (210 clips) que le dash
+n'avait **jamais** fouillé — il ne s'appuyait que sur les 19 clips de
+Battleground. C'était le trou évident.
+
+### Une métrique fausse, corrigée avant de conclure
+
+Premier passage : « poussée de torse » mesurée en `max − min` de l'angle du
+RootJoint. Résultat, des clips à **347 degrés** en tête de classement — un spin
+kick enroule l'angle, ce n'est pas une inclinaison avant. La métrique classait
+les rotations, pas les projections.
+
+Remplacée par une mesure **géométrique** via la FK : amplitude, en stud, du
+décalage avant entre la tête et la racine. Insensible à la rotation, et c'est ce
+que « le corps se projette » veut dire physiquement.
+
+### Ce que ça donne
+
+**Référence, le dash actuel : appui 0,42 stud, poussée 0,26 stud.** La poussée est
+quasi nulle — ça chiffre en stud la faiblesse déjà notée (13,6 deg d'amplitude).
+
+Les candidats des packs licenciés qui font mieux sans perdre l'appui :
+
+| pack | clip | appui | poussée | durée |
+|---|---|---|---|---|
+| closecombat | **Regular Kick** | **3,37** | **1,04** | **0,20 s** |
+| closecombat | Elbow Jab | 3,37 | 0,32 | 0,20 s |
+| battleground | [3] Downslam V1 | 1,72 | 2,59 | 1,08 s |
+| closecombat | Jumping Spin Kick | 2,86 | 2,56 | 0,88 s |
+| closecombat | Stylized Jump / Vault | 3,06 | 1,75 | 1,35 s |
+
+**`Regular Kick` est la piste sérieuse** : 8× l'appui actuel, 4× la poussée, et
+0,20 s — la seule durée de la liste qui soit une durée de dash. Les trois autres
+en tête sont un slam (déjà assigné à Chute Divine par le §8), un saut tourné et
+un vault : aucun n'est un déplacement au sol.
+
+**Réserve que je ne masque pas** : un coup de pied lève une jambe haut, ce qui
+peut mal lire sur un dash. Il faut assembler et passer la cascade de gates avant
+de conclure — et ça demande le moteur.
+
+### Non fait, et pourquoi
+
+**La machine est repartie en cours de second passage** : `screencapture` échoue
+avec `could not create image from display` et le MCP répond `Place is not open`.
+Studio n'a pas été fermé par moi. Donc pas d'assemblage vérifié, pas de passage
+par les gates, pas de capture du dash. L'analyse disque est complète et rejouable
+(`scripts/animator_ai/dash_second_pass.py`).
+
+L'inventaire des **devices VFX inutilisés** est bloqué sur le même point de
+licence : les devices des six dumps non autorisés ne peuvent pas être embarqués.
+
 ## 2026-08-31 (suite 2) — État des lieux du kit avec le harnais corrigé
 
 Milan demande si les compétences et l'ultime jouent bien, et si c'est réellement
