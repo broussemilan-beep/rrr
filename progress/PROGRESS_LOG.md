@@ -69,6 +69,76 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 (suite) — Milan avait raison : l'impact était écarté à CHAQUE coup
+
+Cinquième instance du même schéma cette semaine. Le signal — « je ne le vois pas »
+alors que la mesure dit présent — a de nouveau eu raison contre la mesure.
+
+### La chaîne remontée maillon par maillon
+
+| maillon | résultat |
+|---|---|
+| confirmation côté client | ✅ `M1_1 result=Hit`, trois fois |
+| payload sur le remote `CombatFX` | ✅ `procedural_atoms : SlashTrail, Impact` |
+| `hitPos` transporté | ✅ `(0.0, 3.0, 45.0)` |
+| **`ImpactFlash` créé** | ❌ **jamais** |
+| **onde au sol créée** | ❌ **jamais** |
+
+Tout arrivait correctement, et rien n'était produit.
+
+### La cause
+
+```lua
+priority = if i == 1 then 0 else 2
+```
+
+Le rang de **héros** revenait au **premier atome déclaré**, quel qu'il soit. Les
+recettes M1 du Demi-Dieu déclarent `SlashTrail` **avant** `Impact` : la traînée
+prenait le rang — et comme je l'avais moi-même sortie en `exempt` le 2026-08-31,
+**ce rang était perdu**. `Impact` se retrouvait classé **ambiant (2)**, donc
+dernier au tri, donc le **premier supprimé** par la troncature.
+
+Avec `screen_flash` et `camera_kit` qui occupent aussi `pending`, cela faisait
+**3 atomes pour un plafond Light de 2**. L'impact était écarté **à chaque coup**.
+
+**Corrigé** : la priorité se lit sur le **kind**. Un impact est le héros d'une
+recette de coup — ça ne dépend pas de l'ordre dans lequel quelqu'un a tapé la
+table. C'est une classe de bug fermée, pas une instance.
+
+### Réponses aux quatre questions posées
+
+**1. Toutes les pièces ?** Oui sur le papier — les 16 recettes Demi-Dieu portent un
+atome `Impact`. Mais **aucune ne le jouait**, M1 comme compétences. Ma mesure du
+2026-09-01 qui annonçait l'onde « posée à Y=2.15 » portait sur un cast de
+compétence dont le `pending` était moins encombré ; je l'avais généralisée à tort.
+
+**2. Sur un cast qui rate ?** **Non, jamais.** Et c'est structurel, distinct du
+bug ci-dessus : `CombatService` le dit dans son propre commentaire — *« Skipped on
+Whiff (no recipe for misses) »* — et les modules de compétence conditionnent tous
+leur diffusion à `hitTarget and hitPosition`. **Un joueur qui rate, ou qui frappe
+sans cible, ne voit rien : ni onde, ni poussière.** Non corrigé : c'est une
+décision de design, pas un défaut.
+
+**3. La poussière persiste-t-elle ?** Oui. Relevé après correction : le socle est
+**toujours vivant à +0,8 s**, avec ses 3 émetteurs. Elle n'est pas mangée par le
+flash.
+
+**4. Visible à 8,5 stud ?** Oui — vérifié sur une capture **cadrée sur le sol**, en
+plongée. L'arc doré balaie le sol depuis le point d'impact.
+
+### Note de vocabulaire
+
+L'« **air comprimé** » que Milan mentionne **n'a jamais été implémenté** — il n'a
+été qu'**identifié** comme device disponible dans les packs. Ce n'est pas la
+poussière au sol, qui est une couche distincte, et qui elle existe désormais.
+
+### Sur ACCAD
+
+L'essai a **conclu négativement** au tour précédent (rig cassé à l'écran, cause :
+pose de repos non gérée par `bvh_to_r6`). Il n'y a rien à y continuer sans une
+décision sur la construction d'un vrai retargeter, qui est un chantier à part
+entière et non une suite d'essai.
+
 ## 2026-09-01 — Essai ACCAD : conclu NÉGATIF, et c'est un bon résultat
 
 ### L'attribution, prévue AVANT — comme demandé
