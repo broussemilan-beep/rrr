@@ -69,6 +69,82 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — JALON B : la caméra, dans l'ordre des prérequis
+
+### 1. L'écart FOV élucidé — ce n'était pas un mystère, c'était un conflit de constantes
+
+| module | constante | ce qu'il faisait |
+|---|---|---|
+| `CameraController` | `BASE_FOV = 72` | annonçait 72 au démarrage et **l'imprimait** |
+| `Surhumain` | `FOV_BASE = 72` | commentaire : « must match CameraController » |
+| **`CameraJuice`** | **`BASE_FOV = 70`** | **écrivait 70 par-dessus** |
+| **`MovementController`** | **`FOV_BASE = 70`** | **tweenait vers 70** |
+
+Le dernier qui écrit gagne, et ce n'est pas celui qui croit décider. FOV effectif
+mesuré : **70**. Aucune enquête n'était nécessaire une fois les constantes mises
+côte à côte.
+
+### 2. Centralisation — `CameraDirector`
+
+**FOV = base + somme de décalages NOMMÉS.** Un même effet qui se redéclenche
+remplace sa propre contribution au lieu de s'empiler — deux coups rapprochés
+cumulaient leurs dips.
+
+Migrés : `CameraController` (hit, dash), `CameraJuice` (sprint tenu, punch),
+`MovementController` (sprint, dash), `CombatFXReceiver` (fxkick).
+
+Les deux modules **partagés** ne peuvent pas requérir un module client :
+`VFXLibrary` et `Surhumain_LimitBreak` posent l'attribut caméra `FovImpulse`, que
+`CombatFXReceiver` transforme en décalage nommé. Surhumain exprime désormais un
+**écart** à la base et non une valeur absolue — sa cible absolue écrasait la base
+des autres.
+
+**Vérifié : plus une seule écriture de `FieldOfView` hors `CameraDirector`.**
+
+### 3. Caméra dynamique
+
+`PROCHE = 8,0` stud pendant l'échange, `LARGE = 13,0` en déplacement. On ne paie
+les **−48 %** de vision périphérique que pendant le combat.
+
+Le resserrement se déclenche sur un **vrai coup confirmé par le serveur**
+(`CombatConfirm`), pas sur une heuristique de proximité seule — un PNJ qui passe
+à côté ne doit pas resserrer le cadre. La proximité d'un adversaire vivant à
+moins de 18 stud, à l'arrêt, compte aussi : sinon le resserrement arrive toujours
+en retard d'un échange.
+
+**On ne prend pas la main sur la caméra** (pas de `CameraType.Scriptable`) : on
+borne la plage de zoom. Une caméra qu'on arrache au joueur pendant un combat est
+pire que le problème qu'elle résout.
+
+### Un défaut trouvé dans ma propre approche
+
+`CameraMaxZoomDistance` ne fait que **borner**. Mesuré :
+
+```
+joueur eloigne a 40 stud du mannequin
+zoom 0.5-13.0 (borne relachee)  mais distance reelle 8.51, immobile
+```
+
+L'abaisser tire bien la caméra vers l'intérieur, mais **le relâcher ne la repousse
+pas** — le zoom du joueur reste où la borne l'avait amené. **La caméra se serait
+rapprochée définitivement.** C'est le minimum qui force le zoom vers l'extérieur :
+on pilote donc les deux bornes.
+
+Puis un second défaut dans ma correction : la condition de libération comparait la
+cible à `_zoomMax` (400), donc jamais vraie — le joueur n'aurait jamais récupéré
+son zoom. L'intention est maintenant passée explicitement.
+
+### Vérifié par le vrai chemin, aller-retour complet
+
+```
+engage (5 stud)   distance  8.51   zoom tenu 8.0-8.0
+eloigne +0.6 s    distance 13.28   zoom 0.5-12.9
+eloigne +1.2 s    distance 13.30   zoom 0.5-13.0   <- liberte rendue au joueur
+```
+
+Le FOV reste à 70 de base sur toute la séquence, avec des décalages transitoires
+(70,7 / 70,2) qui reviennent bien à la base — le modèle de décalages fonctionne.
+
 ## 2026-09-01 — JALON A : packs VFX dépouillés, et un blocage de licence à trancher
 
 ### 1. Statut de licence — rapporté, pas supposé
