@@ -69,6 +69,116 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 (suite) — Trois bugs de fond trouves en verifiant, pas en cherchant
+
+Reprise de la file d'attente. Chaque etape a revele un defaut plus serieux que
+l'etape elle-meme.
+
+### 1. Capture apres la gerbe −30 % — et le harnais etait faux
+
+Avant de pouvoir comparer, la sonde a montre que **le harnais de capture placait
+le joueur hors de portee de trois M1 sur quatre**. `STAND_OFF = 8` stud, alors que
+M1_1 a M1_3 portent a 6 et M1_4 a 7. Sur une chaine de quatre clics, **un seul
+coup touchait**. Toutes les captures faites avec ce reglage montraient des impacts
+absents qu'on pouvait prendre pour un defaut de VFX.
+
+Corrige a 5 stud : 4 impacts sur 4.
+
+Comparaison refaite, cadrages apparies sur la taille du personnage a l'ecran :
+
+| | couverture doree | coeur sature |
+|---|---|---|
+| avant (gerbe pleine) | 19,85 % | 1,71 % |
+| apres (gerbe −30 %) | 17,71 % | 2,94 % |
+
+**−30 % sur les parametres ne donne que −10 % a l'ecran**, et le coeur sature ne
+bouge pas. La trainee ne lit toujours pas. Sonde cote client : elle est bien
+creee sur le bras, active, 2,20 stud d'envergure, opaque — **elle est correcte,
+juste minuscule face a la gerbe**. Ce n'est pas un probleme de trainee.
+
+### 2. Les 13 reactions natives R6
+
+Uploadees par asphalt (13 identifiants reels), reparties sur les trois paliers :
+4 legeres, 4 lourdes, 4 projections, 1 etourdissement. Le mannequin tire dans le
+pool du palier sans repetition immediate.
+
+**Et la variete a revele un bug qui dormait :** la reaction escaladait sur le
+**cumul** de degats, pas sur le coup. `MAX_HP - newHp` mesure les degats depuis
+les PV pleins, et le mannequin ne se soigne qu'apres 2 s. Mesure :
+
+```
+chaine 6/6/8/12  ->  cumul 6/12/20/32/38/44
+reactions        ->  leger, lourd, lourd, lourd, lourd, PROJECTION
+```
+
+**Un jab a 6 degats declenchait la reaction reservee a l'ultime.** Le bug
+preexistait ; avec trois reactions seulement il etait invisible, parce que
+« lourd » et « projection » se ressemblaient assez. La variete l'a rendu lisible.
+
+Verifie apres correction, par le vrai chemin : 6 et 8 -> leger, 20 et 22 ->
+lourd, 50 -> projection, avec variation a chaque palier.
+
+### 3. `AssetVerifier` ne pouvait pas verifier
+
+`classify` regardait la **forme** de l'identifiant et renvoyait `UNVERIFIED` des
+qu'il ressemblait a un vrai id, avec le commentaire « TimeLength not yet
+confirmed ». Rien, nulle part, ne confirmait ce TimeLength : **la branche
+`VERIFIED` n'existait pas dans le code.**
+
+`VERIFIED=0 UNVERIFIED=45` etait un artefact de construction. Le meme resultat
+serait sorti avec 45 animations parfaitement fonctionnelles — un diagnostic
+incapable de diagnostiquer, sur l'outil cense faire respecter la regle
+anti-hallucination du projet.
+
+Reecrit : chaque slot est charge sur un Animator jetable et sa duree **mesuree**.
+Nouveau statut `FAILED` pour le cas dangereux que la regle decrit (pcall qui
+reussit sur une animation vide) — il n'avait aucune categorie.
+
+Passe en Play Solo : **`VERIFIED=58 FAILED=0 NOTUPLOADED=0 ROBLOXDEFAULT=0`**.
+`verified_assets.json` regenere avec la duree mesuree de chaque slot.
+
+### 4. Les 23 recettes decrivaient leur flash, les 23 donnaient le meme
+
+Chaque recette ecrit `screen_flash = { color, duration, peak }`. Le receveur
+appelait `Flash()` **sans argument** : les 23 produisaient a l'ecran exactement le
+meme flash blanc de 0,050 s. Le jab Demi-Dieu (peak 0,11) et l'ultime (0,32)
+etaient indiscernables.
+
+Mon propre commentaire dans le receveur affirmait que « `Flash()` ne prend aucun
+argument ». **C'etait faux** : il decrivait `src/client/V1/ImpactFrameController.lua`,
+qui porte le meme nom mais n'est pas le module requis. Consequence a signaler :
+la baisse de 30 % appliquee plus tot portait entre autres sur `peak`, qui
+n'atteignait pas l'ecran — cette part-la etait sans effet.
+
+Puis **ma premiere correction s'est trompee dans l'autre sens.** J'avais cale la
+correspondance pour rester sous l'ancien preset. Mesure dans un coin d'ecran
+eloigne de l'action, ou seul un effet plein ecran peut changer quelque chose :
+
+| | luminance | saturation |
+|---|---|---|
+| avant cablage | + 2,9 | − 1,3 |
+| teinte brute | **+41,1** | **−63,6** |
+| teinte interpolee | +13,2 | −10,4 |
+
+`TintColor` est un **multiplicateur sur toute l'image** : poser GOLD_PALE brut
+repeignait la scene entiere. L'intention ne remplace pas la mesure. Corrige en
+interpolant depuis le blanc proportionnellement au peak.
+
+### Elements pour l'arbitrage camera (je ne tranche pas)
+
+- **Ce que le joueur perd concretement en se rapprochant** : a 13 stud le cadre
+  couvre **38,0 stud de large** au plan du personnage ; a 6,7 stud, **19,6 stud**,
+  soit **48 % de moins**. C'est le chiffre reel du cout en vision peripherique.
+- **Un ecart interne a signaler** : `CameraController` pose `BASE_FOV = 72` et
+  l'imprime au demarrage, mais le FOV effectif mesure en jeu est **70**. Quelque
+  chose en aval le corrige. A eclaircir avant de regler quoi que ce soit sur la
+  camera, sinon on reglera sur une valeur qui n'est pas celle qui s'applique.
+- **Ce que d'autres systemes supposent** : cinq modules touchent au FOV ou a la
+  camera (`CameraController`, `CameraJuice`, `MovementController`,
+  `CombatFXReceiver`, `Surhumain_LimitBreak`). Une camera dynamique devra passer
+  par un seul point d'entree, sinon les dips de FOV existants et le rapprochement
+  se combattront. C'est le vrai cout : pas la camera elle-meme, la centralisation.
+
 ## 2026-08-31 — Le cadrage est un vrai sujet, mais la traînée ne lit toujours pas
 
 **Méthode imposée par Milan, et elle était juste** : tester l'hypothèse 2 (le
