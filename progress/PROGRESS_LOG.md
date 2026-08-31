@@ -69,6 +69,116 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 — Analyse des deux vidéos de référence (regardées, pas déduites)
+
+Frames extraites avec `ffmpeg` et **ouvertes une par une**, y compris un zoom
+pleine résolution sur la timeline de l'éditeur d'animation. Aucune conclusion
+tirée des métadonnées seules.
+
+### Ce que sont réellement ces deux vidéos — à dire d'emblée
+
+**Ni l'une ni l'autre n'est une capture de jeu.** Ce sont deux **enregistrements
+d'écran de réseau social** montrant des démos d'animateurs Roblox.
+
+**Réf 1** (16,9 s · 888×1920 · 60 fps, portrait téléphone) : un fil social qui
+défile. Segment 1 titré **« Linear Easing Test »**, rig R6 dans un vide blanc,
+avec une traînée blanche rectiligne. Segment 2, clip de `EclipseTheGenima…`, avec
+les légendes successives **« No camera movement »** puis **« No effects +
+Slowdown »** — l'auteur montre son animation **brute, sans effets, ralentie**.
+
+**Réf 2** (45,4 s · 888×904 · 60 fps) : clip signé **« HOVA »** (9 565 likes),
+montrant l'éditeur d'animation avec une timeline de 0 à 1100+ frames. Il alterne
+des segments à **deux personnages sur une plateforme surélevée** et des segments
+à un seul rig dans le vide. Les rigs sont les mannequins d'animation standard
+(blocs colorés étiquetés FRONT / BACK / L / B).
+
+Le contenu correspond bien à ce que Milan décrit (un enchaînement, une plateforme
+utilisée), mais **la nature du matériau change ce qui est transposable** : on
+compare notre jeu à du travail d'animateur présenté en vitrine, pas à un jeu
+concurrent en situation.
+
+### Ce qui est mesurable dans ces références
+
+**1. Le rig est R6.** Timeline lisible au zoom : pistes `Rig / Torso / Right Arm /
+Head / Left Arm / CFrame`. **Notre rig n'est donc pas la limite.**
+
+**2. La densité de keyframes est MODÉRÉE, pas dense.** Règle de frames lisible de
+15 à 120+, avec des keyframes **discrètes et espacées** — de l'ordre de 2 à 3
+colonnes par intervalle de 15 frames, soit **une clé toutes les 5 à 7 frames**.
+
+C'est l'inverse de ce que je supposais. Nos animations issues des packs sont
+**bakées à ~60 kf/s**. La qualité de la référence ne vient donc **pas** de la
+densité : elle vient du **choix des poses**.
+
+**3. Le VFX principal est une TRAÎNÉE de mouvement, pas une gerbe de particules.**
+Sur la frame d'impact la plus nette, un **arc blanc unique** suit la course du
+membre. Et l'auteur revendique **« No effects »** : la lisibilité vient de
+l'animation, la traînée n'est qu'un soulignement.
+
+**4. Le « décor » de la réf 2 est une simple plateforme.** Pas de destruction, pas
+de scénographie : de la géométrie de niveau basique sur laquelle deux personnages
+s'appuient.
+
+### L'écart avec notre kit, chiffré
+
+| critère | référence | notre kit | écart |
+|---|---|---|---|
+| rig | R6 | R6 | aucun |
+| densité de keyframes | ~1 clé / 5-7 frames | **~60 kf/s (bakées)** | on est *plus* dense, sans bénéfice |
+| VFX porteur | **traînée sur le membre** | gerbe de particules à l'impact (22-55 émetteurs) | **device absent chez nous** |
+| anticipation M1 | — | 0,298 s (réf jeu mesurée avant : 0,067 s) | 4,4× trop long |
+| position de l'impact | — | 46 % du clip (réf jeu : 23 %) | 2× trop tard |
+| traînées de membre | présentes | **ZÉRO** | total |
+
+**Le constat le plus actionnable :** nous avons déjà l'atome `SlashTrail`
+(`CombatVFX.SlashTrail`, câblé dans `VFXLibrary`), mais il exige un `part` ou un
+`ctx.attackPart` — et **`attackPart` n'est fourni nulle part dans le dépôt**.
+J'avais retiré les `SlashTrail` des recettes Demi-Dieu précisément parce qu'ils ne
+rendaient rien. Le device central de la référence est donc **déjà implémenté chez
+nous et inerte faute d'un seul paramètre.**
+
+### Ce qui est atteignable, et ce qui ne l'est pas
+
+**Atteignable, à coût faible :**
+- **Traînées sur le membre frappeur.** Le code existe ; il manque de passer la
+  partie du bras dans `ctx.attackPart`. C'est le plus gros gain visuel par rapport
+  à la référence, pour le plus petit changement.
+- **Réduire l'anticipation des M1** en recoupant les sources (`span`), pour passer
+  de 46 % à ~25 % sur la position de l'impact.
+
+**Atteignable, à coût moyen :**
+- Retravailler les poses plutôt que la densité. Nos clips viennent de packs
+  professionnels, donc la qualité de pose est déjà là ; le levier est le
+  **recoupage** et le **retiming**, pas l'ajout de keyframes.
+
+**NON atteignable dans l'état, et je le dis franchement :**
+- **L'interaction avec le décor de la réf 2.** Notre arène est statique et
+  l'ultime ne l'utilise pas. Même la version minimale de la référence — deux
+  personnages qui prennent appui sur une plateforme — suppose un système
+  d'ancrage au décor qui n'existe pas. Ce n'est pas un réglage, c'est un chantier.
+- **La comparaison de « fluidité » elle-même est biaisée** : la référence est un
+  rendu d'éditeur ralenti, sans contraintes de latence réseau, sans prédiction
+  client, sans interruption par l'entrée du joueur. Notre chaîne M1 est jugée en
+  conditions de jeu. Une partie de l'écart perçu n'est pas rattrapable parce
+  qu'elle ne porte pas sur la même chose.
+
+### Ce que je propose (rien codé ce tour)
+
+1. **Câbler `ctx.attackPart`** pour rendre les traînées vivantes, puis les remettre
+   sur les M1 et compétences. Petit changement, device central de la référence.
+2. **Recouper les sources M1** pour ramener l'impact de 46 % à ~25 % du clip.
+3. **Ne pas augmenter la densité de keyframes** — la référence prouve que ce n'est
+   pas de là que vient la qualité.
+4. **Traiter le décor comme un chantier séparé**, pas comme un réglage de l'ultime.
+
+### Note d'outillage
+
+Codex n'a pas été employé : ce tour demandait explicitement de **regarder** les
+frames, ce qui ne se délègue pas. Il sera utile sur le répétitif — par exemple
+appliquer un même recoupage à plusieurs seeds.
+
+---
+
 ## 2026-08-31 — Étape 5 : l'Ultime noyait bien le geste, allégé — et un bug d'étiquettes trouvé
 
 État de reprise vérifié d'abord : plugin MCP revenu, Play arrêté, **`DESYNC = 0`**
