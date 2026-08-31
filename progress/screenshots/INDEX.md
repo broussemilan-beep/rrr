@@ -8,6 +8,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-08-31_ultime-allege.gif` | 5339650 |
 | `2026-08-31_trainees.gif` | 5825126 |
 | `2026-08-31_trainees-double.gif` | 5561042 |
+| `2026-08-31_trainees-apres.gif` | 4618954 |
 | `2026-08-30_vfx-main-du-colosse.gif` | 915163 |
 | `2026-08-30_vfx-celeste-titan.gif` | 6850611 |
 | `2026-08-30_ultime-descente.gif` | 2802439 |

@@ -69,6 +69,63 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 — Traînées réglées, nameplate masqué — et la traînée ne lit toujours pas
+
+### Appliqué comme validé
+
+`Lifetime` **0,14 → 0,30 s**, attaches **±0,8 → ±1,1 stud** (ruban de 2,2 stud).
+Vérifié dans la place : `LightEmission = 0.35`, `Lifetime = 0.30`, attaches 1.1.
+
+### Nameplate masqué
+
+Le nom et la barre de vie du rig sont coupés
+(`DisplayDistanceType = None`, `HealthDisplayType = AlwaysOff`). Vérifié en
+moteur, et visible sur la capture : ils ont disparu du cadre.
+
+**Moyen de les rendre pour déboguer**, sans toucher au script :
+`dummy.Humanoid:SetAttribute("ShowNameplate", true)`.
+
+### Le constat honnête : ça ne suffit pas
+
+Après le réglage validé, j'ai regardé — **la traînée ne se lit toujours pas comme
+un arc**. J'ai cherché la cause plutôt que de le présenter comme réussi.
+
+**Cause mesurée : un problème de CONTRASTE, pas de durée.**
+`trail.Color` partait du **blanc pur** avant de virer vers la couleur demandée, et
+les recettes envoyaient `GOLD_PALE` (255,236,179) ou `DIVINE_WHITE` (255,252,240)
+— **des rubans quasi blancs sur un personnage R6 quasi blanc, dans une scène
+claire**, avec `LightEmission = 0.7` qui les délavait encore.
+
+**Deuxième itération appliquée :** la courbe part directement de la couleur
+demandée et s'assombrit vers la queue, `LightEmission` **0,7 → 0,35**, et les
+**9 traînées passent en `GOLD_BRIGHT`** (255,205,92) — les teintes pâles et
+blanches sont abandonnées.
+
+**Et après cette deuxième itération : ça ne lit toujours pas.** Le ruban existe
+(compte d'instances 0 → 2, sur les bons membres), mais à cette distance de caméra
+il reste écrasé par la gerbe d'impact qui, elle, occupe tout le cadre.
+
+### Mon analyse, à trancher
+
+Deux hypothèses, que je ne peux pas départager sans un choix de direction :
+
+1. **La gerbe d'impact est trop dominante.** Elle sature la zone au moment précis
+   où la traînée devrait se voir. La rendre plus discrète ferait apparaître l'arc
+   — mais c'est l'effet que Milan a validé comme « embrasement ».
+2. **La traînée n'est pas le bon device à cette distance de caméra.** Dans la
+   référence, la caméra est proche et le geste occupe l'écran ; chez nous elle est
+   reculée et le bras R6 balaie peu de pixels.
+
+Je n'ai pas continué à tâtonner sur les valeurs : deux itérations mesurées
+suffisent à dire que le levier n'est pas là.
+
+### Non commencé
+
+Les 13 `Get Hit` natifs R6, `AssetVerifier`, la proposition sur
+`ImpactFrameController.Flash()`.
+
+---
+
 ## 2026-08-31 — Traînées hors plafond + seuil Heavy 15→10, les deux vérifiés
 
 ### 1. Traînées exclues du décompte, plafond inchangé
