@@ -69,6 +69,117 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — Recherche de packs : un seul candidat, et deux corrections livrées
+
+### La recherche — conclusion d'abord
+
+**Un seul candidat retenu. Rien téléchargé, rien importé.**
+
+#### ✅ ACCAD Open Motion Project — Ohio State University
+
+- **Source** : <https://accad.osu.edu/research/motion-lab/mocap-system-and-data> — centre
+  de recherche universitaire, projet identifiable avec une histoire.
+- **Licence, citée verbatim** : *« Open Motion Project by ACCAD/The Ohio State
+  University is licensed under a Creative Commons Attribution 3.0 Unported
+  License »*. CC BY 3.0 : **usage commercial autorisé**, dérivés autorisés
+  (donc le retargeting), sous réserve d'attribution.
+- **Ce qu'il apporte qu'on n'a pas** : le corpus « Male 2 » contient **95 fichiers
+  d'arts martiaux** — coups de pied, coups de poing, **postures** et déplacements.
+  Ça vise deux de nos manques nommés : le **geste franc de garde** et la **frappe
+  au sol**. Formats dont **BVH**, que `scripts/bvh_to_r6.py` sait déjà lire.
+- **Audit malveillant** : **sans objet, structurellement**. Le BVH et le C3D sont
+  des formats de données de mouvement, sans contenu exécutable. Notre
+  `audit_pack_safety.py` cible les `.rbxm`/`.rbxl`, les conteneurs Roblox qui
+  peuvent embarquer des `Script` — ce vecteur n'existe pas ici.
+
+#### ❌ Bandai Namco Research Motion Dataset — écarté sur la licence
+
+3 000 mouvements dont du combat, en BVH. Mais licence **CC BY-NC-ND**, citée :
+*« free for research and personal use under a Creative Commons Attribution
+Non-Commercial No Derivatives licence »*. **Deux blocages** : usage non commercial,
+et **pas de dérivés** — or retargeter vers R6 EST un dérivé. Écarté sans discussion,
+exactement la règle qu'on vient de se donner.
+
+#### ❌ Dépôts R6 open-source sur GitHub — rien
+
+Aucun dépôt d'animations de combat R6 sous licence permissive. Le marché R6 est
+**commercial** (BuiltByBit, KitsBlox, robloxanimations.com) : ce sont des achats à
+arbitrer, pas des trouvailles sous licence libre.
+
+#### ⚪ CMU mocap — déjà chez nous, et maigre sur le combat
+
+`vendor/cmu-mocap` contient déjà **2 548 clips BVH**, avec une licence explicite
+citée dans son propre README : *« CMU places no restrictions on the use of the
+original dataset, and I (Bruce) place no additional restrictions »*. Mais recherche
+ciblée sur nos manques : **un seul** `punch/strike` (02_05), **une seule**
+`defensive guard pose` (76_04), un sujet « Martial Arts **Walks** » (marches, pas
+frappes). Il est là, il est libre, il ne couvre pas nos besoins.
+
+#### VFX : rien à ajouter
+
+Les trois devices BZ1 posés couvrent l'arc, le sol et l'aura. **Je n'ajoute rien** —
+c'est la réponse, pas une absence de recherche.
+
+#### La réserve que je pose sur ACCAD
+
+Notre propre histoire dit que le mocap → R6 déçoit régulièrement : *« raw SMPL→R6
+projection casse les poses »*, *« A-native bat B-cloud sans vrai retargeter »*, et
+le pivot référence concluait *« voie viable mais exige refs curées + retargeter plus
+sophistiqué »*. ACCAD est un **candidat**, pas une promesse. Si tu valides, je
+propose un essai étroit : **3 à 4 clips** (garde, frappe au sol, appui-poussée) à
+travers `bvh_to_r6` + la cascade de gates, avant tout import en volume.
+
+---
+
+### Correction 1 — Main du Colosse 64 % → 88 %, Frappe Céleste 54 % → 86 %
+
+**Cause réelle** : `recovery` **ne coupe pas** l'animation. Il fait passer la FSM en
+`Locomotion.Idle`, et c'est `Idle` qui écrase la piste. Deux choses distinctes
+étaient confondues : le **verrou d'entrée** et la **fin du geste**.
+
+Séparées :
+
+| | avant | après |
+|---|---|---|
+| `recovery` — rend la main au joueur | 0,55 s | **0,55 s, inchangé** |
+| retour de la FSM à l'idle | 0,55 s | **fin réelle de la piste** |
+
+| pièce | avant | après |
+|---|---|---|
+| Main du Colosse | 64 % | **88,1 %** |
+| Frappe Céleste | 54 % | **85,8 %** |
+| Marche du Titan | 96 % | 98,4 % |
+
+Le reliquat (~12 %) est le **fondu** vers l'idle, pas une troncature. **La
+réactivité n'a pas bougé** : si le joueur agit dans l'intervalle, sa nouvelle
+action écrase la piste comme avant. On ne paie pas la lisibilité du geste en temps
+de blocage.
+
+### Correction 2 — l'ordre des marqueurs, garanti par construction
+
+**Cause racine** : deux règles indépendantes plaçaient des marqueurs censés être
+ordonnés. `Whoosh` était posé à `0,55 × contact` dans l'absolu, sans regarder où
+tombe `Windup` (valeur héritée, 0,51 à 0,77 du contact). Seul M1_2 respectait
+l'ordre ; M1_3 et M1_4 avaient même `Whoosh` **après** `Impact`.
+
+Nouvelle règle : **`Whoosh` à mi-chemin entre `Windup` et `Impact`**. L'ordre est
+garanti quelle que soit la valeur de `Windup` — on supprime la **classe** de bug,
+pas ses quatre instances.
+
+Vérifié en moteur, par les signaux réels :
+```
+M1_1  Windup@0.117 -> Whoosh@0.163 -> Impact@0.200
+M1_2  Windup@0.125 -> Whoosh@0.183 -> Impact@0.246
+M1_3  Windup@0.171 -> Whoosh@0.208 -> Impact@0.233
+M1_4  Windup@0.225 -> Whoosh@0.308 -> Impact@0.325
+```
+
+**Un piège au passage** : ma première passe posait `Whoosh` à un temps non **snappé
+sur une frame**. Le convertisseur indexe par temps de frame arrondi — le marqueur
+n'était donc associé à aucune keyframe et **n'était pas baké du tout**. Constaté en
+moteur : seul `Impact` firait. Le snap est obligatoire, il ne s'agit pas d'un
+arrondi cosmétique.
+
 ## 2026-09-01 — TRANCHE COMPLETE : les trois devices sont posés et mesurés
 
 ### Les quatre états, même métrique, même caméra (8,5 stud)
