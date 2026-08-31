@@ -69,6 +69,141 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 — NOTE DE REPRISE (pause demandée)
+
+À lire en premier à la reprise. Pause posée par l'utilisateur ; le second passage
+packs et le recoupage M1 sont **explicitement hors périmètre** jusqu'à nouvel ordre.
+
+### Verdict de l'état des lieux — il est bouclé
+
+Les 4 compétences et l'ultime jouent, poids 1,00, aucun Idle prématuré, aucune
+couche qui en écrase une autre. **Deux sont tronquées par leur propre `recovery`**
+(Main du Colosse 64 %, Frappe Céleste 54 %), pas par un conflit d'animation. Les
+réactions du rig sont cohérentes avec le coup reçu sur les trois paliers. Le
+kit est **nettement meilleur** qu'il y a trois jours sur l'ultime, les réactions,
+le flash et la vérification d'assets ; **équivalent** sur les M1, la gerbe et le
+cadrage ; **encore faible** sur quatre points listés plus bas.
+
+### Ce qui a été corrigé sur l'ultime — fini, vérifié
+
+Trois défauts enchaînés, tous mesurés à 20 Hz sur le vrai chemin :
+
+1. **L'impact partait sur un délai fixe** de `RISE + SUSPEND + FALL` = 1,15 s,
+   alors que le commentaire du code disait déjà « Impact, at landing ».
+   L'atterrissage réel est à **0,92 s**.
+2. **L'impulsion de chute** (`FALL_SPEED = -90`, `MaxForce = math.huge`)
+   continuait de pousser dans le sol jusqu'à `FALL_DURATION`. Le solveur éjecte :
+   le personnage repartait vers le haut à 1,07 s et dépassait 80 stud.
+3. Conséquence : à 1,15 s l'onde cherchait ses cibles depuis **22 stud de haut**,
+   hors de `IMPACT_RADIUS = 14`. **Zéro dégât, zéro erreur en console.**
+
+Corrections livrées (`2c27d00`, `2a5d9f7`, `82ba7f5`) :
+- impact calé sur l'atterrissage **réel** ;
+- détection **géométrique** (hauteur mémorisée au cast) et non `FloorMaterial` —
+  celui-ci renvoie `Air` à l'atterrissage parce que l'impulsion enfonce le
+  personnage **sous** le sol (hauteur 1,37 pour un repos à 3,00) ;
+- purge de `AssemblyLinearVelocity` + repose à la hauteur de départ : détruire la
+  `LinearVelocity` ne suffisait pas, il remontait encore à 30 stud.
+
+**Après : 50 dégâts infligés, hauteur max 27,68 stud (l'apogée voulue), plus
+d'éjection, réaction `KnockedDown`.**
+
+### PISTE À NE PAS REPERDRE — même famille de bug sur Marche du Titan
+
+`FALL_SPEED` et l'impact-à-l'atterrissage sont réglés pour l'ultime, mais
+**Marche du Titan souffre exactement du même schéma** : elle joue à 96 % et
+n'inflige jamais de dégât. Trace de distance relevée pendant le cast :
+
+```
+6,93 -> 4,92 -> 8,38 -> 10,85 -> 15,98 -> 18,84 stud
+```
+
+Elle traverse la cible (4,92) puis emmène le joueur **19 stud au-delà**. Son
+`finalStrike` utilise `HitboxService.ComputeTargets` avec une portée de 7, mais il
+se déclenche quand le joueur est déjà loin. **Hypothèse à vérifier en premier à la
+reprise** : le coup final est lui aussi câblé sur un délai fixe plutôt que sur la
+fin réelle du déplacement — c'est-à-dire le même défaut que l'ultime, dans le
+module `src/server/Skills/Skill3_MarcheDuTitan.lua`. Ne pas corriger à l'aveugle :
+mesurer d'abord l'instant réel de `finalStrike` contre l'instant réel d'arrêt.
+
+### PISTE DASH — trouvée, en attente de reprise
+
+**Le dash n'a jamais cherché dans Close Combat.** Il ne s'appuie que sur les
+**19 clips de Battleground**, alors que Close Combat en contient **210**. C'est le
+trou le plus évident du kit sur la pièce dont la correspondance est la plus faible.
+
+Référence mesurée du dash actuel : **appui 0,42 stud, poussée 0,26 stud**.
+Meilleure piste trouvée : `closecombat / Regular Kick` — appui **3,37**, poussée
+**1,04**, durée **0,20 s** (8× l'appui, 4× la poussée, la seule durée de dash de
+la liste). Réserve : un coup de pied lève une jambe haut, ça peut mal lire sur un
+dash — **il faut assembler et passer la cascade de gates avant de conclure**.
+Analyse rejouable : `scripts/animator_ai/dash_second_pass.py`.
+
+**Cette piste attend la reprise. Rien n'a été assemblé ni modifié.**
+
+### Ce qui reste ouvert
+
+**Défauts connus, non corrigés :**
+1. Main du Colosse coupée à **64 %**, Frappe Céleste à **54 %** par leur
+   `recovery` de 0,55 s. (Le chiffre est plus sévère que les 84 % documentés le
+   29, qui mesuraient le mouvement vu, pas la position de la piste.)
+2. **Marche du Titan ne touche jamais** — voir la piste ci-dessus.
+3. **Jugement inatteignable au momentum plein** : `R` est partagé avec l'ultime,
+   qui gagne dès que le momentum est à 100. Question de **design**, pas un bug.
+4. **Les traînées ne lisent pas** — deux itérations mesurées, la cause est
+   l'échelle relative à la gerbe, pas la traînée elle-même.
+5. `test_moving_contact::TestTracking` rouge depuis le 2026-08-25.
+
+**Décisions qui t'appartiennent :**
+
+- **Arbitrage caméra (Milan, non tranché).** Notre caméra de combat est à 13 stud,
+  FOV 70, le personnage occupe 27,5 % de la hauteur d'écran. À 6,7 stud il en
+  occupe 53 % et le travail VFX devient lisible. Coût mesuré en vision
+  périphérique : le cadre passe de **38,0 à 19,6 stud de large**, soit **−48 %**.
+  Proposition remontée : une caméra qui se rapproche pendant l'échange et recule
+  en déplacement. Deux éléments pour décider : (a) `CameraController` pose
+  `BASE_FOV = 72` mais le FOV **effectif est 70** — un écart à éclaircir AVANT de
+  régler quoi que ce soit ; (b) cinq modules touchent au FOV ou à la caméra, donc
+  le coût réel n'est pas la caméra mais la **centralisation** en un point d'entrée.
+  **Rien n'a été touché sur la caméra.**
+
+- **Cible intermédiaire du timing M1 — à valider avant que je touche à quoi que
+  ce soit.** Contact réel mesuré : 49,3 % / 58,3 % / 38,8 % / 42,9 %, moyenne
+  **47,3 %**.
+
+  | M1 | classe | actuel | cible proposée | contact |
+  |---|---|---|---|---|
+  | M1_1 | straight | 49,3 % | **33 %** | 0,271 → 0,182 s |
+  | M1_2 | hook | 58,3 % | **38 %** | 0,350 → 0,228 s |
+  | M1_3 | uppercut | 38,8 % | **33 %** | 0,252 → 0,215 s |
+  | M1_4 | overhead | 42,9 % | **38 %** | 0,364 → 0,323 s |
+
+  Moyenne 47,3 % → **35,5 %**. **Pas 25 %** : c'est la valeur de jeux dont les M1
+  sont des jabs légers, et l'identité Demi-Dieu est le coup lourd, qui a droit à
+  plus d'anticipation. Mais 47 % n'est plus « lourd », c'est **en retard** — le
+  coût se paie en délai entre le clic et l'impact. Le poids reste dans le
+  follow-through et le hitstop, qu'on ne touche pas. Méthode : remappage temporel
+  du seul segment d'anticipation, durée totale inchangée, **aucune keyframe
+  ajoutée**.
+
+- **Licence des packs.** Seuls Battleground et Close Combat sont autorisés. Les
+  six autres dumps ne peuvent rien fournir en production — et 3 d'entre eux sont
+  de toute façon R15. Cela bloque aussi l'inventaire des devices VFX.
+
+### État machine à la pause
+
+La machine était déjà repartie avant la demande de pause : `screencapture` échoue
+avec `could not create image from display`, le MCP répond `Place is not open`.
+**Studio n'a pas été fermé par moi, et aucune sauvegarde n'a pu être confirmée.**
+
+Toutes les sondes étaient insérées dans le DataModel de **Play** (serveur :
+`play_scene_server`, `sonde_kit`, `sonde_ult`, `sonde_ult2`, `sonde_dist`,
+`sonde_log`, `sonde_hits`, `sonde_reactions`, `sonde_trails` ; client :
+`_SondeKitClient`, `_SondeTrailsClient`). Play étant arrêté, elles ont disparu
+avec lui. **Aucune sonde n'a jamais été insérée en Edit** — seules des sources de
+modules identiques au disque y ont été poussées. À vérifier tout de même à la
+reprise, place rouverte.
+
 ## 2026-08-31 (suite 3) — Second passage packs : deux blocages, et une piste chiffrée pour le dash
 
 ### Deux blocages à signaler avant tout
