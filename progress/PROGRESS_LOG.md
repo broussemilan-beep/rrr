@@ -69,6 +69,112 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 (suite 2) — État des lieux du kit avec le harnais corrigé
+
+Milan demande si les compétences et l'ultime jouent bien, et si c'est réellement
+meilleur. Réponse mesurée, harnais corrigé, repositionnement avant chaque cast.
+
+### Le piège, confirmé : nos jugements passés étaient faussés
+
+Deux défauts du harnais, tous deux corrigés aujourd'hui :
+
+1. `STAND_OFF = 8` stud alors que M1_1..M1_3 portent à 6 → un seul coup sur
+   quatre touchait.
+2. `faceDummy()` ne tournait **qu'une fois à l'insertion**. Après un dash ou une
+   Marche du Titan, le joueur se retrouvait à 26 puis 68 stud du mannequin, et
+   les compétences suivantes « ne touchaient pas ». Ce n'était pas la compétence.
+
+Le harnais a maintenant un repositionnement à la demande (attribut `Replace`).
+
+### Ce que jouent réellement les animations
+
+| pièce | durée | atteint | poids | interruption |
+|---|---|---|---|---|
+| Pas Divin | 0,45 s | **96 %** | 1,00 | non |
+| Main du Colosse | 0,70 s | **64 %** | 1,00 | `recovery` 0,55 s |
+| Frappe Céleste | 0,83 s | **54 %** | 1,00 | `recovery` 0,55 s |
+| Marche du Titan | 0,97 s | **96 %** | 1,00 | non |
+| Ultime | 4,50 s | **91 %** | 1,00 | non |
+
+Poids 1,00 partout : aucune n'est écrasée par une autre couche, aucun Idle
+prématuré. Les deux qui sont coupées le sont par leur `recovery`, pas par un
+conflit d'animation.
+
+### L'ultime : il était cassé, il ne l'est plus
+
+Trouvé en mesurant à 20 Hz. Deux défauts qui se renforçaient :
+
+1. L'impact se déclenchait sur un **délai fixe** de RISE+SUSPEND+FALL = 1,15 s,
+   alors que le commentaire du code disait déjà « Impact, at landing ».
+2. L'impulsion de chute (LinearVelocity −90, MaxForce infini) continuait de
+   pousser dans le sol ; le solveur éjectait le personnage vers le haut.
+
+```
+t=0.92  hauteur  2.64  distance 3D  4.98   dans le rayon
+t=1.07  hauteur 11.28  distance 3D 10.23   dans le rayon
+t=1.15  hauteur 23.48  distance 3D 21.98   HORS RAYON (14)   <- l'impact
+```
+
+**L'onde cherchait ses cibles depuis 22 stud de haut. Zéro dégât, sans la moindre
+erreur en console.** Et c'est ce qui envoyait ensuite le joueur à 68 stud, ce qui
+faisait passer les compétences suivantes pour cassées.
+
+Corrigé en trois passes, chacune mesurée :
+- impact calé sur l'atterrissage réel ;
+- `FloorMaterial` ne marche pas ici (l'impulsion enfonce le personnage **sous**
+  le sol, hauteur 1,37 pour un repos à 3,00, le rayon de détection part de sous
+  la géométrie) → détection géométrique sur la hauteur de départ ;
+- purge de `AssemblyLinearVelocity` à l'atterrissage : détruire la
+  LinearVelocity ne suffisait pas, le personnage remontait encore à 30 stud.
+
+**Après : 50 dégâts infligés, hauteur max 27,68 stud (l'apogée voulue), plus
+d'éjection.** Réaction déclenchée : `KnockedDown`, 1,25 s au sol.
+
+### Les réactions du rig sont cohérentes avec le coup
+
+```
+4 x M1   6 dégâts  ->  Front_V3, Front_V2, Face, Front_V2   (léger, varié)
+Skill1  20 dégâts  ->  HitReactHeavy                        (lourd)
+Skill2  22 dégâts  ->  HitHeavy_GutFast                     (lourd)
+Ultime  50 dégâts  ->  KnockedDown                          (projection)
+```
+
+Tous à 5,00 stud mesurés, tous par le vrai chemin.
+
+### Comparaison honnête avec il y a trois jours
+
+**Meilleur, chiffres à l'appui :**
+
+| | 2026-08-28 | aujourd'hui |
+|---|---|---|
+| ultime, dégâts | 0 (non détecté) | **50** |
+| ultime, éjection | jusqu'à 80+ stud | **aucune** |
+| ultime, `recovery` | 1,40 s (coupait à 31 %) | 4,50 s (91 %) |
+| réactions du rig | 3, conversions R6→R15 | **13 natives R6**, 3 paliers variés |
+| réaction sur un jab | palier faussé par le cumul | correcte |
+| flash d'impact | 1 flash blanc pour 23 recettes | différencié par pièce |
+| assets vérifiés | inconnu (l'outil ne pouvait pas) | **58/58 mesurés** |
+| hitstop | 0–2 ms | 114–136 ms |
+| secousse caméra | 0,16 stud | 1,0–1,4 stud |
+
+**Équivalent :** les animations M1 elles-mêmes, la gerbe d'impact (le −30 % n'a
+donné que −10 % à l'écran), le cadrage.
+
+**Reste faible, sans enjoliver :**
+1. **Main du Colosse coupée à 64 %, Frappe Céleste à 54 %.** Le `recovery` de
+   0,55 s tronque les deux. C'est l'arbitrage en attente depuis le 2026-08-29 —
+   et le chiffre réel est plus sévère que les 84 % documentés alors, qui
+   mesuraient le mouvement vu, pas la position de la piste.
+2. **Marche du Titan ne touche toujours pas.** Elle joue à 96 %, mais elle
+   déplace le joueur au-delà de la cible : trace de distance 6,93 → 4,92 → 8,38
+   → 10,85 → 15,98 → 18,84 stud. Le coup final cherche ses cibles quand le
+   joueur est déjà 19 stud plus loin. Même famille de bug que l'ultime.
+3. **Jugement est inatteignable au momentum plein.** `R` est partagé : au-dessus
+   de 100 de momentum il part toujours en ultime. Question de design, pas un bug
+   — je ne tranche pas.
+4. **Les traînées ne lisent toujours pas.** Deux itérations mesurées, la cause
+   est l'échelle relative à la gerbe, pas la traînée.
+
 ## 2026-08-31 (suite) — Trois bugs de fond trouves en verifiant, pas en cherchant
 
 Reprise de la file d'attente. Chaque etape a revele un defaut plus serieux que
