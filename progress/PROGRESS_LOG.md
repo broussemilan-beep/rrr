@@ -69,6 +69,93 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 — Rig de test : cible R6 immortelle qui se réancre seule (étape 1/4)
+
+### Audit AVANT retrait, comme demandé
+
+Deux créateurs seulement (`TrainingDummies.server.lua` et `DummyService.server.lua`),
+et **une seule référence externe** : `scripts/visual_check/play_scene_server.luau`,
+un script de capture qui cherche par nom. **Aucun système de jeu n'en dépendait.**
+Les deux anciens sont **désactivés, pas supprimés** — corps conservé entre
+`--[==[ ]==]`, réversion triviale.
+
+### Le point qui a changé la conception
+
+L'ancien mannequin était **R15** (`CreateHumanoidModelFromDescription` sans rig
+type). Or le projet est **R6 uniquement** et le kit du joueur l'est : un rig R15
+ne peut pas porter correctement des animations R6. Le nouveau est explicitement
+`Enum.HumanoidRigType.R6`.
+
+### Les trois propriétés, mesurées par le vrai chemin
+
+**1. Les réactions jouent réellement.** Observées via `AnimationPlayed` sur
+l'Animator — pas un `LoadAnimation` qui réussit :
+
+```
+REACTION jouee : HitReactLight_Front    len=0.383
+REACTION jouee : HitReactHeavy          len=0.517
+  ... 12 declenchements sur la sequence
+BILAN : 2 type(s) de reaction joue(s)
+```
+
+**2. Les dégâts restent lisibles.** PV min **468** — le signal « 500 → 468 » qui
+sert de preuve qu'un coup touche est préservé — puis **remontés à 500**
+automatiquement après 2 s. Un `MaxHealth = math.huge` aurait supprimé ce signal ;
+c'est pour ça que l'immortalité est faite par **soin différé** et non par
+invulnérabilité.
+
+**3. Le réancrage — et la nuance honnête.** Pendant la séquence de combat, la
+dérive maximale a été de **0,03 stud** : rien n'a jamais déplacé la cible, donc le
+réancrage **ne s'était pas déclenché** et n'était pas prouvé. Testé directement :
+
+```
+projection horizontale       ecart 25.0 stud -> revenu en 0.05 s
+projection en l'air (ultime) ecart 24.2 stud -> revenu en 0.12 s
+knockback violent            ecart 17.7 stud -> revenu en 0.75 s
+position finale : 0, 3.00, 44.99
+```
+
+Le cas « knockback violent » met 0,75 s **par conception** : on attend que la
+vitesse retombe sous 6 stud/s avant de ramener, sinon on annulerait le mouvement
+qu'on cherche justement à regarder.
+
+### Ce que ça débloque
+
+Les captures de cette session ont buté quatre fois sur la cible : mannequin à
+43 studs pour une portée de 8, dérive du knockback précédent, PV à réinitialiser,
+replacement scripté avant chaque enregistrement. **Toutes les captures futures
+deviennent comparables entre elles.**
+
+---
+
+### Signalements hors périmètre (à trier)
+
+Conformément au nouveau cadrage — rapporter large, même hors sujet :
+
+1. **`Knockback` ne se déclenche jamais.** Le seuil est de 40 dégâts sur un seul
+   coup, et aucun coup du kit ne l'atteint (M1 ~8, Skill1 20, Skill2 22). Une des
+   trois animations de réaction est donc morte. Seuil à revoir, ou à réserver à
+   l'ultime.
+2. **Les trois réactions sont des conversions R15.** Leurs commentaires dans
+   `AnimationDB/Reactions.lua` disent « 6to15 : Hit 1 … R6 → R15 ». Elles jouent
+   correctement sur le rig R6 (longueurs conformes), mais leur **fidélité visuelle
+   sur R6 n'est pas vérifiée**. Le pack Close Combat contient 13 `Get Hit`
+   natifs R6 non uploadés — candidats évidents.
+3. **`scripts/visual_check/play_scene_server.luau` est cassé** : il cherche encore
+   `TrainingDummy` par nom, qui n'existe plus.
+4. **`ImpactFrameController.Flash()` ne prend aucun argument** et désature tout
+   l'écran de −0,6, de façon fixe, pour toutes les compétences. C'est ce qui fait
+   perdre son identité violette à l'arène à chaque impact. Effet partagé, non
+   touché.
+5. **`AssetVerifier` rapporte `VERIFIED=0 UNVERIFIED=45`** à chaque Play, alors
+   que les assets sont bel et bien valides. Sa vérification ne fonctionne pas en
+   session — bruit permanent dans la console qui masquerait un vrai problème.
+6. **Rojo n'a pas synchronisé de la session.** Tous les fichiers sont poussés à la
+   main via un serveur local, puis vérifiés. Ça marche, mais c'est le principal
+   risque de mesurer du code périmé.
+
+---
+
 ## 2026-08-31 — Analyse des deux vidéos de référence (regardées, pas déduites)
 
 Frames extraites avec `ffmpeg` et **ouvertes une par une**, y compris un zoom
