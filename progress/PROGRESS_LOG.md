@@ -69,6 +69,74 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — Recoupage M1 appliqué, et les VFX dorment ailleurs
+
+### Le recoupage : 47,3 % → 37,2 % mesurés en moteur
+
+Cible validée : **35,5 %**, pas 25 %. Le raisonnement retenu — un coup lourd a
+droit à son anticipation, 25 % est la valeur de jeux dont les M1 sont des jabs
+légers ; mais 47 % n'est plus « lourd », c'est **en retard**, et le coût se paie
+en délai entre le clic et l'impact.
+
+**Méthode** — `retime_anticipation` : remappage linéaire **par morceaux** du temps,
+`[0,c] → [0,cible]` et `[c,1] → [cible,1]`. L'anticipation se comprime, le
+follow-through s'étire d'autant, la durée totale ne bouge pas.
+
+| M1 | classe | avant | cible | **moteur** | anticipation |
+|---|---|---|---|---|---|
+| M1_1 | straight | 49,3 % | 33 % | **34,1 %** | 0,271 → 0,181 s |
+| M1_2 | hook | 58,3 % | 38 % | **41,0 %** | 0,350 → 0,228 s |
+| M1_3 | uppercut | 38,8 % | 33 % | **34,0 %** | 0,252 → 0,214 s |
+| M1_4 | overhead | 42,9 % | 38 % | **39,7 %** | 0,364 → 0,323 s |
+
+L'écart aux cibles est **inférieur à une frame** (33 ms à 30 fps) : le marqueur se
+cale sur une frame réelle.
+
+### Les contraintes, vérifiées et non supposées
+
+- **Aucune keyframe ajoutée** : 72 / 37 / 50 / 36 avant **et** après.
+- **Gate de classe PASS** sur les quatre, amplitude **inchangée au millième**
+  (3,233 / 2,893 / 3,069 / 4,118) — un remappage du temps ne touche pas la
+  géométrie.
+- **Le poids n'est pas perdu** : le follow-through **s'allonge** de +9 % à +49 %.
+  Le poids d'un coup vient de la suite du geste et du hitstop, pas de la longueur
+  de la préparation.
+
+### Un défaut préexistant mis au jour, non corrigé ici
+
+L'ordre attendu `Windup → Whoosh → Impact` n'est respecté que par **M1_2**. Avant
+ce recoupage, M1_3 et M1_4 avaient déjà `Whoosh` **après** `Impact` (0,300 vs
+0,252 et 0,400 vs 0,364), ce qui n'a pas de sens pour un marqueur documenté comme
+« pre-impact » dans `AnimationMarkerRouter`. Deux règles différentes posent ces
+marqueurs et personne ne les a jamais rapprochées. Le rapport `Windup / Impact`
+est **exactement préservé** par mon remappage (0,61 / 0,51 / 0,77 / 0,70 avant
+comme après) : l'incohérence est **héritée, pas introduite**. Non corrigée ici —
+ce serait changer une convention en douce au milieu d'un autre chantier.
+
+### Devices inutilisés : ils ne sont pas où on les cherchait
+
+Les dumps de packs ne contiennent **que des animations** (`anims`, `pose_names`,
+`rig`). Ils ont été extraits en données de keyframes : aucun `ParticleEmitter`,
+`Beam`, `Trail` ni `Sound` n'y a jamais été capturé. Chercher des devices dedans
+ne pouvait rien donner.
+
+**En revanche, cinq packs VFX dédiés dorment sur le disque, jamais dépouillés :**
+
+| fichier | note |
+|---|---|
+| `15+ HQ Aura VFX.rbxl` | auras — exactement le registre Demi-Dieu |
+| `SoulShroud Ultimate VFX Pack V1.7` | marqué SAFE à l'audit sécurité |
+| `Blood Engine Ultimate VFX Pack V1.4` | marqué SAFE (deux copies sur disque) |
+| `Ultimate RPG Combat & Loot VFX Pack V1.3` | combat + loot |
+
+Le `.rbxl` de Close Combat est également toujours présent, donc ses devices
+éventuels restent extractibles.
+
+**Rien n'a été extrait ni importé** — signalé pour décision commune, comme demandé.
+Deux questions à trancher avant d'y toucher : la **licence commerciale** de ces
+cinq packs (seuls Battleground et Close Combat sont confirmés), et lesquels
+valent le coût d'extraction.
+
 ## 2026-09-01 — Dash v2 : la catapulte existe enfin
 
 ### Le trou
