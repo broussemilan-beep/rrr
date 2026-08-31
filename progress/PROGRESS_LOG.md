@@ -69,6 +69,85 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 — Étape 5 : l'Ultime noyait bien le geste, allégé — et un bug d'étiquettes trouvé
+
+État de reprise vérifié d'abord : plugin MCP revenu, Play arrêté, **`DESYNC = 0`**
+sur les 5 points du chantier, aucune sonde résiduelle côté Edit.
+
+### Ce que la charge VFX fait dans le temps
+
+Sonde allégée (la précédente parcourait `workspace:GetDescendants()` à chaque
+échantillon et n'avait rendu qu'un point à t=0 ; celle-ci écoute
+`DescendantAdded`, donc ne compte que ce qui apparaît) :
+
+```
+ULTIME anim 4.50 s — 64 emetteurs APPARUS pendant le geste
+  t=1.5-2.0 s   64 ##################################################
+  (toutes les autres tranches : 0)
+```
+
+**Les 64 émetteurs tombent dans une seule fenêtre de 0,5 s.** Ce n'est pas une
+surcharge continue : c'est une décharge concentrée à l'impact, et les trois temps
+du geste (élévation, chute, relevé) n'ont rien d'autre que l'aura.
+
+### Verdict : oui, ça noyait le geste
+
+Frame d'impact mesurée : **luminance 203/255, 22,3 % de pixels saturés**. À
+l'écran, l'arène perdait son identité violette, tout virait au blanc, et **le
+personnage n'était plus distinguable**.
+
+### Allégé, pas augmenté
+
+`Impact Burst` et `GroundSmash` faisaient doublon au même instant → un seul gardé.
+Magnitudes 1.6-1.8 → 1.1-1.3. Atome `Impact` blanc 6.0 → 3.2 et passé en doré.
+Flash 0.65 → 0.32. Shake 2.20 → 1.60. **Poussière et fracture conservées et même
+allongées** (1800→2200 ms, 2400→2800 ms) : ce sont elles qui portent le geste dans
+la durée, là où le blanc ne faisait que masquer.
+
+| | avant | après |
+|---|---|---|
+| pixels saturés au pic | **22,3 %** | **11,9 %** |
+| couches d'émetteurs | 4 | 3 |
+| atomes procéduraux | 4 | 3 |
+
+À l'œil : le personnage est de nouveau **lisible**, silhouette distincte,
+géométrie de l'arène lisible.
+
+### Bug trouvé en chemin : des étiquettes de vitrine affichées en jeu
+
+La capture montrait le texte **« ight Wave Impact »** à l'écran. Vérifié : **5 des
+11 émetteurs** que nos recettes clonent embarquent un `BillboardGui` affichant
+leur propre nom — `Impact Burst`, `Light Wave Impact`, `Wind Flare`,
+`Shockwave Impact V`, `Ground Skill II`. Ce sont les étiquettes de la place de
+démonstration du pack.
+
+Elles touchaient M1 #1, #2, #3, Skill1, Skill3, Skill4 et l'Ultime.
+
+Corrigé **à la source du clonage** (`CombatFXBroadcaster.SpawnVFXLayer`) plutôt
+que recette par recette : le correctif couvre aussi les émetteurs qu'on ajoutera
+plus tard. Preuve inverse, sur une session avec 2 M1 + l'ultime :
+
+```
+BILAN : 0 GUI apparus dans le workspace | textes : AUCUN
+```
+
+### Reste ouvert
+
+Le voile global qui subsiste à l'impact ne vient pas de la recette mais de
+`ImpactFrameController.Flash()`, qui applique une désaturation fixe de **−0.6** à
+tout l'écran, sans paramètre. C'est un effet **partagé par tout le kit** : je ne
+l'ai pas touché, ce serait un changement de game-feel sur toutes les compétences,
+pas un réglage de l'ultime.
+
+### Note d'outillage
+
+Codex et la parallélisation n'ont pas été employés ici : ce tour était de
+l'investigation et de la vérification moteur, exactement ce qui ne se délègue pas.
+Ils seront utiles sur le travail répétitif — appliquer un même geste à plusieurs
+pièces, par exemple.
+
+---
+
 ## 2026-08-30 — PAUSE (4) — note de reprise
 
 ### Ce qui est fait

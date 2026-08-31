@@ -5,6 +5,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 
 | file | bytes |
 | --- | --- |
+| `2026-08-31_ultime-allege.gif` | 5339650 |
 | `2026-08-30_vfx-main-du-colosse.gif` | 915163 |
 | `2026-08-30_vfx-celeste-titan.gif` | 6850611 |
 | `2026-08-30_ultime-descente.gif` | 2802439 |
