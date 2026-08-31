@@ -69,6 +69,84 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 — Traînées hors plafond + seuil Heavy 15→10, les deux vérifiés
+
+### 1. Traînées exclues du décompte, plafond inchangé
+
+Implémenté comme arbitré : les `SlashTrail` sortent du décompte **et** de la
+troncature, sans toucher au plafond global — le relever aurait rouvert la porte à
+la surcharge de particules qu'on venait de fermer sur l'ultime. Elles ne
+consomment pas non plus le budget des autres effets, donc elles ne peuvent pas
+faire écarter un impact au coup suivant.
+
+**Vérifié en moteur :**
+
+```
+M1_1   trainees pic 1  [Right Arm]              <- 1 bras declare
+M1_2   trainees pic 2  [Left Arm, Right Arm]    <- 2 bras declares  (etait 1 avant)
+```
+
+Les pièces « serrées » affichent bien leurs deux traînées.
+
+### 2. À l'œil : elles ne se lisent pas comme du bruit — elles se lisent à peine
+
+Réponse honnête à la question posée. Sur la capture, ce qui porte le coup c'est
+l'**éclat doré d'impact** ; la traînée ne ressort pas comme un ruban distinct.
+Deux traînées ne créent donc aucun encombrement — le problème est inverse.
+
+Cause chiffrée, lue dans `CombatVFX.SlashTrail` :
+
+| paramètre | valeur actuelle | conséquence |
+|---|---|---|
+| attaches | ±0,8 stud | ruban de **1,6 stud** de large |
+| `Lifetime` | **0,14 s** | le ruban ne persiste que **140 ms** derrière le bras |
+
+À la vitesse mesurée du poignet, 140 ms laisse un arc très court. La référence
+d'animateur analysée montrait au contraire un **grand arc balayé** qui reste
+visible pendant toute la course du membre.
+
+**Proposition, non appliquée** — `SlashTrail` est partagé par tout le jeu, donc
+même catégorie de décision que le plafond :
+- `Lifetime` **0,14 → 0,30 s** (l'arc suit vraiment la course au lieu de la
+  frôler) ;
+- attaches **±0,8 → ±1,1 stud** (ruban de 2,2 stud, proportionné à un bras R6 de
+  2 stud, sans devenir une nappe).
+
+Capture avant/après à fournir si tu veux trancher dessus.
+
+### 3. Seuil Heavy 15 → 10 : appliqué et vérifié
+
+Test par **identifiant d'asset** et non par nom d'instance — le rig R6 par défaut
+embarque un script `Animate` dont toutes les pistes s'appellent « Animation »,
+ce qui rendait ma première sonde illisible :
+
+```
+  M1 #1/#2            6 degats -> HitReactLight_Front
+  M1 #3               8 degats -> HitReactLight_Front
+  M1 #4 finisher     12 degats -> HitReactHeavy        <- LE SEUL QUI BASCULE
+  Main du Colosse    20 degats -> HitReactHeavy
+  Marche du Titan    35 degats -> HitReactHeavy
+  ULTIME             50 degats -> Knockback
+```
+
+**Seul M1 #4 change de réaction.** Rien d'autre ne bouge, comme annoncé.
+
+---
+
+### Signalement mineur
+
+Le rig R6 par défaut affiche **son nom (« CombatDummy ») et une barre de vie**
+au-dessus de lui, hérités du `Humanoid` standard. Pratique pour tester, mais
+c'est de l'interface non voulue dans les captures. Trivial à masquer
+(`DisplayDistanceType = None`) si ça gêne — dis-moi.
+
+### Reste du tri, non commencé
+
+Les 13 `Get Hit` natifs R6, puis `AssetVerifier`, puis la proposition chiffrée
+sur `ImpactFrameController.Flash()`.
+
+---
+
 ## 2026-08-31 — Étape 2 : les traînées sont réveillées (elles étaient inertes depuis toujours)
 
 ### « Ne pas recréer, améliorer » — cas d'école
