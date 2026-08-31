@@ -69,6 +69,68 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — TRANCHE COMPLETE : les trois devices sont posés et mesurés
+
+### Les quatre états, même métrique, même caméra (8,5 stud)
+
+| état | pale médiane | pale pic |
+|---|---|---|
+| sans traînée | 1 475 | 6 086 |
+| traînée seule | 1 527 *(+3,5 %)* | 7 384 |
+| + `Beam` (largeur 4,0) | 3 922 | 6 755 |
+| **+ onde au sol + braises, `Beam` 2,2** | **4 458** | **6 360** |
+
+**×2,9 de médiane** contre la traînée seule, et le **pic baisse** — plus de
+présence tenue, moins d'éblouissement. C'est la bonne direction : ce qu'on
+cherchait, c'est un geste lisible pendant toute sa course, pas un flash plus fort.
+
+### Device 2 — onde au sol
+
+Paramètres relevés sur `Impact Structures + Larger VFX/Shockwave`, recolorés
+(l'original est magenta). Trois couches, telles que le pack les articule :
+
+| couche | vitesse | durée | rôle |
+|---|---|---|---|
+| anneau | 26 | 0,30 s | le choc, ~7,8 stud de propagation |
+| poussière | 7 | 1,25 s | **ce qui reste après le coup** |
+| escarbilles | 7 | 1,10 s | le grain qui accroche la lumière |
+
+Posé **au sol par raycast** sous le point d'impact — vérifié : `Y=2.15` pour un
+joueur à `Y=3.00`, donc 0,85 stud sous lui. Jusqu'ici nos coups se produisaient
+en l'air et le sol ne répondait pas. **La poussière qui reste est ce qui distingue
+une frappe qui a touché de quelque chose d'un simple flash.**
+
+### Device 3 — braises, en complément
+
+Relevé sur `Auras/Humanoid Fx/CharacterAura162`, recoloré (l'original est violet).
+Vitesse **0,125–0,25**, taille 0,20–0,40, durée 1,0–1,4 s, émission rare.
+
+Ce sont ces valeurs **basses** qui font que la couche complète au lieu d'écraser :
+des braises rares et lentes se lisent **devant** un embrasement sans le
+concurrencer. Le feu doré-blanc validé n'est pas touché. Vérifié : émetteur sur le
+`Torso`, vitesse 0,125–0,25, couleur (255,205,92).
+
+### Un réglage que j'avais calé sur une caméra qui n'existe plus
+
+Le `Beam` était à **4,0 stud** de large — valeur calée **avant** que la caméra
+passe à 8,5 stud. Constaté sur capture : à cette distance, 4 stud sur un bras de 2
+stud donne une **plaque qui recouvrait le torse** pendant un cast.
+
+Ramené à **2,2** (la traînée fait 2,2 stud au total, donc le Beam reste au-dessus
+en largeur utile). La médiane n'a pas baissé — elle a **monté** (3 922 → 4 458),
+parce que le sol et les braises apportent la présence que la largeur excessive
+apportait de force.
+
+**Deuxième fois cette semaine qu'un réglage calé à une distance devient faux à une
+autre.** Tout paramètre VFX exprimé en stud doit être revalidé quand la caméra
+bouge.
+
+### Ce que ça donne
+
+Sur la capture finale : le personnage est **entièrement visible**, un **arc doré**
+court en travers du cadre, et des braises parsèment le sol autour de l'impact.
+C'est le meilleur état visuel de la semaine.
+
 ## 2026-09-01 — Licence levée, et le `Beam` répond enfin sur la traînée
 
 ### Licence : deux statuts, désormais séparés dans l'audit
