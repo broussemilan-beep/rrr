@@ -9,6 +9,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-01_tranche-trois-devices.gif` | 1880805 |
 | `2026-09-01_slash-beam.gif` | 1507545 |
 | `2026-09-01_dash-v2.gif` | 3084040 |
+| `2026-09-01_competences-completes.gif` | 2198619 |
 | `2026-09-01_camera-dynamique.gif` | 1533608 |
 | `2026-09-01_camera-avant-apres.png` | 604790 |
 | `2026-09-01_beam-avant-apres.png` | 651543 |
@@ -16,6 +17,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-08-31_trainees.gif` | 5825126 |
 | `2026-08-31_trainees-double.gif` | 5561042 |
 | `2026-08-31_trainees-apres.gif` | 4618954 |
+| `2026-08-31_pose-cassee-en-moteur.png` | 464533 |
 | `2026-08-31_m1-gerbe-moins30.gif` | 3844698 |
 | `2026-08-31_kit-complet.gif` | 4308915 |
 | `2026-08-31_flash-differencie.gif` | 3419024 |

@@ -69,6 +69,79 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — Essai ACCAD : conclu NÉGATIF, et c'est un bon résultat
+
+### L'attribution, prévue AVANT — comme demandé
+
+`CREDITS.md` créé **avant** toute intégration. Il formalise les **trois statuts
+distincts** qu'on avait confondus — **licence**, **sécurité**, **attribution** — et
+pose le plan : fichier de dépôt (fait), **panneau Crédits en jeu** et **description
+de l'expérience** (obligatoires dès qu'une ressource attribuée est retenue, pas
+optionnels).
+
+### Tout a marché, sauf l'essentiel
+
+| étape | résultat |
+|---|---|
+| Licence | ✅ CC BY 3.0 Unported, citée |
+| Audit malveillant | ✅ **3/3 SAFE** (`audit_pack_safety.py`) |
+| Compatibilité squelette | ✅ tous nos `BONE_ALIASES` trouvent leur os |
+| Conversion `bvh_to_r6` | ✅ sans erreur — 128 / 89 / 88 keyframes |
+| Chargement en moteur | ✅ durées correctes : 4,23 / 2,93 / 2,90 s |
+| **Rendu à l'écran** | ❌ **tas de membres effondrés** |
+
+Joué sur le personnage, `E7_SuperFastAdvance` ne donne **aucune pose humaine
+reconnaissable**. Capture : `artifacts/animator_ai/accad_essai/pose_cassee_en_moteur.png`.
+
+### La cause
+
+`bvh_to_r6.py` le dit lui-même dans son en-tête : *« Tested on HumanML3D 22-joint
+template »*. **Des noms de joints identiques ne garantissent pas une pose de repos
+identique.** Les données ACCAD datent de 2006 ; leur T-pose n'est pas celle du
+template sur lequel le convertisseur a été calibré.
+
+C'est un problème de **retargeting**, pas de licence ni de format. Notre propre
+journal l'avait écrit le 2026-05-28 — *« voie viable mais exige refs curées +
+retargeter plus sophistiqué »*. **L'essai le confirme sur mesure au lieu d'en
+discuter, ce qui était exactement son but.**
+
+### Ce que l'archive contenait quand même — pour mémoire
+
+La page ACCAD annonce les arts martiaux **en c3d seulement**. C'est inexact :
+`Male2_bvh.zip` contient **149 fichiers BVH**, dont une série E complète de boxe
+(`JabLeft`, `CrossRight`, `HookLeft`, `UppercutRight`, **8 blocks**,
+`Advance`/`QuickAdvance`/`SuperFastAdvance`) et une série G d'arts martiaux
+(20 coups de pied). Le corpus **est** riche et **est** pertinent. Ce qui manque,
+c'est le retargeter.
+
+### Verdict
+
+**On garde le pack.** Le dash v2 (Close Combat, `Stylized Jump / Vault`) reste en
+place : appui **3,13** stud, poussée **1,72**, ordre appui→poussée respecté.
+Aucune attribution due, puisque rien n'est retenu.
+
+### Une erreur de méthode que j'ai failli commettre
+
+Ma première passerelle de mesure donnait des chiffres nets — ACCAD perdait sur
+tous les axes — et **ils étaient faux**. Mon mappage des jambes était incorrect :
+en FK, les pieds sortaient **au-dessus du torse** 88 à 100 % du temps.
+
+J'allais conclure sur ces chiffres. C'est le **contrôle de sanité géométrique** —
+tête au-dessus du torse, pieds en dessous, longueur d'os stable — qui l'a
+rattrapé. Une mesure qui donne un résultat net n'est pas pour autant une mesure
+juste.
+
+---
+
+## Captures des deux corrections précédentes
+
+Filmées comme demandé. `24_competences_completes.mp4` montre Main du Colosse puis
+Frappe Céleste jouées **jusqu'au bout** — cette dernière déploie enfin sa nova
+dorée complète, là où elle était coupée à 54 %.
+
+Rappel des mesures : **64 % → 88,1 %** et **54 % → 85,8 %**, sans qu'une
+milliseconde de réactivité soit payée.
+
 ## 2026-09-01 — Recherche de packs : un seul candidat, et deux corrections livrées
 
 ### La recherche — conclusion d'abord
