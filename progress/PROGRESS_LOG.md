@@ -69,6 +69,96 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 (suite 4) — VFXAudit : le détecteur de recettes muettes
+
+### Ce qu'il fait
+
+`src/shared/Modules/VFXAudit.lua`. Il répond à la seule question que personne ne
+posait : **est-ce qu'un objet est né ?**
+
+Deux pannes, deux messages distincts — on a rencontré les deux, et les confondre
+ferait chercher au mauvais endroit :
+
+| | signification | où chercher |
+|---|---|---|
+| **ATOME MUET** | joué, aucune instance créée | dans le code de l'atome |
+| **ATOME ÉCARTÉ** | dans la recette, jamais joué | dans le câblage et le budget |
+
+**Pas bruyant, et c'est délibéré.** `AssetVerifier` criait faussement à chaque
+lancement et ce bruit permanent masquait tout — c'est pour ça que personne ne l'a
+jamais lu. Ici : on n'avertit que sur une panne réelle, chaque couple
+(recette, atome, panne) n'avertit **qu'une fois par session**, le message est
+encadré, et l'audit **ne tourne qu'en Studio**. Un silence veut dire quelque chose.
+
+### Le test volontaire a trouvé DEUX défauts dans le détecteur lui-même
+
+C'était l'exigence la plus importante, et elle a payé deux fois.
+
+**Défaut 1 — il ne criait pas.** Le compteur était global sur une fenêtre de
+0,4 s : n'importe quelle instance créée ailleurs pendant la fenêtre — une autre
+VFX, un personnage — était créditée à l'atome. En jeu réel, il n'aurait **jamais**
+crié. Un détecteur à faux négatifs est pire qu'aucun détecteur.
+
+**Défaut 2 — il criait à tort.** Après passage en mesure synchrone, un atome qui
+créait réellement un `Part` était signalé MUET. Cause : **en Roblox moderne les
+signaux sont différés**. `DescendantAdded` ne se déclenche pas dans la frame où
+l'objet est parenté, donc un delta synchrone basé dessus vaut toujours zéro.
+
+**Corrigé** : comptage direct de `#Workspace:GetDescendants()` avant et après.
+Plus coûteux, mais c'est la seule mesure à la fois **synchrone et exacte** — et
+les deux sont nécessaires. Le coût est assumé : l'audit s'éteint hors Studio.
+
+**Résultat du test après correction :**
+```
+MUET signale   : 1   (attendu 1, et 1 SEULE malgre 2 appels — dedup OK)
+ECARTE signale : 1   (attendu 1)
+faux positif   : 0   (attendu 0)
+VERDICT        : LE DETECTEUR MARCHE
+```
+
+Sans ce test, j'aurais livré deux fois de suite un détecteur cassé en le croyant bon.
+
+---
+
+## `GroundChunks` — l'atome marche, le défaut est ailleurs
+
+### Il n'y avait rien à construire
+
+`CombatVFX.GroundChunks` existe, et **il fonctionne**. Appel direct mesuré :
+
+```
+avant       :  0 eclats
+juste apres : 14 eclats
+a +0,5 s    : 14 eclats
+VERDICT     : L'ATOME FONCTIONNE
+```
+
+Il est déjà câblé sur les quatre compétences (14 / 18 / 20 / 24 éclats). Et il est
+**déjà non-collisionnant** (`CanCollide = false` dans le code) — la question de
+performance posée est donc à moitié réglée d'avance.
+
+### Mais il ne part pas en jeu, et le détecteur ne l'explique pas
+
+Le remote livre bien les trois atomes :
+```
+DemiDieu_Skill1_Impact -> atomes : SlashTrail, Impact, GroundChunks
+DemiDieu_Skill2_Impact -> atomes : SlashTrail, Impact, GroundChunks
+```
+Et pourtant : **zéro éclat dans le monde, et le détecteur reste silencieux.**
+
+Or son silence devrait être impossible : si `GroundChunks` avait été tronqué, il
+aurait crié ÉCARTÉ ; s'il avait été joué sans rien produire, il aurait crié MUET.
+**Il y a donc un troisième chemin que je n'ai pas encore identifié**, et je le dis
+plutôt que d'inventer une cause. C'est le point de reprise, et il est étroit.
+
+### Une erreur de mesure à moi, attrapée par le détecteur
+
+J'ai d'abord compté « 0 éclat » en filtrant sur des `Part` **nommées** « chunk ».
+Elles n'ont pas de nom : elles s'appellent `Part`. **Ma mesure était fausse, et le
+silence du détecteur avait raison contre moi.** C'est la troisième fois cette
+semaine que je mesure la mauvaise chose — et la première fois qu'un outil me
+rattrape au lieu de Milan.
+
 ## 2026-09-01 (suite 3) — Aura arrêtée, éclats déjà là, flash calé
 
 ### 1. Aura — le test ciblé est fait, et il conclut
