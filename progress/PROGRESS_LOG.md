@@ -69,6 +69,74 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-30 — PAUSE (4) — note de reprise
+
+### Ce qui est fait
+
+**Étapes 1 à 4, plus l'étape 6 en partie** — détail complet dans l'entrée
+ci-dessous.
+
+1. **Inventaire du réel** : les 10 sources de VFX du kit, avec couleur, émetteur
+   et déclencheur pour chacune.
+2. **Ce que les packs contiennent déjà**, énuméré et non deviné : pression/air
+   (`Wind`, `Wind Flare`…), onde/anneau (`Light Wave Impact`, `Shockwave
+   Impact V`…), poussière/sol (`Dust`, `CraterDust`, `Cracks`…). Les 12 noms
+   retenus ont été vérifiés un par un en moteur avant écriture.
+3. **Bug rouge corrigé.** Ce n'étaient pas « certains hits » : **les quatre M1**
+   tiraient les anciennes recettes cramoisies avec des émetteurs de sang, via
+   `CombatService.MOVE_FX`. Preuve inverse mesurée sur une chaîne M1 complète au
+   contact : `ROUGES=0 | dore/blanc=14 | autres=0`.
+4. **Différenciation.** `Skill1` et `Skill3` n'étaient pas « similaires » mais
+   **identiques** (mêmes émetteurs, mêmes teintes). Chaque pièce a maintenant sa
+   signature dans la même palette.
+6. **Couche secondaire ajoutée EN PLUS** du doré : `Wind` sur Main du Colosse,
+   `Light Wave Impact` sur Jugement, `CraterDust` sur Marche du Titan et M1 #4.
+
+Dernier commit : `5d7c83d`. Arbre propre.
+
+### Ce qui reste — étape 5, NON FAITE
+
+**Capture dédiée de l'Ultime** pour juger si son VFX noie le geste réparé
+(animation 100 %, aura 4,545 s).
+
+Ce qui a été établi avant l'interruption :
+- synchro vérifiée, `DESYNC = 0` ;
+- composition mesurée : **4 couches d'émetteurs + 4 atomes procéduraux = 8
+  sources**, avec un `screen_flash` à 0,65 de pic et un shake à 2,20 — de loin la
+  pièce la plus chargée du kit. C'est un candidat sérieux à l'allègement, mais
+  **ce n'est pas une conclusion** : elle demande de voir le rendu.
+
+Ce qui a échoué et qu'il faudra refaire :
+- **la sonde de charge visuelle n'a rendu qu'un échantillon à t=0** (`pic 0
+  emetteurs a t=0.00`), donc **aucune mesure valable** ;
+- **l'enregistrement écran n'a laissé aucun fichier** (`ult5.mov` absent) — la
+  tâche a été interrompue sans marqueur de fin.
+
+Aucun jugement n'a donc été porté sur l'Ultime. À reprendre de zéro.
+
+### Points ouverts
+
+1. **Rojo ne synchronise plus depuis le redémarrage de Studio.** Le listener
+   écoute bien sur `127.0.0.1:34872`, mais le plugin ne s'est jamais reconnecté :
+   **tous** les fichiers de ce chantier ont dû être poussés à la main, via la
+   source exacte servie en local, puis vérifiés avant chaque mesure. Ça marche,
+   mais reconnecter le plugin supprimerait ce détour et le risque d'oubli.
+2. **Le plugin MCP de Studio s'est déconnecté** en fin de session : Studio tourne
+   toujours au niveau système, mais plus aucune instance n'est listée. **Play n'a
+   donc pas pu être arrêté et les sondes n'ont pas pu être balayées par script.**
+   Sans conséquence sur le dépôt : toutes les sondes ont été insérées **à
+   l'exécution en mode Play** (`PlayerGui` et `ServerScriptService` de la session
+   courante), donc elles disparaissent d'elles-mêmes à l'arrêt de Play — elles
+   n'ont jamais fait partie de la place enregistrée. Les seules écritures
+   persistantes faites dans la place sont les `Source` de fichiers poussées pour
+   contourner rojo, et elles sont identiques au disque.
+3. `recovery` de Frappe Céleste (0,55 s, geste vu à 84 %) — arbitrage toujours en
+   attente.
+4. `test_moving_contact::TestTracking` — 2 rouges antérieurs au 25/08,
+   couverture 53,8 %.
+
+---
+
 ## 2026-08-30 — Analyse VFX complète, bug rouge corrigé, M1 différenciés (étapes 1-4)
 
 ### 1. Inventaire du réel — ce qui tire sur chaque pièce
