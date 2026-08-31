@@ -69,6 +69,65 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — Dash v2 : la catapulte existe enfin
+
+### Le trou
+
+Le dash n'avait **jamais** cherché ailleurs que dans les **19 clips de
+Battleground**, alors que Close Combat en contient **210**. C'était le trou le plus
+évident du kit, sur sa pièce la plus faible.
+
+### Une métrique d'abord, parce que la première était fausse
+
+`max − min` sur l'angle de torse renvoyait **347 degrés** en tête de classement :
+un spin kick enroule l'angle. Cette métrique classait les rotations, pas les
+projections. Remplacée par une mesure **géométrique** via la FK — amplitude, en
+stud, du décalage avant entre la tête et la racine — insensible à la rotation.
+
+### Ce que le §4 demande, et ce que chaque clip fait
+
+Le pied **frappe le sol**, *puis* le corps **se projette**. Donc deux grandeurs et
+un **ordre** :
+
+| clip | appui | poussée | appui à | poussée à | ordre |
+|---|---|---|---|---|---|
+| `[3] Forward Dash` *(source v1)* | 1,34 | 0,94 | 63 % | 0 % | **non** |
+| `[1] Run` *(source v1)* | 0,28 | 0,17 | 95 % | 95 % | oui |
+| `Regular Kick` | 3,37 | 1,04 | 71 % | 71 % | simultané |
+| **`Stylized Jump / Vault`** | **3,06** | **1,75** | **69 %** | **76 %** | **oui** |
+
+Le vault est le **seul** clip du corpus licencié qui porte les deux phases dans le
+bon ordre, avec la poussée la plus forte. `Regular Kick` a de bonnes magnitudes
+mais appui et poussée coïncident — ce n'est pas une catapulte, c'est un choc.
+
+### Résultat
+
+Span 0,55–0,95 du vault, retimé (0,871) vers 0,45 s :
+
+| | appui | poussée | ordre |
+|---|---|---|---|
+| v1 | 0,42 | 0,26 | **non** (poussée à 44 %, appui à 67 %) |
+| **v2** | **3,13** | **1,72** | **oui** (appui à 38 %, poussée à 59 %) |
+
+**7,5× l'appui, 6,6× la poussée**, et l'ordre inversé remis à l'endroit. Gate
+mouvement PASS (`static_run` 0,1613).
+
+### Vérifié par le vrai chemin
+
+Slot `PasDivin` d'`AnimationDB`, animation chargée depuis l'identifiant réel
+(`93826732069681`, uploadé par asphalt) : durée **0,450 s**, marqueur **`Plant`
+qui fire à 0,1833 s** (posé à 0,1742, soit moins d'une frame d'écart).
+
+### Un troisième artefact de mesure, à consigner
+
+Mon premier relevé disait « le marqueur ne fire pas ». **Faux** : je jouais la
+piste à `Play(0, 0, 1)`, donc **à poids 0** — et un marqueur ne se déclenche pas
+sur une piste de poids nul. À poids 1,0 il fire normalement.
+
+Trois artefacts de mesure ce tour, tous du même genre : **sonde expirée**,
+**`AssemblyLinearVelocity` à 0 sous contrainte**, **marqueur muet à poids 0**.
+Aucun n'était un défaut du jeu ; tous auraient pu être rapportés comme tels.
+
 ## 2026-09-01 — Marche du Titan touche enfin, et elle marche toujours
 
 Reprise. Machine, plugin MCP, Play et synchro rojo verifies avant toute mesure ;
