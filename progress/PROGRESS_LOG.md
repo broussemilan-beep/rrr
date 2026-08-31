@@ -69,6 +69,69 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 — JALON A : packs VFX dépouillés, et un blocage de licence à trancher
+
+### 1. Statut de licence — rapporté, pas supposé
+
+| pack | vendeur | statut sécurité documenté | **licence commerciale** |
+|---|---|---|---|
+| `Ultimate RPG Combat & Loot VFX V1.3` | BZ1 Studios | vérifié, `_SAFE_PACKS.01` **présent** | **non documentée** |
+| `Blood Engine Ultimate VFX V1.4` | BZ1 Studios | vérifié, slot réservé | **non documentée** |
+| `SoulShroud Ultimate VFX V1.7` | BZ1 Studios | vérifié, slot réservé | **non documentée** |
+| `15+ HQ Aura VFX` | Skater Studios | ⚠️ noté « ARNAQUE confirmée » | **non documentée** |
+
+**Aucun des quatre n'a de licence commerciale documentée dans le dépôt.** Milan a
+confirmé l'usage commercial sur Battleground et Close Combat — pas sur ceux-ci.
+« Vérifié » dans l'audit sécurité veut dire *sans script malveillant*, pas
+*utilisable commercialement*. Les deux choses ont été confondues jusqu'ici.
+
+**Rien n'a été importé.** C'est le blocage à trancher avant toute application.
+
+### 2. Une note d'audit à corriger
+
+`artifacts/safe_packs_recovered.md` dit du pack d'auras : « ARNAQUE confirmée —
+c'est un DUPE de BZ1 Close Combat, pas le contenu vendu ». **L'ouverture du
+fichier contredit cela** : il contient 16 groupes nommés, tous de vrais jeux de
+`ParticleEmitter` — `Mist`, `Blink`, `Flashstep`, `Fire`, `Lightning`,
+`Colourful Flashy Lightning`, `Black Flash`, `Rocks`, `Windy`, `Heal`, `Boost`,
+`Bleeding`, et 4 `Misc.` — soit 83 émetteurs. Ce n'est pas un doublon d'un pack
+d'animations. Je ne peux pas dire ce qui était vrai en mai ; je dis ce que
+contient **ce fichier, aujourd'hui**.
+
+### 3. L'inventaire réel
+
+Les `.rbxl` sont **binaires** — une lecture par expression régulière ne donne
+rien, il faut les désérialiser (outils ajoutés : `scripts/vfx_packs/*.luau`).
+
+| pack | devices | dont Beam | dont Trail |
+|---|---|---|---|
+| SoulShroud V1.7 | **7 496** | **969** | **103** |
+| Blood Engine V1.4 | 2 120 | 334 | 68 |
+| Ultimate RPG Combat & Loot V1.3 | 1 723 | 47 | 24 |
+| 15+ HQ Aura VFX | 105 | 0 | 0 |
+
+**Groupes nommés qui répondent à nos manques identifiés** (noms énumérés, pas
+devinés) :
+
+- **L'aura** — SoulShroud `Auras/Humanoid Fx` : 2 265 émetteurs, 476 Beams, 6 Fire.
+  Registre exact, et le `Fire` va dans le sens du feu/embrasement doré-blanc validé.
+- **La traînée qui ne lit pas** — SoulShroud porte **969 Beams**. Un `Beam` est une
+  bande à largeur contrôlée, bien plus lisible à 13 stud qu'un `Trail` de 2,2 stud
+  attaché au bras. `Impact Structures + Larger VFX / Slash` est le candidat direct.
+- **Poussière et fractures au sol, qu'on n'a jamais eues** — `Impact Structures +
+  Larger VFX / Shockwave` : 12 émetteurs + 22 `PointLight`.
+
+### 4. Ce chantier est plus gros qu'annoncé — je le signale avant de m'engager
+
+11 444 devices sur trois packs exploitables, et **la question de licence n'est
+tranchée pour aucun**. Importer quoi que ce soit sans ce feu vert serait exactement
+le genre de dette qu'on ne veut pas.
+
+**Ce que je propose, si la licence est confirmée** : une tranche étroite plutôt que
+tout ouvrir — `Slash` (la traînée lisible), `Shockwave` (poussière/fracture), et
+un aura de `Auras/Humanoid Fx` en complément du doré-blanc **sans l'écraser**.
+Trois devices, pas trois packs.
+
 ## 2026-09-01 — Recoupage M1 appliqué, et les VFX dorment ailleurs
 
 ### Le recoupage : 47,3 % → 37,2 % mesurés en moteur
