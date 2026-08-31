@@ -69,6 +69,66 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-08-31 — Le cadrage est un vrai sujet, mais la traînée ne lit toujours pas
+
+**Méthode imposée par Milan, et elle était juste** : tester l'hypothèse 2 (le
+cadrage) avant l'hypothèse 1 (alléger la gerbe), parce que l'hypothèse 2 ne coûte
+rien alors que l'hypothèse 1 dégrade un effet déjà validé.
+
+### Notre caméra de combat, mesurée
+
+| grandeur | valeur en jeu |
+|---|---|
+| distance au personnage | 13,0 stud |
+| champ de vision | 70° |
+| viewport | 1231 × 588 |
+| hauteur du personnage à l'écran | 162 px = **27,5 %** |
+| hauteur d'un bras à l'écran | 65 px |
+
+Même chaîne de 4 M1 recapturée avec une caméra **de capture seule** à ~6,7 stud
+(aucune valeur de jeu touchée, restauration automatique) : le personnage occupe
+**53 %** de la hauteur d'écran, soit environ le double.
+
+### Verdict, partagé
+
+- **Le cadrage compte, beaucoup.** À 6,7 stud l'embrasement d'impact est riche et
+  lisible — arcs électriques, aura dorée, recul du mannequin bien visible. À 13
+  stud le même effet est un petit éclat. Une grande partie du travail VFX ne se
+  voit pas en jeu.
+- **Mais la traînée ne ressort toujours pas** comme un ruban distinct, même de
+  près. L'hypothèse 2 tombe *sur la traînée* : c'est bien la gerbe qui la couvre.
+
+### Ce que j'ai appliqué
+
+Gerbe **−30 % sur les M1 uniquement** — magnitudes, taille de l'atome d'impact,
+pic du flash d'écran. L'ultime et les 4 compétences ne bougent pas : leur
+embrasement a été validé.
+
+| recette | magnitudes | taille impact | pic flash |
+|---|---|---|---|
+| M1_1 | 0,42 | 1,26 | 0,11 |
+| M1_4 | 0,70 / 0,70 / 0,63 | 2,10 | 0,21 |
+| Skill1 *(témoin, inchangé)* | 1,0 / 1,0 / 1,0 / 0,8 | 3,00 | 0,28 |
+| Ultime *(témoin, inchangé)* | 1,1 / 1,3 / 1,3 | 3,20 | 0,32 |
+
+Tests 7/7, stylua et selene propres, poussé et vérifié dans la place avant l'arrêt.
+
+### Ce qui n'est PAS fait, et pourquoi
+
+**La capture après −30 % n'existe pas.** La machine est devenue indisponible en
+cours de route : le plugin MCP ne répond plus (`Place is not open`) et
+`screencapture` échoue avec `could not create image from display` — la signature
+d'un écran verrouillé ou endormi. Je n'ai pas fermé Studio. La comparaison
+avant/après de la gerbe reste donc à faire dès que la machine revient.
+
+### Constat UX/systèmes, plus large qu'une capture
+
+Notre caméra de combat est **trop reculée pour que le travail d'animation se voie
+en jeu**. 27,5 % de hauteur d'écran pour le personnage, c'est un cadrage
+d'exploration, pas de combat. Ça conditionne le rendement de *tout* ce qu'on
+produit en animation et en VFX : on peaufine des gestes qui arrivent au joueur à
+65 px de bras. À arbitrer — je ne tranche pas.
+
 ## 2026-08-31 — Traînées réglées, nameplate masqué — et la traînée ne lit toujours pas
 
 ### Appliqué comme validé
