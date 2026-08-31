@@ -69,6 +69,79 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 (suite 3) — Aura arrêtée, éclats déjà là, flash calé
+
+### 1. Aura — le test ciblé est fait, et il conclut
+
+Les **deux** corrections demandées ont été appliquées :
+
+1. **Rapport d'échelle inversé** : or petit (0,35–1,1) et serré (dispersion 6°),
+   fumée grande (0,8–3,0) et dispersée (55°).
+2. **Ordre corrigé** : en regardant à nouveau les références, **la couleur est la
+   couche INTÉRIEURE**, plaquée au corps, et **le noir le contour EXTÉRIEUR**.
+   J'avais construit un rapport avant/arrière là où c'est un rapport
+   intérieur/extérieur.
+
+**Ça ne lit toujours pas. On arrête**, comme convenu.
+
+### Mais le constat est plus utile qu'« inatteignable »
+
+| vérification | résultat |
+|---|---|
+| attaches créées | ✅ **6**, une par membre |
+| émetteurs présents | ✅ deux par attache |
+| émission qui tourne | ✅ `Emit()` toutes les 0,09 s depuis un script vivant |
+| textures | ✅ **les cinq chargent** (`PreloadAsync`) |
+| **rendu à l'écran** | ❌ **rien** |
+
+Ce n'est pas une impasse de conception : c'est un **échec de rendu circonscrit**.
+Tout ce qui devrait produire l'image est en place et l'image n'apparaît pas. C'est
+un point de départ précis pour qui reprendra le sujet, pas un mur.
+
+### Une erreur de méthode à moi, et elle est grosse
+
+**Mes trois mesures précédentes portaient sur la scène, pas sur mon aura.**
+65,3/1,8 puis 60,9/1,6 puis 58,1/1,6 — je commentais l'évolution d'un rapport
+fumée/or qui appartenait au décor. Un appel antérieur n'avait laissé **aucune
+attache**, et je ne l'avais pas vérifié avant de mesurer.
+
+J'ai tiré des conclusions de chiffres qui ne portaient pas sur ce que je croyais.
+La leçon est la même que celle du plafond de lisibilité : **vérifier que la chose
+existe avant de mesurer ce qu'elle fait.**
+
+### 2. Les éclats de terrain — ils existent déjà
+
+`CombatVFX.GroundChunks` **est déjà implémenté** : de vrais `Part` solides
+projetés par `BodyVelocity`, durée 4 s, fondu sur 1 s, filet `Debris` à 5,5 s.
+C'est exactement la nature d'effet que montre la référence.
+
+Et il est **déjà câblé sur les quatre compétences** :
+
+| recette | éclats | rayon |
+|---|---|---|
+| Skill1 Main du Colosse | 14 | 10 |
+| Skill2 Frappe Céleste | 18 | 12 |
+| Skill3 Marche du Titan | 20 | 13 |
+| Ultime | 24 | 16 |
+| **les quatre M1** | **aucun** | — |
+
+**Il n'y a donc rien à construire.** Il y a à vérifier qu'il part — c'est un atome
+de priorité **ambiante (2)**, exactement comme `Impact` l'était, donc le premier
+candidat à la troncature. Ma correction d'aujourd'hui a promu `Impact` en héros,
+**pas `GroundChunks`**.
+
+### 3. Flash — calé sur la référence
+
+Mesure sur la référence de jeu : **plein écran blanc, 0,20 s** (3 frames à 15 fps).
+Le nôtre était partiel et plafonné à 0,12 s.
+
+- plafond de durée **0,120 → 0,200 s**
+- luminosité **0,55 → 1,15 × peak**
+
+La progression par `peak` est conservée : c'est elle qui distingue un jab d'un
+ultime. Seul le haut de l'échelle s'ouvre, pour que les gros coups atteignent
+vraiment le blanc.
+
 ## 2026-09-01 (suite 2) — La référence de combat, et l'aura à moitié construite
 
 ### Nature du matériau — vérifiée en premier, comme demandé
