@@ -69,6 +69,93 @@ Détail : `artifacts/RESEARCH_TRACKS_2026-08-25.md`.
 
 ---
 
+## 2026-09-01 (suite 2) — La référence de combat, et l'aura à moitié construite
+
+### Nature du matériau — vérifiée en premier, comme demandé
+
+**C'est une capture de jeu réelle**, pas une démo d'animateur : HUD avec boutons de
+capacités, barres de vie et de stamina, pseudo d'un autre joueur au loin, tableau
+des scores, filigrane « makeagif ». Contrairement aux deux références précédentes,
+**celle-ci est transposable** : elle a la latence, le HUD et la caméra d'un vrai jeu.
+
+### Ce qui rend le coup « puissant » — mesuré
+
+| élément | référence | nous |
+|---|---|---|
+| flash à l'impact | **plein écran blanc, 0,20 s** | teinte partielle, **0,12 s max**, jamais plein écran |
+| éclats + poussière au pic | **91 % de l'écran** | cœur saturé à **2,9 %** du cadre |
+| éclats + poussière tenus | **~26 % pendant des secondes** | — |
+| persistance des éclats | **≥ 3,5 s**, intacts | poussière particulaire, ~1,25 s |
+| caméra à l'armement | **épaule, le torse remplit le cadre** | 8,5 stud |
+
+### La différence structurelle, et c'est la vraie réponse à Milan
+
+La référence ne projette pas de la *poussière* : elle **casse le terrain**. Des
+**éclats angulaires solides** sont projetés sur un large rayon et **restent au
+sol**, avec une **colonne de fumée grise** qui monte au milieu. Ce sont des
+**objets**, pas des particules — c'est pour ça qu'ils persistent et occupent
+durablement le quart de l'écran.
+
+Notre onde au sol est une couche de particules qui vit 1,25 s. **Même parfaitement
+réglée, elle ne peut pas produire ce que Milan regarde.** L'écart n'est pas un
+réglage, c'est une nature d'effet.
+
+### Ce qui rend l'animation « propre »
+
+Pas de secousse parasite entre les phases : l'armement, la frappe et la
+récupération s'enchaînent en une courbe continue, et la caméra suit sans à-coup.
+C'est cohérent avec ce qu'on vient de corriger de notre côté (verrou d'entrée
+séparé de la fin du geste), donc **ce point-là n'est plus notre écart principal**.
+
+### Ce qui nous manque VRAIMENT, versus ce qu'on a et qui ne se voyait pas
+
+- **Manque réel** : les éclats de terrain solides et persistants. On n'a rien de
+  cette nature.
+- **Manque réel** : un flash plein écran court. Le nôtre est plafonné à 0,12 s et
+  n'est jamais plein écran.
+- **On l'avait, ça ne se voyait pas** : l'onde au sol et le flash d'impact — l'atome
+  `Impact` était écarté à chaque coup par le plafond de lisibilité, corrigé plus
+  haut aujourd'hui.
+
+---
+
+## L'aura, reconstruite sur les références
+
+### Une mesure qui contredit l'intuition
+
+Milan pensait qu'on avait le patron dans les packs. **Sur les 181 auras de
+SoulShroud : zéro couche de fumée sombre, zéro lumière.** Ce sont toutes des
+nuages émissifs à couche unique — exactement ce qui ne lit pas. La couche sombre
+est donc **autorée**, pas trouvée.
+
+### Ce qui marche
+
+| trait attendu | état |
+|---|---|
+| monte au-dessus de la tête | ✅ colonne visible bien au-dessus du crâne |
+| éclaire le décor | ✅ halo au sol mesuré à **32,6 %** de la zone |
+| continue | ✅ émission toutes les 0,09 s |
+
+### Ce qui ne marche pas — et je m'arrête plutôt que d'empiler
+
+| trait attendu | état |
+|---|---|
+| deux couches en contraste | ❌ colonne à **60,9 % sombre contre 1,6 % doré** |
+| épouse la silhouette | ❌ la colonne monte *derrière*, elle n'enveloppe pas le corps |
+
+J'ai tenté **un** rééquilibrage mesuré — fumée allégée de 0,42 à 0,62, or agrandi
+de 1,5 à 2,4 et densifié de 3 à 6. Résultat : **65,3 % → 60,9 % de sombre**, l'or
+reste à 1,6 %. **Ça n'a rien changé.**
+
+Cause probable, non vérifiée : six membres émettent de la fumée à une échelle de
+2,6 à 3,4, contre un or à 2,4 sur un seul plan — le volume sombre écrase
+mécaniquement l'émissif, et jouer sur l'opacité ne compense pas un rapport de
+volume. Il faudrait sans doute inverser le rapport d'échelle, pas les
+transparences.
+
+**Je ne pousse pas une troisième itération à l'aveugle** — c'est la leçon de cette
+semaine. L'aura est à moitié construite et je le dis tel quel.
+
 ## 2026-09-01 (suite) — Milan avait raison : l'impact était écarté à CHAQUE coup
 
 Cinquième instance du même schéma cette semaine. Le signal — « je ne le vois pas »
