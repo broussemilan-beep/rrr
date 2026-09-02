@@ -8527,3 +8527,66 @@ une dépendance invisible en ligne de rapport.
 Et l'avertissement « effet introuvable » ne se répète plus à chaque coup — une
 fois par nom, avec un compteur. C'est le troisième garde-fou de la semaine qu'on
 corrige pour avoir crié trop fort pour être écouté.
+
+---
+
+# Premier contact réel : tout tourne, et un défaut apparaît
+
+Ta sauvegarde a tenu. Les deux packs sont là et le jeu les retrouve **en jeu**,
+pas seulement dans l'éditeur.
+
+## La chaîne de coups à l'encre marche
+
+Quatre clics réels, quatre coups, et chacun produit exactement les formes que sa
+recette annonce — l'éclat pour le direct, l'anneau pour le crochet, le croissant
+et sa poussière pour l'uppercut, les débris pour le finisseur.
+
+Je les ai vues vivantes en jeu, sur fond sombre. **Ce sont bien des traits** :
+bordures franches, pas de halo.
+
+*(Une réserve honnête : le pont ne me laisse pas enregistrer les images sur le
+disque. Elles existent dans le fil de la session, pas dans le dépôt.)*
+
+## Le momentum : ce n'était pas un bug, c'était ma façon de tester
+
+Douze coups portés et la barre restait à zéro. J'ai cru à une panne. En posant
+une sonde sur le canal de momentum, la vérité était plus simple : **le crédit
+marche parfaitement** — six points par coup, seize au quatrième de la chaîne —
+mais il redescend de huit points par seconde, et mes pauses entre rafales
+duraient des dizaines de secondes.
+
+En frappant sans interruption, la barre monte à **100 sur 100** et s'y fige.
+Aucune correction n'était nécessaire ; c'est mon protocole qui était faux.
+
+## L'ultime a tiré, avec l'astre
+
+C'est la première fois que l'ensemble tourne. L'animation part, **l'astre du
+pack apparaît avec ses six satellites**, le sol est rasé, et **vingt-quatre
+éclats de terrain** volent — le chantier du décor cassable et celui de l'ultime
+se rencontrent enfin. Le momentum est consommé.
+
+## Mais le rythme ne tient pas, et c'est visible
+
+La chronologie qu'on a validée prévoit **0,95 seconde entre l'apparition de
+l'astre et le rasage** — c'est le gel, le temps suspendu, tout l'intérêt de la
+mise en scène.
+
+**Mesuré : 0,19 seconde.** L'astre apparaît et le sol explose presque en même
+temps. Les cinq phases s'écrasent en un seul instant. Et l'astre arrive une
+seconde et demie après le début du geste, au lieu d'une demi-seconde.
+
+**Je ne sais pas encore pourquoi**, et je ne vais pas inventer une cause. Deux
+explications tiennent debout : soit le serveur émet en retard, soit c'est
+l'astre — une pièce lourde, dix émetteurs — qui met une seconde à voyager
+jusqu'à l'écran pendant que les effets de rasage, eux, sont calculés localement
+et arrivent instantanément. Une mesure horodatée des deux côtés tranchera.
+
+Je n'ai pas non plus vérifié le bandeau noir ni le titre : ma sonde regardait le
+monde, or une interface vit ailleurs. Je n'ai donc aucune preuve qu'ils aient
+joué.
+
+## Ce que je ferai ensuite
+
+Séparer les deux hypothèses sur le retard, vérifier le bandeau, **et seulement
+après** juger la scène à l'œil. Une scène dont le rythme est cassé ne se juge
+pas au goût — on répare l'horloge d'abord.
