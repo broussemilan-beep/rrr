@@ -7914,3 +7914,55 @@ lueur ; une bordure faite de centaines de pointes fines se lit comme de l'encre.
 **Conclusion : aucun pack à acheter.** Le vocabulaire est géométrique et il se
 génère. Reste à éprouver le point le plus dur, la silhouette hachurée du
 personnage.
+
+---
+
+# Le doré n'est plus un fond, c'est un événement
+
+**Ta remarque contenait la solution.** « C'est logique qu'il fasse du doré à
+chaque coup, mais là c'est trop. »
+
+J'ai compté avant de toucher à quoi que ce soit. Le doré apparaissait dans **les
+dix recettes d'effets sur dix**, en **vingt-neuf endroits**. Un signal présent à
+chaque coup n'est plus un signal — c'est le décor. Ce n'était pas un problème de
+qualité d'assets. C'était que tout tirait en même temps.
+
+## Ce qui change
+
+Aux deux paliers bas de momentum, les couleurs sont neutralisées. Au palier haut
+— surchargé — le doré revient.
+
+Le détail qui compte : **la neutralisation conserve la luminosité**. Le doré
+`(255, 205, 92)` ne devient pas un gris moyen, il devient `(207, 207, 207)`,
+exactement aussi lumineux. Le coup ne perd rien en lisibilité, il perd sa
+couleur. Éteindre naïvement aurait tué l'impact en même temps que le doré.
+
+Sur la capture, le même effet, à la même intensité, aux deux régimes. À gauche
+paliers 0 et 1. À droite, palier 2.
+
+## Sur les compétences : elles se distinguent, sauf sur un point
+
+Tu disais aussi que les compétences ne sont toujours pas bonnes. J'ai relevé ce
+qu'elles produisent réellement, canal par canal.
+
+**Sur trois canaux sur quatre, la hiérarchie est propre et sans exception.** La
+secousse de caméra monte de 0,25 à 1,60 du M1 le plus léger à l'ultime. Le
+mouvement de champ va de 0 à 3,4. L'ampleur va de 0,85 à 16 stud. L'ultime mène
+sur la secousse et sur l'ampleur, avec 23 % d'avance sur la deuxième.
+
+**Une seule inversion, et elle est sur le canal que l'œil lit en premier.** Sur
+le flash d'écran, l'ultime arrive **troisième**. Le contre (Skill4) flashe à
+0,50 et Skill3 à 0,38, contre 0,32 pour l'ultime. Le contre est le plus petit
+des mouvements lourds — 3,20 stud contre 16 — et c'est celui qui crie le plus
+fort.
+
+Ce n'est pas forcément une erreur : un flash de parade doit se lire vite. Mais
+il entre en concurrence avec l'ultime, et le flash prime sur la secousse dans
+l'ordre de lecture. **Je ne l'ai pas corrigé** — c'est un choix de conception, à
+toi.
+
+## Sur le pack de 100 VFX premium
+
+Rien dans cette mesure ne pointe vers les assets. La correction qui change tout
+tient en deux fonctions. Elle est gratuite et réversible. Acheter avant d'avoir
+réglé le dosage aurait ajouté du volume à un problème de hiérarchie.

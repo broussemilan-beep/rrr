@@ -6,6 +6,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | file | bytes |
 | --- | --- |
 | `2026-09-03_primitives-trait.png` | 234928 |
+| `2026-09-03_dore-au-palier-2.png` | 297159 |
 | `2026-09-03_contre-rotation-tete.png` | 429951 |
 | `2026-09-02_vfx-orientation.png` | 769409 |
 | `2026-09-02_ultime-mise-en-scene.png` | 306832 |
