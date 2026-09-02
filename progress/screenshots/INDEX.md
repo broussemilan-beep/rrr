@@ -7,6 +7,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | --- | --- |
 | `2026-09-02_vfx-orientation.png` | 769409 |
 | `2026-09-02_ultime-mise-en-scene.png` | 306832 |
+| `2026-09-02_ultime-en-mouvement.png` | 120622 |
 | `2026-09-02_trois-formes.png` | 218127 |
 | `2026-09-02_impactframe-silhouette-v2.png` | 1014792 |
 | `2026-09-02_fadeout-sortie-attaque.png` | 343808 |

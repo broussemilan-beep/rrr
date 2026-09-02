@@ -7599,3 +7599,55 @@ Le verrou qui réserve l'ultime au momentum maximal. La jauge monte de 0,42 poin
 en seize coups : y arriver par des clics n'était pas praticable. La scène a donc
 été déclenchée par le même canal et la même description que l'amorce réelle, ce
 qui couvre toute la chaîne sauf ce verrou-là — lequel n'a pas été modifié.
+
+---
+
+## L'ultime part vraiment — et la capture a révélé un défaut
+
+### Le déclencheur, exercé pour la première fois par le chemin normal
+
+La mise en scène était livrée, mais son déclencheur — la jauge de momentum au
+maximum — n'avait jamais été atteint par un vrai combat. C'est fait :
+**45 coups consécutifs → jauge à 100 → R → la scène part → la caméra est rendue
+→ le momentum est consommé.**
+
+La règle, mesurée dans le service : +6 par coup, +10 de plus au quatrième d'une
+chaîne, **mais −8 par seconde de décroissance**. Deux enseignements pour
+l'équilibrage :
+
+- **l'accumulation vient presque entièrement du bonus de quatrième coup** — les
+  trois premiers sont quasiment annulés par la décroissance ;
+- il faut **environ douze chaînes ininterrompues** pour atteindre le maximum. Un
+  échange normal, avec des pauses, n'y arrivera jamais. À dire à Milan : c'est
+  soit un choix d'équilibrage assumé, soit un réglage à revoir.
+
+### Un défaut trouvé parce que j'ai regardé l'image
+
+La capture est sortie **délavée**. Ce n'était pas un artefact : deux effets de
+couleur restaient actifs après l'ultime, désaturant et éclaircissant **toute la
+scène, en permanence**. Relus quatre secondes plus tard : inchangés.
+
+Ce n'est pas un problème de rendu — le rendu tournait. La restauration ne
+s'exécute simplement jamais. Le défaut est **lié à l'ultime** : pendant les
+mesures suivantes (coups normaux et compétences), les mêmes effets se sont
+restaurés correctement.
+
+**Je n'ai rien réparé** — c'était hors des tâches demandées. L'état a été
+neutralisé pour ne pas fausser les mesures suivantes.
+
+### Une hypothèse à moi, réfutée par la mesure
+
+J'attendais qu'une compétence dépourvue de marqueur de fin laisse le champ de
+vision « creusé » indéfiniment. **C'est faux** : les décalages de caméra ont une
+durée propre et se referment seuls.
+
+L'incohérence réelle est plus étroite : les compétences encaissent le même pic de
+caméra que les coups normaux, **mais sans le creux d'anticipation qui l'annonce**.
+Compléter les marqueurs manquants est donc un raffinement, pas une réparation.
+
+### Ce qu'il faut pour juger la scène en mouvement
+
+L'outil de capture met 1,35 s par image ; la scène en dure 1,75. La planche
+fournie étire donc l'horloge pour être lisible, ce qui est indiqué dessus. **Pour
+la juger vraiment en mouvement, il faut appuyer sur R soi-même ou un
+enregistrement d'écran** — que je ne peux pas produire.
