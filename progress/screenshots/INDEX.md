@@ -12,6 +12,8 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-02_ultime-mise-en-scene.png` | 306832 |
 | `2026-09-02_ultime-en-mouvement.png` | 120622 |
 | `2026-09-02_trois-formes.png` | 218127 |
+| `2026-09-02_trait-dans-le-pack.png` | 177078 |
+| `2026-09-02_textures-pack-100.png` | 515401 |
 | `2026-09-02_pub2.png` | 515401 |
 | `2026-09-02_pub1.png` | 177078 |
 | `2026-09-02_impactframe-silhouette-v2.png` | 1014792 |
