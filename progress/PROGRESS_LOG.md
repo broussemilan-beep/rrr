@@ -7233,3 +7233,47 @@ Deux faux positifs ont été éliminés avant de s'y fier : la profondeur
 d'indentation (12 fausses accusations sur les recettes VFX, tombées à 0) et les
 lecteurs homonymes. Et le sens de la boucle a été inversé — 35 s à 1,0 s : un
 crochet à 35 s finit contourné, ce qui vaut un outil absent.
+
+---
+
+## Deux alertes graves, vérifiées, et fausses
+
+Le détecteur signalait `MoveData.serverCooldown` et `MoveData.hitbox` comme
+« perdus en route ». Si c'était vrai, **les cooldowns ne seraient pas appliqués
+côté serveur** et les portées de frappe ne seraient pas celles qu'on croit.
+
+**Vérifié par le vrai chemin : les deux alertes sont fausses.** Le serveur lit
+`move.serverCooldown` et rejette avec `on_cooldown` ; il lit `move.hitbox` et
+calcule les cibles sur la position serveur. Les deux se lisent directement sur
+l'enregistrement, dans la même fonction, sans reconstruction en amont. Le dash
+autoritaire n'a pas de faille jumelle.
+
+Ce que le détecteur avait vu était réel mais mal interprété : le constructeur
+qu'il accusait est une **charge utile de dégâts**, une projection vers un type
+plus étroit — pas le remplaçant de l'enregistrement. Le recouvrement de noms ne
+prouve pas qu'un constructeur soit sur le chemin de la table.
+
+Trois garde-fous en sont sortis, chacun écrit contre un faux positif constaté :
+le fichier doit requérir la table ; la clé ne doit pas être relue sur la même
+variable source dans le même fichier ; la destination doit connaître la table.
+**13 signalements → 5.** Les 8 de `MoveData` étaient tous faux. L'auto-test passe
+toujours dans les deux catégories — les garde-fous n'ont pas été taillés au prix
+des vrais positifs.
+
+### Sur les 5 restantes, deux comptent
+
+**`fadeOut`** : renseignée sur les 48 animations, documentée dans le type… et
+**jamais appliquée à une piste, nulle part**. Le fondu sortant retombe sur 0,15 s
+en dur. C'est le miroir exact du bug `fadeIn`, et un levier direct de fluidité.
+**`speed`** : le pilote la prend en paramètre, personne ne lui passe celle de la
+base. Sans effet aujourd'hui, inerte dès qu'on voudra s'en servir.
+
+Les trois autres (`markers`, `status`, `fallbackImpactTime`) sont sans
+conséquence : leurs lecteurs se servent directement à la source.
+
+### Une leçon de méthode, nommée
+
+Un garde-fou meurt par les deux bouts. Par le **bruit permanent** — il parle à
+chaque fois, on apprend à le sauter. Ou par le **coût** — un crochet à 35 s finit
+contourné au `--no-verify`. Deux morts opposées, un seul résultat : un outil
+absent.
