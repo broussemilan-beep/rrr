@@ -8458,3 +8458,72 @@ second moteur de combat à côté du nôtre**.
 
 Ce que je ferais à la place, dans l'ordre : corriger la fenêtre du premier coup
 (une valeur, mesurable tout de suite), puis roll cancel, puis feinte, puis clash.
+
+---
+
+# Je retire un chiffre que je t'ai donné — et l'archive est réglée
+
+## D'abord la correction
+
+Je t'ai annoncé que le premier coup de la chaîne avait une fenêtre d'annulation
+de **40 ms au lieu de 200**, et tu as relayé ce chiffre à Milan.
+
+**C'est faux. Elle vaut 159 ms, et il n'y a aucun bug.**
+
+Ma mesure lisait le *texte* du fichier au lieu de la *table* de données, et elle
+a attrapé une valeur qui traînait dans un vieux commentaire — commentaire
+lui-même périmé depuis une re-génération de l'animation.
+
+J'ai donc écrit un balayage qui regarde les **neuf** coups du kit, lit la vraie
+table, et tient compte du fait que chaque coup a son propre nom de repère (les
+M1 utilisent « Impact », les compétences « HitConnect »). Résultat :
+
+```
+neuf coups, fenetres de 113 a 200 ms — AUCUNE alerte
+```
+
+La correction d'août n'a laissé aucun survivant. **Sur ce point, le système est
+sain.** Mon diagnostic « c'est l'assemblage, pas l'architecture » perd une de ses
+trois preuves ; les deux autres tiennent et restent mesurées.
+
+## L'archive : réglée
+
+J'ai suivi l'ordre validé — mesurer, déplacer, re-mesurer.
+
+```
+AVANT   47 effets — 5 sains, 42 trouvés par le chemin de secours
+APRÈS   47 effets — 47 sains, 0 par le secours
+42 déplacés, aucun échec, aucun effet perdu
+```
+
+**Déplacés, jamais copiés.** Copier aurait créé un doublon de nom par effet, et
+c'est exactement ce qui a failli nous faire tirer un mauvais soleil.
+
+Effet de bord non prévu et bienvenu : **les doublons de noms passent de 11 à 2.**
+
+L'archive garde 10 560 effets dont **plus aucun n'est utilisé** — elle redevient
+ce que son nom dit, quelque chose qu'on peut ranger.
+
+## Un doublon actif à te signaler
+
+Sur les deux qui restent, l'un est inoffensif (trois copies identiques). L'autre
+ne l'est pas : **deux effets différents s'appellent `Wind`** — l'un à six
+émetteurs, l'autre à un seul — et c'est le premier trouvé qui gagne. Il est
+utilisé par la première compétence.
+
+**Ce n'est pas cassé aujourd'hui** : le jeu prend depuis toujours celui à six.
+Mais réorganiser un dossier suffirait à basculer sur celui à un, sans erreur.
+Le correctif est le même que pour le soleil — un nom unique. Je ne l'ai pas
+appliqué : choisir lequel des deux est le bon est un choix, pas une mesure.
+
+## Trois garde-fous en place
+
+Une **liste explicite** des 47 effets dont le jeu dépend — elle n'existait nulle
+part. Un **test** qui échoue dès qu'une recette utilise un effet absent de la
+liste. Et un **contrôle en jeu** qui répond, pour chaque effet : *introuvable /
+sain / trouvé par le secours*. C'est ce troisième mot qui compte : il transforme
+une dépendance invisible en ligne de rapport.
+
+Et l'avertissement « effet introuvable » ne se répète plus à chaque coup — une
+fois par nom, avec un compteur. C'est le troisième garde-fou de la semaine qu'on
+corrige pour avoir crié trop fort pour être écouté.
