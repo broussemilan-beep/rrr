@@ -7802,3 +7802,51 @@ la correction de la tête ne le répare pas, elle ne touche pas le bras.
 J'avais proposé le premier en blocage ; la remesure l'interdit — 43 % des clips
 professionnels tomberaient aussi. Un garde-fou qui crie faux une fois sur deux
 finit ignoré.
+
+---
+
+## « Paraître dessiné » : la technique est là, c'est l'image qui manque
+
+Analyse seule, rien construit.
+
+### L'intuition était juste sur la technique
+
+Nos packs contiennent bien des **planches d'images animées** — une texture
+découpée en cases, jouée image par image comme un dessin animé. **2 649 émetteurs
+sur 13 176 en utilisent une**, pour 834 planches différentes.
+
+### Mais « on ne s'en est jamais servi » est faux
+
+C'était ma première conclusion et elle ne tient pas : **25 de nos 47 effets cités
+en contiennent déjà**. En clonant les modèles des packs, nous embarquons leurs
+planches sans le savoir. Ce n'était donc pas une matière ignorée.
+
+J'ai ensuite vérifié trois explications possibles à « ça ne se voit pas », et
+**les trois sont fausses** : les planches ne sont pas tronquées (le mode utilisé
+à 84 % les joue toujours en entier), elles ne sont pas détruites trop tôt (une
+seconde de marge explicite), et elles ne sont pas écrêtées par le budget
+d'effets (elles sont créées côté serveur, avant lui).
+
+### Ce que ces planches sont réellement — regardé, pas déduit
+
+Fumée, arcs électriques, anneaux d'onde, étincelles, croissants de frappe,
+griffures. Toutes en **art peint doux, en niveaux de gris, avec halo**. De la
+bonne matière d'effets spéciaux de jeu.
+
+**Aucune n'est du trait d'encre.** Pas de contour noir, pas d'aplat, pas de ligne
+de vitesse dessinée.
+
+### La réponse, franchement
+
+**Ce qui manque n'est pas la technique, c'est le style de l'image.**
+
+La technique du dessin image par image est disponible, native, et déjà en service
+chez nous. Ce qui manque, c'est **de l'art au trait** — et aucun de nos deux
+packs n'en contient. Pour l'arrêt sur image plein écran, il n'existe rien du
+tout : notre unique « trait » est une forme que nous répétons quatre-vingt-quatre
+fois par programme.
+
+**Il faut donc une source d'images dessinées, pas un réglage.** Soit un pack
+d'effets de style animé — ils existent, ce ne sont pas les mêmes que les nôtres,
+qui sont réalistes — soit des illustrations commandées, soit des planches
+générées puis téléversées avec la même discipline que le reste.
