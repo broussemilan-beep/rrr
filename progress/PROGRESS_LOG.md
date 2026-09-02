@@ -7966,3 +7966,104 @@ toi.
 Rien dans cette mesure ne pointe vers les assets. La correction qui change tout
 tient en deux fonctions. Elle est gratuite et réversible. Acheter avant d'avoir
 réglé le dosage aurait ajouté du volume à un problème de hiérarchie.
+
+---
+
+# Les deux packs : l'un contient ce qui manquait, l'autre pas
+
+## D'abord la sécurité
+
+`100+ Combat VFX Pack` est propre : aucun script, aucun motif suspect. 2 073
+émetteurs de particules.
+
+`The Creator VFX` a fait crier l'outil d'audit — il contient deux scripts, et ma
+règle dit qu'un pack ne devrait pas en contenir. **Je ne l'ai pas cru sur
+parole.** J'ai extrait les sources du fichier et je les ai lues : c'est le script
+d'animation **standard de Roblox**, celui livré dans chaque personnage (le pack
+embarque un mannequin de démonstration complet), plus une démo de sept lignes.
+Recherche exhaustive sur les 16 000 octets de code : rien de dangereux, pas une
+occurrence.
+
+**Verdict : sûr.** Une réserve : le mannequin de démo et ses scripts sont de
+l'échafaudage, ils ne doivent pas entrer dans le jeu. Seuls les effets comptent.
+
+Les deux sont inscrits dans `CREDITS.md` comme **achetés le 2026-09-02**, avec
+les colonnes sécurité et licence gardées séparées.
+
+## Ensuite la vraie question : est-ce que c'est dessiné ?
+
+Tu voulais savoir si ces packs contiennent du trait, du cellulo — ce qui
+manquait. Les textures se récupèrent par leur identifiant, donc j'ai pu les
+**regarder**, et surtout les **mesurer** plutôt que de me fier à l'œil.
+
+La question se tranche sur la bordure. Un trait dessiné a un bord net : l'opacité
+saute de rien à tout en un ou deux pixels. Une lueur a une rampe : la plupart de
+ses pixels sont des demi-teintes.
+
+```
+100+ Combat VFX   45 textures — 13 sont de l'ENCRE (29 %)
+The Creator VFX   13 textures —  0 sont de l'encre (0 %)
+```
+
+**Le trait existe, et il est dans un seul des deux.** Croissants de taille,
+éclats à bordure hérissée, éclairs tracés, anneaux à bord franc, débris en
+cellulo deux tons.
+
+Et un détail qui compte : **l'une de ces textures est exactement la « frange de
+pointes fines au bord de l'éclat »** que j'avais désignée comme la plus
+importante des sept formes à fabriquer. Elle existe. Tu viens de l'acheter.
+
+**Ça corrige ce que j'avais conclu la semaine dernière** — « aucun pack ne
+contient d'art au trait, il faut le générer ». C'était vrai des packs qu'on avait
+alors. Ce ne l'est plus.
+
+## Ce que The Creator VFX contient, exactement
+
+Il est fait pour ce que tu décris. Sous le personnage :
+
+- une **aura de corps** — 65 émetteurs, répartis sur les six pièces d'un
+  personnage R6, exactement les mêmes noms que les nôtres, donc transférable tel
+  quel ;
+- un **`Sun`** — 10 émetteurs et une lumière ;
+- **six `Star`** — 30 émetteurs et six lumières.
+
+C'est littéralement un soleil entouré de six astres.
+
+## L'ultime : ce qui change et ce qui ne change pas
+
+**Rien de ce qui a été construit n'est perdu.** La scène, l'horloge de phases, le
+gel, la caméra : c'était de l'architecture, et elle ne dépendait pas du contenu.
+Seuls changent les noms des étapes et ce qui est joué à chacune.
+
+Proposition : **invocation → ascension → embrasement → rasage → dissipation.**
+Il ne saute plus, il appelle. Bras levés, l'aura s'allume ; l'astre monte au-
+dessus de lui avec ses six satellites ; tout se fige une demi-seconde ; l'astre
+s'abat. 2,6 secondes au lieu de 1,75 — une invocation qui ne se fait pas
+attendre n'en est pas une.
+
+Bonus non prévu : le saut disparaissant, toute la dette de physique qui
+l'accompagnait disparaît avec (le personnage éjecté à 80 stud après l'impact, la
+purge de vitesse, le repositionnement forcé).
+
+Deux choses que je ne tranche pas : **est-il invulnérable pendant l'invocation ?**
+(1,4 seconde immobile, c'est très long en PvP) et **le rayon** — 14 stud était
+calibré sur un corps qui tombe, « pour tout raser » suggère plus large.
+
+## Les M1 et les compétences : différencier par la nature
+
+Ta correction — « le doré est représentatif de sa nature mais ne doit pas être
+partout, d'autres VFX sont permis » — débloque exactement ce qu'on cherchait.
+Elle est inscrite dans la spec, datée et signée.
+
+Jusqu'ici la hiérarchie ne pouvait jouer que sur l'intensité : doré atténué
+contre doré plein. Chaque M1 était donc *une version faible de l'ultime*.
+
+Proposition : **les M1 passent à l'encre, les compétences mélangent trait et
+lueur, l'ultime est de la lumière pure.** Un M1 est rapide et répété — le trait
+se lit en trois images, pas la lueur. Un ultime est long et unique — la lumière a
+le temps d'exister. Et quand l'astre arrive après quarante coups à l'encre, il
+n'est pas le même effet en plus fort : il est d'une autre matière.
+
+Ça règle ton reproche sur les M1 sans rien acheter de plus. Ils cessent d'être
+dorés **parce qu'ils cessent d'être de la lumière**, pas parce qu'on les a
+atténués.
