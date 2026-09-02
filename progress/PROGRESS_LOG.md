@@ -7192,3 +7192,44 @@ strict demanderait un trait par pièce, qu'aucune primitive Roblox ne donne.
 Autres livraisons du jour : la **course** du Demi-Dieu (cadence basse, foulée de
 1,87 stud, affaissement à chaque appui), le **FOV par phase** (creux 64 à
 l'anticipation, pic 80 à l'impact), et le **dash double-tap rendu autoritaire**.
+
+---
+
+## Le test des réglages morts — et il a commencé par me contredire
+
+Une panne revient sept fois sous sept formes : **un réglage écrit avec soin,
+ajusté, et qui ne branche sur rien.** On l'a toujours trouvée à l'œil, jamais par
+un test, et toujours après avoir passé du temps à régler une valeur sans effet.
+
+L'outil sépare **deux** pannes, et c'est toute sa raison d'être — les confondre
+fait chercher au mauvais endroit :
+
+- **écrit, jamais lu** → il manque le **consommateur** ;
+- **lu, mais perdu en route** → il manque un **maillon**. Un constructeur recopie
+  l'enregistrement champ par champ et omet la clé. Le lecteur existe déjà, et il
+  a raison. Chercher un consommateur ici coûterait des heures pour rien.
+
+**Ce qu'il a trouvé à son premier passage était contre moi.** `AnimationDB.getAll()`
+reconstruisait chaque entrée sans `fadeIn`. Le correctif `fadeIn` que j'avais
+annoncé livré était donc **inerte** : j'avais réparé deux couches sur trois, et la
+valeur ne traversait pas la troisième. Toutes les animations retombaient sur les
+0,15 s par défaut. Corrigé.
+
+**Vérifié en le faisant échouer, dans les deux catégories.** On retire la ligne
+qui transmet `fadeIn` → il doit dire *perdue en route*, et surtout **pas** *jamais
+lue*. On injecte une clé que personne ne lit → il doit dire *jamais lue*, et
+surtout **pas** *perdue*. Les témoins sont restaurés à l'octet près, et le silence
+à l'état sain est exigé lui aussi : un détecteur qui accuse avant qu'on casse quoi
+que ce soit ne prouve rien.
+
+**Impossible à rater sans devenir du bruit permanent.** Le rapport complet fait
+~90 lignes ; l'imprimer à chaque commit, c'est ce qui a rendu `AssetVerifier`
+invisible. Le crochet ne se déclenche donc que si le commit touche une table
+surveillée, ne parle que des cas **nouveaux** face à une référence gelée, et **ne
+bloque jamais** — un accès dynamique échappe à toute recherche textuelle, et un
+outil qui crie faux cesse d'être lu.
+
+Deux faux positifs ont été éliminés avant de s'y fier : la profondeur
+d'indentation (12 fausses accusations sur les recettes VFX, tombées à 0) et les
+lecteurs homonymes. Et le sens de la boucle a été inversé — 35 s à 1,0 s : un
+crochet à 35 s finit contourné, ce qui vaut un outil absent.
