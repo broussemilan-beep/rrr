@@ -8369,3 +8369,92 @@ angulaire à bords francs. L'autre fait 64 pixels et n'est qu'un motif de fond.
 ## Ce que je n'ai pas fait
 
 Rien supprimé, rien déplacé, comme demandé. Les faits sont posés.
+
+---
+
+# Deux systèmes de combat regardés — et une mesure qui explique beaucoup
+
+## Ce que j'ai pu voir, et ce que je n'ai pas pu
+
+Les deux pages refusent la lecture automatique ; je les ai ouvertes au
+navigateur. J'ai la description, la liste des fonctionnalités, le guide
+d'installation, le prix, les avis.
+
+**Je n'ai pas le code, ni le nombre d'animations, ni les durées, ni les fenêtres
+de jeu, ni la structure réseau.** Les vidéos ne sont pas lisibles par mes outils.
+Juger leur fluidité réelle serait de l'invention — c'est l'erreur que j'ai faite
+sur Strikeborn, je ne la refais pas.
+
+## Un fait à connaître avant d'acheter
+
+**Les deux sont du même vendeur, `skaterstudios`.** Ce nom est déjà dans nos
+dossiers : son pack d'auras est le **seul** du projet écarté **sur la sécurité**.
+
+Ce n'est pas un verdict sur ces deux-là, qui n'ont pas été audités. Mais leur
+propre guide d'installation demande d'activer **« Allow HTTP Requests »** — un
+système de combat n'a aucune raison technique de sortir sur le réseau.
+
+## Ce qui nous manque vraiment
+
+Mesuré en cherchant dans notre code, pas estimé :
+
+**Absent chez nous : feinte, roll cancel, clash, combos aériens, casse de garde,
+et tout le support mobile** (zéro ligne, pas une seule).
+
+Déjà présent : dash directionnel, ragdoll, blocage, parade, uppercut, downslam,
+barre de ressource. Et sur les **réactions de coup**, nous sommes devant : 16
+animations avec des variantes multiples, là où leurs pages n'en mentionnent
+aucune.
+
+## La mesure qui explique le « c'est primitif »
+
+Notre code annonce une fenêtre d'annulation de 200 ms. Mais elle s'ouvre au
+moment de l'impact et se referme à la fin de la récupération — sa vraie durée est
+donc la différence entre les deux :
+
+```
+coup     fenetre reelle    images a 60 ips
+M1_1         40 ms              2,4
+M1_2        162 ms              9,7
+M1_3        200 ms             12,0
+M1_4        197 ms             11,8
+```
+
+**Le premier coup de la chaîne — celui qu'on presse le plus — a une fenêtre cinq
+fois plus étroite que les trois autres.** Deux images et demie.
+
+Ce n'est pas une supposition : c'est exactement le bug qu'on avait déjà trouvé et
+corrigé en août pour les coups 2, 3 et 4. **Le premier a été oublié.**
+
+Un enchaînement qui accroche à son ouverture, à chaque fois, et rien ne le
+signale.
+
+## Architecture ou assemblage ?
+
+**L'assemblage, très majoritairement.**
+
+Trois choses mesurées le même jour disent la même chose : la fenêtre du premier
+coup vaut 40 ms au lieu de 200 ; 37 de nos 40 effets ne tiennent qu'à un dossier
+nommé « archive » ; et le jeu allait chercher un mauvais « soleil » à un seul
+émetteur au lieu du nôtre à dix.
+
+Aucun des trois n'est un défaut de conception. Aucun ne produit d'erreur. Le jeu
+tourne, les effets sortent, l'enchaînement passe — **moins bien qu'il ne devrait,
+sans que rien ne le dise.**
+
+**Le vrai manque de conception est court** : roll cancel, feinte, clash. Trois
+mécaniques d'**interruption** — c'est précisément ce qui sépare un combat qui se
+lit comme une suite d'actions d'un combat qui se lit comme un échange. Notre
+moteur sait déjà annuler ; il ne sait annuler que vers un dash.
+
+## Ma recommandation : ne rien acheter
+
+Vendeur déjà écarté ailleurs sur la sécurité. Accès réseau demandé sans raison.
+Et ce qu'ils apporteraient — trois mécaniques — se décrit en trois paragraphes,
+sur des fondations qu'on a déjà.
+
+Acheter un système complet pour trois mécaniques nous ferait hériter d'**un
+second moteur de combat à côté du nôtre**.
+
+Ce que je ferais à la place, dans l'ordre : corriger la fenêtre du premier coup
+(une valeur, mesurable tout de suite), puis roll cancel, puis feinte, puis clash.
