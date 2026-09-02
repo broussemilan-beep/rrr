@@ -8146,3 +8146,70 @@ rendrait le personnage punissable **en l'air**, ce qui serait une régression.
 
 Il reste donc une seule chose bloquante : **les deux fichiers `.rbxm` doivent
 être glissés dans Studio.**
+
+---
+
+# Les deux packs sont dans le jeu — sans glisser-déposer
+
+Tu ne voulais pas le faire à la main. C'est fait autrement : les fichiers ont été
+**lus, décodés et rebâtis** dans la place.
+
+## Ce que ça a donné
+
+| pack | reconstruit | vérifié |
+|---|---|---|
+| **The Creator VFX** | 212 objets, **111 émetteurs**, 7 lumières, le `Sun` à 16,48 stud, six `Star` | 4 792 propriétés comparées — **4 écarts, aucun sur un émetteur** |
+| **100+ Combat VFX** | 2 505 objets, **2 073 émetteurs**, 27 faisceaux, 11 traînées | 79 357 propriétés comparées — **aucun écart** |
+
+Les quatre écarts sont les positions des membres du mannequin de démonstration,
+déplacés par le moteur quand il a raccordé leurs articulations. C'est de
+l'échafaudage, pas du contenu.
+
+## Pourquoi j'ai vérifié propriété par propriété
+
+Un émetteur réglé, c'est quarante réglages, dont trois courbes — la taille, la
+transparence, la couleur au fil du temps. Une reconstruction qui perdrait une
+seule courbe donnerait un effet **plausible et faux**. Rien ne crierait. C'est
+le pire mode de panne qu'on connaisse, et on en a mangé plusieurs.
+
+Le programme relit donc chaque réglage **sur l'objet fabriqué** et le compare à
+ce que le fichier déclare, point de courbe par point de courbe.
+
+Une contre-vérification qui m'a rassuré : le code Python lit « 23,08 » pour la
+plus grande particule du soleil en décodant le fichier ; l'émetteur reconstruit
+répond « 23.08 » au moteur de jeu. Deux chemins indépendants, le même nombre.
+
+## Ce qui ne se reconstruit pas — je le dis plutôt que de l'approcher
+
+- **Les scripts du pack : refusés exprès**, pas par incapacité. Ce sont
+  l'animation standard de Roblox et une démo de sept lignes. Importer du code
+  d'un pack tiers ne doit pas pouvoir arriver par accident.
+- **Les propriétés physiques d'un objet** : je ne sais pas les décoder. Deux
+  dispositions essayées, les deux échouent, et les deux fichiers laissent 33
+  octets inexpliqués. Sans conséquence ici — tous les supports d'effets sont
+  fixes et sans collision. Si un pack livre un jour un objet physique, il faudra
+  y revenir.
+- **Seize réglages refusés** sur le pack de combat, tous des métadonnées internes
+  de texture. **Aucun sur un émetteur.**
+
+## L'astre
+
+Il est vivant, et c'est bien ce que tu décrivais : une boule de feu tournante
+avec sa couronne d'éruptions et six satellites. Reconstruit entièrement à partir
+du fichier binaire.
+
+Le contenu est rangé par usage : le soleil et ses satellites d'un côté ; l'aura
+de corps de l'autre, répartie en six dossiers portant **exactement les noms des
+pièces de nos personnages** — donc transférable sans retouche ; les effets de
+frappe à part. **111 émetteurs sur 111 conservés.**
+
+Tout ça est rangé là où le jeu cherche déjà ses effets, donc les recettes
+pourront s'en servir **sans une ligne de code en plus**.
+
+## Une chose que je ne peux pas faire
+
+La reconstruction vit dans Studio mais **la place n'est pas sauvegardée**, et je
+n'ai aucun moyen de la sauver moi-même — il n'existe pas de commande de
+sauvegarde accessible depuis mon côté. **Il faut un Ctrl+S dans Studio.** Sinon
+tout est perdu à la fermeture. C'est rejouable en deux commandes, mais autant ne
+pas avoir à le refaire.
