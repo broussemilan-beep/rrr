@@ -8067,3 +8067,82 @@ n'est pas le même effet en plus fort : il est d'une autre matière.
 Ça règle ton reproche sur les M1 sans rien acheter de plus. Ils cessent d'être
 dorés **parce qu'ils cessent d'être de la lumière**, pas parce qu'on les a
 atténués.
+
+---
+
+# Les M1 ne sont plus dorés — parce qu'ils ne sont plus de la lumière
+
+Tu avais validé le principe : différencier par la **nature** de l'effet, pas par
+son intensité. C'est fait pour les quatre M1.
+
+## Ce qu'ils sont devenus
+
+| coup | forme | ce qui a disparu |
+|---|---|---|
+| 1 — direct | éclat à bordure hérissée | la gerbe dorée, **le flash** |
+| 2 — crochet | anneau à bord franc | l'onde lumineuse, **le flash** |
+| 3 — uppercut | croissant + poussière d'encre | le vent doré, **le flash** |
+| 4 — finisseur | débris en cellulo + décharge | rien — **il garde son flash** |
+
+Le finisseur garde sa lumière exprès. C'est le seul des quatre au palier
+supérieur, et le passage de l'encre à la lumière est justement ce qui annonce
+que le quatrième coup n'est pas un coup de plus.
+
+La propriété qui fait tout, techniquement, tient en un réglage : `LightEmission`
+à zéro. C'est elle qui sépare un trait d'une lueur. À un, même une texture à
+bordure parfaitement nette se lit comme un halo, parce qu'elle s'additionne au
+fond. C'est très exactement pourquoi « baisser les lumières » ne pouvait pas
+marcher.
+
+## Le doré n'a pas disparu — il a fallu le réinstaller
+
+Piège évité de justesse : en écrivant les M1 en gris à la source, le portail de
+momentum n'avait plus rien à neutraliser, donc **le doré ne serait jamais
+revenu, à aucun palier**. Ta consigne — « le doré reste l'identité » — aurait été
+vidée de son sens par un détail technique.
+
+Le portail repose donc la teinte au palier surchargé, en conservant la
+luminosité. La **forme ne change pas** : l'encre reste de l'encre, bordure nette.
+Seule sa couleur change.
+
+## Trois garde-fous qui criaient faux, corrigés le même jour
+
+Tu m'avais demandé de réparer celui de l'audit. En le faisant, j'en ai trouvé
+deux autres avec le même défaut.
+
+1. **L'audit des packs** criait « DANGER » sur tout pack contenant un script —
+   donc sur toute une catégorie, puisque n'importe quel pack de VFX livré dans un
+   mannequin de démonstration en contient. Nouveau verdict : **« à lire »**. Ce
+   n'est pas un feu vert : il interdit d'importer sans avoir lu les sources.
+2. **La liste des effets de contact** a manqué un effet pour la troisième fois.
+   Résultat : trois des quatre M1 ne produisaient **plus rien du tout** à bas
+   momentum. Un coup sans retour est pire qu'un coup trop bruyant. Cette fois il
+   y a un test, et je l'ai vérifié en le cassant exprès.
+3. **La règle sur les identifiants d'assets** avertissait sur *tous* les
+   identifiants, y compris ceux correctement enregistrés — donc à chaque commit,
+   pour toujours. Un avertissement qu'on ne peut jamais satisfaire n'est pas un
+   garde-fou, c'est du bruit, et le bruit finit ignoré. Il vérifie maintenant.
+
+Le point commun des trois n'est pas la coïncidence : aucun n'avait de test qui le
+prenne au mot.
+
+## L'ultime : le rayon, mesuré
+
+Tu m'as demandé de le déduire de la taille réelle de l'astre. Mesure faite sur le
+fichier : la pièce `Sun` fait **16,48 stud**, sa plus grande particule **23,08**.
+L'astre se lit donc sur environ 23 stud de diamètre, soit un **rayon de 11,5**.
+
+C'est le contraire de ce qu'on attendait : **l'astre du pack est plus petit que
+notre zone de dégâts actuelle** (14). Élargir creuserait l'écart entre ce qu'on
+voit et ce qui touche — exactement ce que ta consigne interdit.
+
+Proposition : que le rayon **découle** de l'échelle d'affichage de l'astre, au
+lieu d'être un nombre réglé à part. Les deux ne peuvent alors plus diverger.
+
+Les deux changements de l'ultime — les iframes limitées au gel, et ce rayon — ne
+sont **pas encore câblés** : ils appartiennent au même bloc que la suppression du
+saut, et le saut n'a de sens de disparaître qu'avec l'astre. Les appliquer seuls
+rendrait le personnage punissable **en l'air**, ce qui serait une régression.
+
+Il reste donc une seule chose bloquante : **les deux fichiers `.rbxm` doivent
+être glissés dans Studio.**
