@@ -7277,3 +7277,48 @@ Un garde-fou meurt par les deux bouts. Par le **bruit permanent** — il parle �
 chaque fois, on apprend à le sauter. Ou par le **coût** — un crochet à 35 s finit
 contourné au `--no-verify`. Deux morts opposées, un seul résultat : un outil
 absent.
+
+---
+
+## `fadeOut` câblé : la pose d'attaque s'efface quatre fois plus vite
+
+Même chaîne que `fadeIn`, deux couches plus loin. Et un défaut de plus dans le
+pilote : le fondu **sortant** utilisait celui de l'animation **entrante**.
+
+Concrètement, après chaque coup, la pose d'attaque s'effaçait sur 0,30 s — le
+fondu d'entrée de l'idle. Elle s'efface maintenant sur 0,08 s, la valeur écrite
+sur l'animation elle-même depuis toujours.
+
+| instant après le coup | avant | après |
+|---|---|---|
+| t+0,05 s | 73,7° de pose d'attaque restante | 14,2° |
+| t+0,10 s | 57,1° | **0,0°** |
+| t+0,15 s | 41,3° | 0,0° |
+
+Ce n'est pas un réglage nouveau : c'est **la valeur déjà autorée, enfin lue**.
+C'est exactement la crispesse que l'audit vidéo réclamait.
+
+L'entrée en attaque, elle, ne bouge pas d'un degré — la piste d'attaque est de
+priorité supérieure et masque totalement l'idle qui s'efface. Aucun risque de
+mollesse de ce côté.
+
+### Une mesure écartée, et un ajustement reverti
+
+Le premier protocole donnait 6,12° puis 23,47° **au même instant** : il laissait
+les pistes avancer, donc mesurait la phase d'animation en même temps que le
+fondu. Sur cette base, j'avais réduit le fondu de l'idle de 0,30 à 0,10. La
+mesure corrigée a montré que la prémisse était fausse — l'entrée ne bavait pas du
+tout. Les deux valeurs sont reverties à l'octet près.
+
+Changer une donnée autorée sur la foi d'une mesure qui ne se reproduit pas est le
+défaut, pas la correction. Le protocole corrigé épingle la phase et vérifie
+explicitement son hypothèse avant de mesurer quoi que ce soit.
+
+### Les garde-fous survivent maintenant à un clone
+
+`.githooks/` versionné, posé par `scripts/install_hooks.sh`. Une commande reste
+nécessaire — git refuse délibérément d'exécuter des crochets versionnés sans
+opt-in, et c'est une bonne chose. Le levier n'est donc pas d'automatiser, c'est
+de rendre l'oubli **bruyant** : la suite de tests échoue franchement, avec la
+commande à lancer, si le chemin n'est pas posé. Un clone neuf l'apprend au
+premier test plutôt qu'au premier bug.
