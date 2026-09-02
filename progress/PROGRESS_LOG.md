@@ -7546,3 +7546,56 @@ du centre est à 26 studs, alors que le couloir de destruction en fait 12 à 18.
 l'état, l'effet ne se déclenchera presque jamais en jeu réel. Soit on allonge les
 couloirs, soit on rapproche des éléments cassables — la seconde est une décision
 de niveau.
+
+---
+
+## Un ultime est une scène, pas une animation longue
+
+L'ultime déclenche maintenant une **chronologie orchestrée** : la caméra recule,
+un cadre noir se pose, un titre apparaît, et tout se retire à la dissipation.
+Avant, il n'y avait rien de tout ça — une animation longue et une zone de dégâts.
+
+La séparation est celle que Milan avait décrite : **la mise en scène est cliente,
+le résultat reste serveur**. Le module ne calcule rien et ne décide de rien ; il
+met en scène un événement dont le serveur a déjà l'autorité.
+
+### Trois choses qu'il ne fait délibérément pas
+
+**Il ne gèle pas les joueurs proches.** Ce serait de l'autorité, donc du serveur
+— et elle existe déjà, l'ultime étourdit ses cibles 1,8 s. Un gel côté client
+ferait croire à une immobilisation vraie sur un seul écran, ce qui est pire que
+pas de gel du tout.
+
+**Il ne déplace pas la caméra vers un point choisi**, il la recule le long de son
+axe : casser le repère du joueur au moment où il en a le plus besoin rendrait la
+scène injouable.
+
+**Il ne s'impose qu'à celui qui lance l'ultime.** Une cinématique infligée à
+l'adversaire pendant qu'il se fait frapper serait une perte de contrôle, pas une
+mise en scène.
+
+### Mesuré dans le jeu
+
+| instant | ce qui se passe |
+|---|---|
+| t+0,00 | la caméra est prise, le cadre se pose |
+| t+1,77 | la caméra est **rendue** |
+| t+2,12 | le cadre est retiré |
+
+Et les temps de la scène ne sont pas inventés : ce sont ceux de la mécanique déjà
+en place — montée 0,35 s, suspension 0,50 s, chute 0,30 s.
+
+### Éprouvé en le cassant
+
+Prendre la caméra est la chose la plus dangereuse que fasse ce système : une
+scène interrompue qui ne la rend pas laisse le joueur coincé. Quatre
+interruptions ont été provoquées volontairement — annulation en plein milieu,
+scène écrasée par une autre, étape qui plante, liste d'étapes vide. **Dans les
+quatre cas la caméra est rendue.**
+
+### Ce qui n'a pas été testé, et je le dis
+
+Le verrou qui réserve l'ultime au momentum maximal. La jauge monte de 0,42 point
+en seize coups : y arriver par des clics n'était pas praticable. La scène a donc
+été déclenchée par le même canal et la même description que l'amorce réelle, ce
+qui couvre toute la chaîne sauf ce verrou-là — lequel n'a pas été modifié.
