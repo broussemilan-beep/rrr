@@ -7158,3 +7158,37 @@ Piège documenté : avec `StreamingEnabled`, un rig loin du joueur n'a aucune
 Voir `STATE.md` — journal Day 1 → Day 20 (2026-05-31). Attention : tout verdict
 géométrique qui y figure est **antérieur au fix C0/C1** et doit être considéré
 comme provisoire.
+
+## 2026-09-02 — Impact frames manga : la silhouette v2 (aplat + contour)
+
+**Capture jointe** : `2026-09-02_impactframe-silhouette-v2.png`.
+
+Chantier fermé. L'effet combine trois éléments, tous vérifiés à l'image :
+
+1. **La scène bascule en encre** — `ColorCorrection`, `Saturation = -1`,
+   `Contrast = 3.5`. **Et non ±25000** comme le donnait l'audit vidéo : cette
+   valeur ne produit pas de l'encre mais un **seuil à 1 bit**, sans demi-tons, où
+   le personnage disparaît purement et simplement.
+2. **Des lignes de concentration** convergent vers le point d'impact et
+   **s'arrêtent avant lui** — le centre reste clair, sinon l'effet masque ce qu'il
+   souligne. 84 traits composés à partir d'une seule texture de pack, aucun upload.
+3. **La silhouette est aplatie ET contournée** — `Highlight`, remplissage noir,
+   trait blanc. C'était la pièce manquante : dans une planche, une figure aplatie
+   est définie par son **trait**. Sans lui, l'aplat seul était un recul (en noir il
+   se fond dans les ombres, en blanc il bloome en tache informe).
+
+**Déclencheurs** : ultime, contre réussi, quatrième M1 au palier de momentum
+surchargé. Jamais les M1 de base, et un verrou global de 7 s entre deux. Un effet
+réussi supporte encore moins d'être banalisé.
+
+**Coût** : −8 % de framerate, et **quasi fixe** — 6 silhouettes et 20 silhouettes
+coûtent la même chose à 0,4 ips près. C'est ce qui le rend viable en PvP.
+
+**Limite, dite franchement** : `Highlight` contourne la silhouette **extérieure**
+du modèle, pas chaque pièce. Un bras qui recouvre le torse n'a pas de ligne
+interne. Le problème est **atténué, pas résolu** — « le perso redessiné » au sens
+strict demanderait un trait par pièce, qu'aucune primitive Roblox ne donne.
+
+Autres livraisons du jour : la **course** du Demi-Dieu (cadence basse, foulée de
+1,87 stud, affaissement à chaque appui), le **FOV par phase** (creux 64 à
+l'anticipation, pic 80 à l'impact), et le **dash double-tap rendu autoritaire**.
