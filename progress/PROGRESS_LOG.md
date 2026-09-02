@@ -7696,3 +7696,50 @@ comportement réel.** La valeur qu'elle recommande donne aujourd'hui un suivi à
 Ce n'est donc pas un solveur cassé, c'est une **calibration périmée** : le réglage
 par défaut a été choisi sur une mesure qui ne décrit plus le code. Reste à
 décider entre recalibrer et assumer la limite — ce n'est pas à moi de trancher.
+
+---
+
+## Vague 4 : ce que la mesure dit des trois critères d'animation
+
+Avant de poser le moindre gate, on a mesuré **8 de nos animations et 61 clips
+commerciaux** sur les trois critères venus de l'audit vidéo. Les clips
+commerciaux servent de référence de « bon » : ils sont vendus et utilisés, donc
+les refuser serait par construction une fausse alarme.
+
+Trois résultats, dont deux inattendus.
+
+**1. « Chez nous tout s'arrête ensemble » est faux.** Nos animations décalent
+leurs arrêts de **9 frames en médiane**, les packs commerciaux de **2**. Nous
+sommes meilleurs que la référence sur ce critère-là.
+
+Mais le critère redevient juste quand on le restreint aux **vraies frappes** :
+sur les mouvements amples, la médiane commerciale monte à 4 frames et un seuil à
+2 ne refuse plus que 8 % des clips professionnels, contre 49 % si on l'applique à
+tout. Sur les petits mouvements — gardes, blocages, réceptions — s'arrêter d'un
+bloc est **normal**.
+
+**2. La snappiness ne distingue rien.** Nos animations et les commerciales ont
+des distributions identiques. À chaque seuil essayé, le taux de refus des nôtres
+est égal ou pire que celui des professionnelles. Un gate là-dessus crierait
+autant sur du bon que sur du mauvais.
+
+**3. La rotation de torse est un critère de style, pas de qualité.** La valeur
+recommandée par l'audit (45-60°) refuserait **87 % des animations commerciales**.
+Nos frappes y sont déjà.
+
+### Le vrai manque n'était dans aucun des trois
+
+**La contre-rotation de tête : 62 % des clips commerciaux la font, 0 % des
+nôtres.** C'est exactement la compensation que réclame le squelette R6, qui n'a
+ni cou ni clavicules : la tête doit rester tournée vers la cible pendant que le
+buste part. Six animations sur six ne le font pas.
+
+### Ce qu'on propose de garder
+
+Deux gates seulement, sur trois critères — et un seul mesure quelque chose que
+nous ne faisons pas déjà. Le décalage d'arrêt, restreint aux frappes amples, sert
+de garde préventif pour le travail à venir ; la contre-rotation de tête devient
+un avertissement, pas un blocage, parce que plus d'un tiers des clips
+professionnels s'en passent aussi.
+
+**Rien n'est intégré** : la calibration passe en revue d'abord.
