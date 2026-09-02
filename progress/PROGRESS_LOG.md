@@ -8284,3 +8284,88 @@ c'est que tu n'aies rien modifié dedans depuis. **À toi de la fermer.**
 **Et il reste 601 émetteurs dans la zone de jeu**, dans le dossier de
 démonstration du pack BZ1, bien antérieur à ce chantier. Ce n'était pas mon
 sujet aujourd'hui, mais c'est beaucoup pour une zone où on se bat.
+
+---
+
+# Le dossier `Read Me!` : ce qu'il contient, et une trouvaille à côté
+
+## D'abord, je me suis trompé
+
+J'ai écrit la dernière fois que ces 601 émetteurs étaient « en pleine zone de
+combat ». **C'est faux, et je l'avais déduit sans mesurer.**
+
+Le dossier est centré à 1 096 stud du centre de l'arène, et sa pièce la plus
+proche est à **875 stud**. L'anneau de l'arène est à 37. C'est vingt-quatre fois
+plus loin que l'arène n'est large. Aucun joueur ne s'en approchera.
+
+## Ce que c'est
+
+Une **vitrine de démonstration** : 26 auras BZ1, chacune portée par un mannequin
+avec son étiquette. 575 émetteurs, 36 personnages, 22 panneaux de texte.
+
+**Et il n'apporte rien d'unique.** Les 26 auras qu'il contient sont *toutes*
+déjà dans notre archive, qui en compte 137. Intersection complète, zéro
+exclusivité.
+
+## Est-ce que ça coûte ? Oui, mais pas là où on croyait
+
+563 des 575 émetteurs sont allumés. Mais le jeu a le **streaming activé** et le
+dossier est à 875 stud : il n'est jamais envoyé au joueur qui se bat. **Le coût
+d'affichage est nul.**
+
+Le vrai coût, c'est **19 scripts actifs** qui tournent en boucle, image par
+image, sur le serveur :
+
+```lua
+while true do
+    -- fait tourner le modele de 0,08 radian
+    task.wait()
+end
+```
+
+Le streaming n'empêche pas un script du Workspace de tourner. Ces dix-neuf
+boucles s'exécutent en permanence pour faire tourner une décoration que personne
+ne verra jamais.
+
+## Est-ce que quelque chose s'en sert ? Non — mais j'ai trouvé pire
+
+Le jeu ne cherche pas ses effets dans le Workspace, donc ce dossier ne peut
+détourner personne. Bonne nouvelle.
+
+**Mais en vérifiant, j'ai trouvé une fragilité de fond.** Sur les 40 effets que
+nos recettes appellent par leur nom :
+
+```
+ 2 se trouvent dans le dossier des packs sûrs
+37 n'y sont PAS — ils sont trouvés par un chemin de SECOURS, dans l'archive
+```
+
+**Toute la couche d'effets du jeu tient à un dossier nommé « archive du
+2026-05-11 »** — c'est-à-dire quelque chose qu'on range un jour de ménage. Si ce
+dossier disparaît, les effets s'arrêtent **sans aucune erreur** : le code se
+contente d'un avertissement et ne fait rien. Exactement comme notre astre qui
+n'aurait jamais tiré sous le nom `Sun`, mais à l'échelle de tout le kit.
+
+*(J'ai aussi trouvé un nom en double, `Dust`, utilisé par quatre compétences. J'ai
+comparé les trois candidats réglage par réglage : ils sont identiques. Sans
+conséquence — je le dis plutôt que de crier au loup.)*
+
+## Et le trait ? Presque rien
+
+31 textures mesurées sur 209 (les autres refusent le téléchargement — donc c'est
+un échantillon de 15 %, et je ne l'extrapole pas).
+
+```
+Read Me!           6 % d'encre
+100+ Combat VFX   29 % d'encre
+The Creator VFX    0 %
+```
+
+Et sur les deux « encres » trouvées, une seule est utilisable : une décharge
+angulaire à bords francs. L'autre fait 64 pixels et n'est qu'un motif de fond.
+
+**Ce dossier n'apporte rien pour le trait.**
+
+## Ce que je n'ai pas fait
+
+Rien supprimé, rien déplacé, comme demandé. Les faits sont posés.
