@@ -7431,3 +7431,63 @@ image** — donc sans dérive de cadrage ni décalage de temps entre deux prises
 point d'impact ; ils ne détruisent aucun élément existant du décor. Ce n'est pas
 de la destruction, c'est de la décoration — et c'est pour ça qu'elle paraît
 « classique » quelle que soit son intensité.
+
+---
+
+## Un direct n'est plus un balayage
+
+Trois formes d'effet là où il n'y en avait qu'une.
+
+**Le couloir** — le direct. L'effet parcourt le trajet du coup **en avançant dans
+le temps** : c'est le « l'air explose derrière le poing » de la référence. Le
+décalage est le cœur de la forme, pas un ornement — poser les bouffées au même
+instant donnerait une barre statique, pas un souffle.
+
+**L'éventail** — le balayage. Un secteur autour de l'attaquant : ni une ligne, ni
+un cercle.
+
+**Le radial** — la chute d'ultime, **inchangée**. Et c'est le point : un corps qui
+tombe du ciel propage vraiment son onde dans toutes les directions. La gerbe
+radiale n'a jamais été le défaut ; le défaut était de l'employer pour **tout**.
+On ne la remplace pas, on la remet à sa place.
+
+### Les recettes le disaient déjà
+
+*« direct : éclat sec et ponctuel »*, *« crochet : onde latérale, pas un point »*,
+*« frappe horizontale ample »* — ces phrases étaient écrites en commentaire dans
+les recettes, et les trois produisaient la même gerbe. **L'intention était là
+depuis le début et le vocabulaire ne savait pas l'exprimer.** Ce n'était pas un
+problème de goût, c'était encore un problème de tuyauterie.
+
+### Quatre erreurs, toutes attrapées par la mesure
+
+La plus instructive : j'**ajoutais** la nouvelle forme à côté de l'ancienne au
+lieu de la **remplacer**. Le budget d'effets écartait silencieusement la
+troisième — mesuré : quinze bouffées d'éventail, zéro couloir. Et surtout, un
+direct qui produirait un couloir *et* la même gerbe qu'avant resterait « la même
+gerbe à trois intensités ». Le brief demande une forme différente, pas une de
+plus.
+
+La plus sérieuse : la substitution avait créé une **régression**. Au momentum
+bas, le premier coup n'affichait plus rien du tout — violation de la règle
+inscrite dans le filtre lui-même : *un coup qui touche doit se voir toucher*.
+Corrigé.
+
+### La preuve
+
+Les deux formes sont séparées par leur **géométrie**, pas par leur nom : un
+couloir pose ses bouffées à distances croissantes droit devant, un éventail à
+distance constante sur des angles symétriques. Relevé en jeu, sur deux coups
+consécutifs :
+
+| coup | relevé | forme |
+|---|---|---|
+| M1_1 | d = 0,0 / 2,5 / 5,0 — angle 0° | couloir |
+| M1_2 | d ≈ 6,5 constant — angles ±33° | éventail |
+
+### Au passage, un vieux problème réglé
+
+Sept fois de suite, l'outil de synchronisation n'envoyait pas les fichiers
+modifiés vers l'éditeur, et je rejouais les modifications à la main. Studio sait
+en fait lire un petit serveur local — c'est ainsi que l'outil de synchronisation
+fonctionne lui-même. Cinq fichiers poussés d'un coup, chacun relu et vérifié.
