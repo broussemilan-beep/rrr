@@ -8590,3 +8590,48 @@ joué.
 Séparer les deux hypothèses sur le retard, vérifier le bandeau, **et seulement
 après** juger la scène à l'œil. Une scène dont le rythme est cassé ne se juge
 pas au goût — on répare l'horloge d'abord.
+
+---
+
+# Prêt à tester : la surcharge se voit
+
+**1. La décroissance du momentum est en pause.** Comme demandé, et proprement :
+un drapeau nommé dans le service, pas une ligne commentée qu'on oublierait de
+remettre. La vraie valeur (8 par seconde) reste juste au-dessus, intacte — c'est
+elle qui fera foi quand on réglera vraiment ce paramètre. **Pour la réactiver :
+un seul `true` à passer en `false`.**
+
+C'est noté au journal comme dette assumée, avec la raison, pour qu'une session
+future ne prenne pas ça pour l'équilibrage voulu.
+
+**2. Au maximum, le personnage s'embrase.** L'aura dorée monte de tout le corps
+— 65 émetteurs, répartis sur les six pièces, ceux du pack `The Creator` qui
+dormaient depuis le transfert. Et un geste de montée en puissance se joue une
+fois au passage à 100.
+
+Je n'ai rien fabriqué : l'animation existait déjà dans nos packs, 1,33 seconde,
+le personnage qui se ramasse et se redresse. Cherché avant d'autorer, comme
+toujours.
+
+**L'aura est posée côté serveur, et c'est voulu** : la spec dit que l'état chargé
+doit être lisible **par l'adversaire**. Une aura montée sur l'écran du porteur ne
+serait vraie que pour lui.
+
+**3. Le défaut de rythme de l'ultime est réglé.** Le gel dure maintenant sa
+durée dès le premier déclenchement.
+
+Au passage, une leçon que je note contre moi : mon premier correctif annonçait
+fièrement « 47 effets sur 47 préchauffés » — et avait raté **exactement les deux
+seuls qui comptaient**, parce que l'ultime les appelle directement au lieu de
+passer par une recette. Le premier tir est alors devenu *pire* qu'avant. C'est le
+compte affiché qui a permis de le voir.
+
+```
+premier declenchement, duree du gel      cible 0,95 s
+  avant                                  0,58 s
+  correctif incomplet                    0,07 s
+  correctif complet                      1,00 s
+```
+
+**C'est prêt.** Frappe le mannequin une quinzaine de fois : la barre se remplit
+et ne redescend plus, le personnage s'embrase, et `R` déclenche l'ultime.
