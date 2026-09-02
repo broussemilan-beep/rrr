@@ -7850,3 +7850,67 @@ fois par programme.
 d'effets de style animé — ils existent, ce ne sont pas les mêmes que les nôtres,
 qui sont réalistes — soit des illustrations commandées, soit des planches
 générées puis téléversées avec la même discipline que le reste.
+
+---
+
+## Le décor casse maintenant là où on se bat
+
+**D'abord une correction sur un chiffre que j'avais publié.** J'avais annoncé que
+l'élément cassable le plus proche était à 26 studs et que l'effet ne se
+déclencherait donc presque jamais. **C'était faux** : ces 26 studs étaient la
+distance depuis la position fixe du mannequin d'entraînement, pas une propriété
+de l'arène. La vraie médiane est de **10 studs**.
+
+Ce qui manquait n'était donc pas « partout », c'était **le centre** — la bande
+autour du monument ne contenait aucun élément cassable, alors que c'est le
+terrain le plus disputé.
+
+**Ajouté** : seize éléments bas, au centre et dans une seconde bande vide.
+
+| | avant | après |
+|---|---|---|
+| éléments cassables | 40 | **56** |
+| arène hors de portée | 42 % | **32 %** |
+| centre hors de portée | 53 % | **0 %** |
+| lignes de vue bloquées | 39/64 | 40/64 |
+
+Et **aucun des nouveaux éléments ne bloque une ligne de vue** — les blocages
+viennent tous des monolithes hauts qui étaient déjà là.
+
+### Un défaut trouvé en lisant le code plutôt que les noms
+
+Ma liste de ce qui a le droit de casser contenait deux types nommés « dalle ».
+En lisant ce que le constructeur d'arène en fait, il s'avère que ce sont des
+**morceaux de sol** — dont douze dalles surélevées sur lesquelles les joueurs
+marchent. Les casser aurait retiré un appui sous leurs pieds. Retirés de la liste.
+
+### La praticabilité, mesurée et non jugée à l'œil
+
+Première pose, les éléments centraux bouchaient **une direction sur deux** autour
+du monument. Espacés, on tombe à une sur quatre — moins que les bandes qui
+existaient déjà. « Ça paraît chargé » ne suffisait pas à décider ; promener une
+boîte de la taille d'un personnage sur des cercles, si.
+
+### Plus de morceaux
+
+Les éclats passent de **6 à 14 par pièce**, plus dispersés et un peu plus petits.
+Le commentaire d'origine affirmait qu'au-delà de huit « ça se lit comme une
+masse » — une supposition jamais mesurée, que la référence contredit : elle
+montre une vingtaine de morceaux.
+
+## Et le trait se génère
+
+Essai décisif concluant. **Cinq des six primitives tombent juste au premier
+essai** — trait fuselé, stries, hachure, contour tremblé, et l'éclat à bordure
+hérissée. Une seule correction a été nécessaire, sur les rayons de l'étoile.
+
+Les valeurs de départ sont **mesurées sur les images de référence**, pas
+estimées.
+
+Ce qui fait la différence, et qui ne figurait pas dans la liste initiale : **la
+bordure hérissée**. Un disque net, même parfaitement blanc, se lit comme une
+lueur ; une bordure faite de centaines de pointes fines se lit comme de l'encre.
+
+**Conclusion : aucun pack à acheter.** Le vocabulaire est géométrique et il se
+génère. Reste à éprouver le point le plus dur, la silhouette hachurée du
+personnage.
