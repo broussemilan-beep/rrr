@@ -7651,3 +7651,48 @@ L'outil de capture met 1,35 s par image ; la scène en dure 1,75. La planche
 fournie étire donc l'horloge pour être lisible, ce qui est indiqué dessus. **Pour
 la juger vraiment en mouvement, il faut appuyer sur R soi-même ou un
 enregistrement d'écran** — que je ne peux pas produire.
+
+---
+
+## L'écran ne reste plus délavé après un ultime
+
+Le défaut trouvé au tour précédent est réparé et vérifié.
+
+**Ce qui se passait** : après chaque ultime, deux effets de couleur restaient
+posés définitivement. Comme ils se composent en s'additionnant, tout l'écran
+restait désaturé pour le reste de la partie — le joueur déclenche son plus beau
+coup et le jeu devient délavé.
+
+**La condition, isolée par la trace** : sur vingt flashs d'une session de combat,
+tous se restauraient proprement **sauf ceux accompagnés d'un arrêt sur image**,
+c'est-à-dire l'ultime.
+
+**La cause n'est pas la course entre deux effets, c'est la forme de la garantie.**
+La restauration disait : *« je ne remets à zéro que si personne ne m'a succédé »*.
+C'est juste — on ne veut pas écraser un flash plus récent — mais si le successeur
+rate sa propre restauration, **plus personne ne restaure jamais**. Une garantie
+qui dépend d'un autre maillon n'est pas une garantie.
+
+**La réparation** : un filet gardé par le temps et non par la succession. Chaque
+flash note son instant ; son filet ne se déclenche que si aucun flash plus récent
+n'est arrivé depuis. Le dernier d'une rafale a forcément l'horodatage le plus
+récent, donc son filet s'exécute toujours. La chaîne ne peut plus se rompre.
+
+**Vérifiée en reproduisant la panne**, pas en constatant son absence : sur quatre
+ultimes d'affilée, deux ont posé **exactement la valeur qui restait bloquée**, et
+les quatre sont revenus à zéro.
+
+## Le test rouge : ma propre hypothèse réfutée
+
+J'avais avancé une explication précise — un solveur ajouté récemment échangerait
+de la précision contre de la stabilité. **La mesure la réfute** : les deux modes
+donnent exactement le même résultat.
+
+Ce que la mesure montre à la place est plus simple et plus gênant : **la table de
+réglages inscrite dans la documentation du code est inversée par rapport au
+comportement réel.** La valeur qu'elle recommande donne aujourd'hui un suivi à
+54 % ; celle qu'elle déconseille donne **100 % avec une erreur nulle**.
+
+Ce n'est donc pas un solveur cassé, c'est une **calibration périmée** : le réglage
+par défaut a été choisi sur une mesure qui ne décrit plus le code. Reste à
+décider entre recalibrer et assumer la limite — ce n'est pas à moi de trancher.
