@@ -7743,3 +7743,62 @@ un avertissement, pas un blocage, parce que plus d'un tiers des clips
 professionnels s'en passent aussi.
 
 **Rien n'est intégré** : la calibration passe en revue d'abord.
+
+---
+
+## Le test rouge depuis le 25 août est vert
+
+`reg_weight` recalibré à `0.0` : **10 tests passés**, la classe entière. La
+valeur par défaut avait été choisie sur une mesure qui ne décrivait plus le code.
+
+## La contre-rotation de tête, mesurée puis appliquée
+
+Avant d'appliquer quoi que ce soit, on a mesuré **ce que les professionnels font
+exactement** — sur les 94 contre-rotations du corpus commercial. Le résultat est
+plus simple qu'attendu : quelle que soit l'axe de rotation, **la tête
+contre-tourne d'environ 70 % de ce que fait le torse**. Ce n'est pas « tourner la
+tête de N degrés », c'est une proportion.
+
+Appliqué à trois de nos frappes, avec un plafond fixé à ce que le corpus montre
+réellement — appliquer la proportion telle quelle à notre torse, qui tourne plus
+que le leur, aurait produit une amplitude qu'aucun clip professionnel n'atteint.
+Extrapoler au-delà de ce qu'on a mesuré, ce serait inventer une pratique en
+prétendant la copier.
+
+**L'ultime n'a pas été touché** — Milan reprend son animation en main.
+
+**Jugé à l'œil** : le corps se tord, la tête reste sur la cible. Ça se lit.
+
+## Le garde-fou a attrapé ma propre correction
+
+Première version : la tête suivait le torse à l'inverse, exactement. Le gate a
+immédiatement signalé que deux animations s'arrêtaient désormais d'un bloc — en
+faisant de la nuque une simple fonction du torse, je l'avais fait s'immobiliser
+au même instant.
+
+J'ai supposé qu'il fallait retarder la tête. **La mesure dit non** : chez les
+professionnels il n'y a pas de retard. Leur décalage vient d'ailleurs.
+
+## Et cela corrige une conclusion que j'avais publiée
+
+En remesurant sur la seule paire qui porte vraiment l'action — le torse et le
+bras qui frappe — le résultat s'inverse :
+
+| | médiane | sous le seuil |
+|---|---|---|
+| animations commerciales | 2,0 frames | 43 % |
+| **les nôtres** | **1,0 frame** | **100 %** |
+
+**Nos six animations s'arrêtent toutes à une frame près.** Ma conclusion du tour
+précédent — « nous sommes meilleurs que les professionnels sur ce critère » —
+était un **artefact de mesure** : notre nuque étant presque immobile, sa « frame
+d'arrêt » n'était que du bruit tardif, ce qui gonflait le score.
+
+**L'audit vidéo avait raison, et moi tort.** Le manque est réel et reste entier :
+la correction de la tête ne le répare pas, elle ne touche pas le bras.
+
+## Les deux gates, tous deux en avertissement
+
+J'avais proposé le premier en blocage ; la remesure l'interdit — 43 % des clips
+professionnels tomberaient aussi. Un garde-fou qui crie faux une fois sur deux
+finit ignoré.
