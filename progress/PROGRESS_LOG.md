@@ -7322,3 +7322,60 @@ opt-in, et c'est une bonne chose. Le levier n'est donc pas d'automatiser, c'est
 de rendre l'oubli **bruyant** : la suite de tests échoue franchement, avec la
 commande à lancer, si le chemin n'est pas posé. Un clone neuf l'apprend au
 premier test plutôt qu'au premier bug.
+
+---
+
+## Analyse : nos VFX sont ponctuels parce que la trajectoire est jetée en route
+
+Milan : *« pas assez travaillé, trop classique… on n'a toujours pas l'effet de
+puissance, l'air, les VFX secondaires »*, avec pour référence le coup sérieux de
+Saitama — l'explosion d'air qui suit le poing et le décor qui casse le long du
+chemin.
+
+L'analyse donne trois constats, et le premier explique les deux autres.
+
+**1. Le serveur connaît la trajectoire complète, et n'en transmet rien.** Au
+moment du coup il construit une boîte orientée : origine, direction, longueur.
+La charge utile envoyée aux effets ne contient qu'**un point**. La couche VFX est
+donc incapable de produire une trajectoire — pas par manque d'idée, mais parce
+que l'information est détruite une couche au-dessus d'elle. C'est le même schéma
+que `fadeIn` et `fadeOut` : une donnée correcte en amont, un maillon qui ne la
+transmet pas.
+
+**2. On possède déjà la matière directionnelle, et on la pose de travers.**
+Inventaire des packs : **947 émetteurs orientés et 227 Beam** — un Beam à deux
+attaches est exactement une primitive de trajectoire. Le poseur d'effets les
+place avec une **rotation identité**, c'est-à-dire face au nord du monde quel que
+soit le sens du coup.
+
+**3. Le vocabulaire est radial dans son code même.** Six formes d'effet en tout,
+et **32 recettes sur 44** utilisent la même gerbe au point d'impact. Les éclats
+au sol sont placés à un angle tiré au hasard sur 360° et éjectés vers l'extérieur.
+Milan a raison sur le fond : une onde circulaire ne devient pas un couloir en
+grandissant.
+
+**Casser selon un chemin ne demande aucune technique nouvelle** — la requête en
+boîte orientée est déjà la convention de frappe du dépôt. En revanche, aujourd'hui
+**rien ne casse** : nos éclats fabriquent des débris neufs, ils ne détruisent rien.
+
+## Les ultimes : il n'existe aucune infrastructure de cinématique
+
+L'ultime est une chaîne d'attentes dans le module serveur et un seul envoi
+d'effets à la fin. Aucune prise de contrôle caméra, aucun gel des joueurs
+proches, aucun titre. Milan décrit exactement le manque : c'est **une animation
+longue plus une zone de dégâts**, pas une chronologie orchestrée.
+
+## L'hypothèse d'une primitive commune : écartée, et non forcée
+
+Les deux chantiers ressemblent à « une séquence dans le temps ». Leur difficulté
+réelle n'est pas là : le premier est **spatial** (la direction n'arrive pas), le
+second est un problème d'**autorité et d'orchestration** (caméra, gel,
+interruption). Le seul recouvrement est « faire quelque chose à l'instant t » —
+une boucle. Une abstraction commune coûterait une couche pour ne rendre qu'une
+boucle, en faisant entrer un concept spatial dans une interface temporelle.
+
+Ce qui est réellement réutilisable n'est pas un séquenceur neuf : c'est la
+**chronologie de phases qui existe déjà** et que le second chantier peut reprendre
+en changeant seulement son horloge.
+
+*Analyse seule — rien n'est codé sur ces deux chantiers.*
