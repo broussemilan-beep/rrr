@@ -7491,3 +7491,58 @@ Sept fois de suite, l'outil de synchronisation n'envoyait pas les fichiers
 modifiés vers l'éditeur, et je rejouais les modifications à la main. Studio sait
 en fait lire un petit serveur local — c'est ainsi que l'outil de synchronisation
 fonctionne lui-même. Cinq fichiers poussés d'un coup, chacun relu et vérifié.
+
+---
+
+## Le décor casse — et avant, rien ne cassait
+
+À dire clairement, parce que ça explique tout le reste : **nos éclats ne
+détruisaient rien.** Ils *fabriquaient* des morceaux neufs autour du point
+d'impact, à un angle tiré au hasard sur 360°. Aucun élément du décor n'était
+touché, ni retiré, ni déplacé.
+
+C'est pour ça que la destruction paraissait « classique » **quelle que soit son
+intensité** : on pouvait en augmenter le nombre et la vitesse indéfiniment sans
+jamais obtenir l'effet, parce que le problème n'était pas le dosage. Ce n'était
+pas de la destruction, c'était de la décoration.
+
+Maintenant ce sont les **vraies pièces** du décor qui volent, et elles partent
+dans la direction du coup.
+
+**Aucune technique nouvelle n'a été nécessaire** — la requête utilisée est
+exactement celle qui sert déjà à savoir qui est touché par une frappe. Il ne
+manquait que la direction, qui n'arrivait pas jusque-là.
+
+### Ce qui casse, et ce qui ne cassera jamais
+
+Le sol, les zones de réapparition et l'anneau suspendu sont **exclus par
+construction** : la liste est blanche, pas noire. Casser le sol ferait tomber les
+joueurs dans le vide, et une liste noire oubliée une seule fois suffirait pour
+ça. Colonnes, monolithes et murets sont cassables.
+
+Et c'est **réversible** : la pièce est cachée puis restaurée, jamais détruite,
+ses collisions coupées pendant l'effet. Une arène qui se dégrade définitivement
+finit vide.
+
+### La mesure
+
+| | |
+|---|---|
+| pièce touchée | cachée, 6 éclats projetés |
+| angles d'éjection | **4° à 25° de la direction du coup** |
+| une éjection radiale donnerait | 0° à 180° |
+
+C'est ce chiffre qui distingue « casser le long du chemin » de « casser autour
+d'un point ».
+
+### Deux décisions qui reviennent à Milan
+
+**Le bris suit un coup qui touche**, pas un moulinet dans le vide : les
+compétences ne déclenchent leurs effets qu'au contact. C'est cohérent avec le
+reste du jeu, mais c'est un choix, pas une fatalité.
+
+**Les éléments cassables sont trop loin de la zone de combat** : le plus proche
+du centre est à 26 studs, alors que le couloir de destruction en fait 12 à 18. En
+l'état, l'effet ne se déclenchera presque jamais en jeu réel. Soit on allonge les
+couloirs, soit on rapproche des éléments cassables — la seconde est une décision
+de niveau.
