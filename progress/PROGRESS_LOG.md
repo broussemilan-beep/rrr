@@ -8213,3 +8213,74 @@ n'ai aucun moyen de la sauver moi-même — il n'existe pas de commande de
 sauvegarde accessible depuis mon côté. **Il faut un Ctrl+S dans Studio.** Sinon
 tout est perdu à la fermeture. C'est rejouable en deux commandes, mais autant ne
 pas avoir à le refaire.
+
+---
+
+# Ton transfert et ma reconstruction : identiques, mesuré
+
+Tu as transféré `The Creator VFX` toi-même. Les deux versions se sont donc
+retrouvées côte à côte dans la place — et c'était l'occasion de répondre à ta
+question sans rien téléverser.
+
+```
+ma reconstruction     111 émetteurs, 47 signatures distinctes
+ton transfert         111 émetteurs, 47 signatures distinctes
+écart, dans les deux sens : 0
+```
+
+Chaque signature compare trente réglages **plus les trois courbes** — taille,
+transparence, couleur au fil du temps — point par point. C'est exactement là
+qu'une reconstruction pourrait mentir de façon crédible. **Aucun écart.**
+
+Ta question était la bonne, et la réponse est que sur ces fichiers les deux
+voies se valent. Le désérialiseur de Roblox a servi d'arbitre.
+
+## Le doublon — et ce qu'il cachait de pire
+
+Ton transfert était dans le **Workspace**, avec le mannequin de démonstration
+complet : 111 émetteurs et un personnage fantôme **dans la zone de jeu**. Le
+doublon était le moindre des deux problèmes.
+
+Je l'ai **déplacé, pas supprimé** — il est prouvé identique, donc rien ne serait
+perdu, mais rien n'oblige non plus à détruire ton travail. Il est hors de portée
+du résolveur d'effets : plus aucune ambiguïté sur ce qui tire.
+
+## Un piège attrapé de justesse
+
+Le jeu retrouve ses effets **par nom exact, premier trouvé**. Notre astre
+s'appelait `Sun` — et un `Sun` existait déjà dans le kit Demon Slayer, rangé
+avant. J'ai rejoué l'algorithme : il rendait un `Sun` à **un seul émetteur**.
+
+Notre astre à dix émetteurs **n'aurait jamais tiré**, et l'ultime aurait produit
+une étincelle sans que rien ne signale l'erreur. Renommés.
+
+## L'ultime est maintenant une invocation
+
+`invocation → ascension → embrasement → rasage → dissipation`.
+
+Il ne saute plus, il appelle. Et **avec le saut disparaît toute la dette de
+physique** : l'éjection à 80 stud après l'impact, la purge de vitesse, le
+repositionnement forcé, l'attente du sol. Le rasage tombe désormais sur un
+instant daté — le décalage qui faisait que l'ultime **ne touchait personne** ne
+peut plus exister.
+
+Invulnérable **pendant le gel seulement** : 0,40 s au lieu de 1,25.
+
+Le rayon **découle** de la taille de l'astre : 11,54 stud, soit moins qu'avant.
+Il ne se règle plus à côté. Pour couvrir plus, on agrandit l'astre et le rayon
+suit tout seul.
+
+La mise en scène côté joueur n'a demandé **aucune modification** — elle était
+déjà pilotée par les données.
+
+## Deux choses pour toi
+
+**La seconde page Studio, je ne peux pas la fermer.** Elle n'est pas connectée à
+mon pont : je ne la vois pas et je ne peux pas vérifier ce qu'elle contient. Ce
+que je peux garantir, c'est que **tout le contenu du pack est dans notre place**
+— 111 émetteurs sur 111, prouvés identiques. Ce que je ne peux pas garantir,
+c'est que tu n'aies rien modifié dedans depuis. **À toi de la fermer.**
+
+**Et il reste 601 émetteurs dans la zone de jeu**, dans le dossier de
+démonstration du pack BZ1, bien antérieur à ce chantier. Ce n'était pas mon
+sujet aujourd'hui, mais c'est beaucoup pour une zone où on se bat.
