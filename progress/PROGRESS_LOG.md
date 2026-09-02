@@ -7379,3 +7379,55 @@ Ce qui est réellement réutilisable n'est pas un séquenceur neuf : c'est la
 en changeant seulement son horloge.
 
 *Analyse seule — rien n'est codé sur ces deux chantiers.*
+
+---
+
+## La trajectoire traverse enfin — et 947 émetteurs se réveillent
+
+Les effets sont maintenant orientés sur le coup qui les produit, au lieu de
+pointer tous vers le nord du monde.
+
+Deux changements, un seul livrable. **La trajectoire entre dans le message**
+envoyé aux effets (origine, direction, longueur) — jusqu'ici il ne contenait
+qu'un point, ce qui rendait toute la couche visuelle incapable d'un effet
+directionnel. Et **le poseur d'effets respecte enfin cette direction**, au lieu
+de placer chaque effet sans rotation.
+
+28 endroits construisent ce message. Les modifier un par un aurait été 28
+occasions d'en oublier un — et un oubli aurait recréé exactement la panne
+réparée. La direction est donc **déduite** de l'attaquant, que tous portent déjà,
+et un appelant qui la connaît mieux garde la main. La chaîne M1 la connaît mieux :
+elle la capture à l'instant où la zone de frappe est calculée, et pas cent lignes
+plus bas, où le joueur a pu tourner entre-temps.
+
+### Vérifié dans le vrai jeu, sur un cap oblique choisi exprès
+
+Un effet non orienté regarde toujours la même direction du monde. Tester face à
+cette direction-là n'aurait donc rien prouvé — le personnage a été placé sur une
+diagonale pour que les deux cas soient discernables.
+
+| effet | écart avec le cap du personnage |
+|---|---|
+| Impact Burst | **0,0°** — orienté |
+| Light Wave Impact | **0,0°** — orienté |
+| éclat au sol (atome interne) | 135,0° — pas encore |
+
+La mesure trace elle-même la frontière de ce qui est livré : les effets internes
+suivront au point suivant.
+
+### Deux erreurs de démonstration, dites franchement
+
+Pour rendre l'effet photographiable, j'avais d'abord allongé la durée de vie des
+particules — sauf que leur taille est calculée **en proportion de cette durée** :
+elles restaient donc à taille zéro au moment de la prise, et rien n'apparaissait.
+Puis j'ai démontré sur un effet **radial**, qui par définition se ressemble dans
+tous les sens et ne pouvait pas montrer une orientation. La planche finale
+utilise un effet réellement directionnel, avec les deux variantes **dans la même
+image** — donc sans dérive de cadrage ni décalage de temps entre deux prises.
+
+### Sur la destruction, pour la suite
+
+**Rien ne casse aujourd'hui.** Nos éclats *fabriquent* des débris neufs autour du
+point d'impact ; ils ne détruisent aucun élément existant du décor. Ce n'est pas
+de la destruction, c'est de la décoration — et c'est pour ça qu'elle paraît
+« classique » quelle que soit son intensité.
