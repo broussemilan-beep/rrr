@@ -9480,3 +9480,98 @@ fichier de place.**
 
 Play arrêté, Studio laissé ouvert en édition. Sondes retirées et vérifié des
 trois côtés. Rien ne traîne en scène. Arbre de travail propre, tests au vert.
+
+---
+
+# 3 septembre 2026 (reprise) — La place a tenu
+
+## D'abord la bonne nouvelle : rien n'est perdu
+
+Les quatre points qui n'existaient que dans le fichier de place ont **tous
+survécu** : les 42 émetteurs rangés en production, les deux renommages de
+l'astre et des satellites, le transfert de Milan mis de côté, les 19 scripts
+désactivés.
+
+Et le point critique est vérifié : **il ne reste qu'un seul porteur du nom
+`Sun`**, et ce n'est pas le nôtre. La collision ne peut plus se produire,
+**l'astre de l'ultime reste visible**. Rien à reconstruire.
+
+## La planche encre contre lueur était déjà faite
+
+Elle date du tour précédent, et elle est bien servie (vérifié). **Trois états et
+non deux** : j'ai ajouté l'encre à côté de l'actuel et du mat, parce qu'un choix
+entre « lueur brûlée » et « fumée grise » n'aurait pas été un vrai choix. Le
+défaut en jeu n'a pas bougé — c'est Milan qui tranche.
+
+## Le piège dans le code était pire que je ne le pensais
+
+Le dash portait deux identifiants décrits tous deux comme « la version
+précédente ». Mesurés en moteur et datés :
+
+```
+  ACTUEL           0.450  marqueur a 0.179   31 aout
+  vraie precedente 0.450  marqueur a 0.204   30 aout
+  bloc commente    0.433  AUCUN MARQUEUR     30 aout, le matin
+```
+
+Le bloc prêt à décommenter portait le troisième — **deux générations en
+arrière**. Son étiquette « version précédente » était vraie le matin du 30 août
+et fausse le soir même.
+
+**Et le décommenter n'aurait pas seulement rendu une vieille animation.** Cet
+identifiant ne porte aucun marqueur, et le bloc n'en déclarait aucun : le
+mécanisme de repli ne se serait pas armé, le signal de poussée n'aurait jamais
+été émis, et **le dash aurait joué son animation sans déplacer le corps.** Un
+dash qui ne dash pas, sans une seule erreur affichée.
+
+Le bloc est retiré, remplacé par le tableau mesuré, avec la bonne valeur de
+marqueur (l'ancienne note se trompait de 19 millièmes).
+
+**Une méthode notée au passage** : les trois identifiants ont d'abord répondu
+« vide », et j'ai failli conclure qu'ils étaient morts. C'était le
+téléchargement qui n'avait pas eu lieu. Notre règle dit qu'une durée réelle
+prouve qu'une animation existe — elle ne dit pas qu'une durée nulle prouve le
+contraire.
+
+## Le second passage sur le dash
+
+**Les deux packs achetés ne contiennent aucune animation** — compté, pas
+supposé : zéro des deux côtés, contre 2073 et 111 émetteurs. Ils ne pouvaient
+rien pour le geste, seulement pour les effets, qui sont faits.
+
+**J'ai vérifié en moteur une comparaison qui n'avait été faite que hors ligne**,
+et je ne retrouve pas leurs chiffres — ma mesure n'est pas la leur, je ne la
+donne donc ni pour une confirmation ni pour un démenti. Mais elle montre autre
+chose :
+
+> **Le buste de la version actuelle part en arrière au milieu du geste**, et ce
+> recul est plus ample que la projection finale vers l'avant. C'est cohérent
+> avec sa source — un saut stylisé — où le recul est l'anticipation. **Reste à
+> juger si un dash doit reculer autant avant de partir.** Je n'y touche pas :
+> c'est un jugement à l'œil, et Milan ne l'a jamais vu.
+
+**Et la recherche n'a pas couvert tout ce qui dort dans la place** : 46
+animations dont le nom évoque un appui-poussée, dont **15 dans le pack de
+movesets anime qui n'a jamais été mesuré**. Un vrai balayage demande la chaîne
+de notation ; je ne l'ouvre pas sans accord.
+
+## Les trois interruptions — conception seule
+
+Une seule des trois est vraiment neuve. Le roll cancel et la feinte réutilisent
+le mécanisme d'annulation qui existe déjà : la feinte, c'est annuler **avant** le
+contact là où le dash annule **après**.
+
+Le clash est le gros morceau, et son vrai problème n'est pas de le détecter :
+c'est que **les deux joueurs ont déjà vu leur coup toucher** sur leur écran. Je
+recommande de ne pas défaire ce contact mais de superposer le clash par-dessus —
+moins pur, mais aucune annulation visible, et c'est le seul point qui compte.
+
+Ordre proposé : roll cancel, puis feinte, puis clash.
+
+## Ce que je n'ai pas obtenu
+
+**Aucune photo exploitable du dash**, après trois tentatives. Le déclenchement
+programmé est refusé par le bac à sable, et l'aller-retour jusqu'à la capture
+dure deux fois plus longtemps que les effets. Le dash reste vérifié **par le
+comptage** sur le vrai chemin — c'est une preuve, mais pas une image. Je le dis
+plutôt que de fabriquer une capture qui ne montrerait pas ce qu'elle prétend.
