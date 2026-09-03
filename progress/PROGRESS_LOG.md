@@ -9642,3 +9642,84 @@ Je ne recommande **pas** `AirDashForward2` malgré ses meilleurs chiffres bruts 
 son appui culmine à la toute première image, donc il n'y a pas d'appui *dans* le
 clip — et c'est un dash aérien. On a déjà écarté un saut pour cette raison
 exacte ; refaire l'erreur en la connaissant serait pire que l'avoir faite.
+
+---
+
+# 3 septembre 2026 — La feinte et la roulade sont construites
+
+## Le dash : tout est prêt, sauf l'upload — et le blocage est net
+
+Fait et vérifié : `FrontDash` **reconstruit** à partir d'instances neuves,
+**retimé de 0,733 à 0,450 s**, **marqueur baké** à 0,2148 s — un vrai marqueur,
+pas une image nommée, puisqu'on sait maintenant ce que coûte la confusion.
+Exporté, 6567 octets.
+
+**L'upload échoue**, et ce ne sont pas nos données : l'outil d'upload embarque
+une bibliothèque trop ancienne pour le format que le Studio actuel écrit. Trois
+essais l'établissent — nettoyer les étiquettes ne change rien, reconstruire à
+neuf non plus.
+
+Une version corrigée de l'outil existe depuis juillet. **Son installation demande
+une confirmation que je ne peux pas donner à ta place :**
+
+```bash
+rokit add jacktabscode/asphalt
+```
+
+Une fois passée, la bascule est à une commande : brancher l'identifiant, garder
+l'actuelle en retour arrière, faire l'A/B.
+
+## La feinte — construite, et vérifiée de bout en bout
+
+**J'avais tort dans ma propre conception, et je l'ai vu en lisant le code avant
+d'écrire.** J'annonçais un travail serveur comme « le vrai coût » des trois
+mécaniques. C'est faux : sur le chemin réellement branché, **le serveur
+n'apprend l'attaque qu'au moment de l'impact**. Avant, il ne sait rien. Donc
+feinter ne laisse aucune attaque orpheline et **ne coûte rien au serveur**.
+
+Preuve en jeu :
+
+```
+feinte acceptee a 234 ms   (sur un coup dont l'impact tombe a 323 ms)
+le serveur a recu : M1_1 -> M1_2 -> M1_3 -> M1_4
+                                             ^ le clic APRES la feinte
+```
+
+Le coup feinté n'a **rien envoyé**, et le clic suivant a **rejoué le même pas de
+chaîne** — donc feinter ne fait pas avancer vers le quatrième coup, exactement
+comme prévu.
+
+## La roulade — construite et vérifiée
+
+Touche **C**, 22 de stamina payée **avant** tout effet visible, invulnérabilité
+**bornée** de 0,05 à 0,25 s — pas sur tout le geste, sinon elle devient la
+réponse à tout. Mesuré : 5,56 stud de déplacement, animation jouée.
+
+**Un conflit corrigé avant l'essai** : j'avais proposé Shift. Or Shift maintenu
+est **déjà le sprint** — la roulade serait partie à chaque départ en course.
+Relevé en relisant les liaisons existantes, pas après.
+
+## Trois réserves, dites plutôt que tues
+
+* **Le roll cancel n'est pas vérifié en jeu.** La fenêtre dure 200 ms ; les
+  outils d'entrée simulée ne descendent pas sous 230 ms, et mesurent **6,5
+  secondes** entre un appel souris et un appel clavier. Aucun instrument
+  disponible ne peut poser un clic et une touche assez près. Ce qui est établi :
+  la roulade tire, et elle emprunte **la même ligne d'octroi** que le dash —
+  l'ancienne fonction n'est plus qu'un appel à la nouvelle.
+* **Le déplacement vaut la moitié du déclaré** (5,56 pour 11). Le dash a la même
+  structure et sûrement le même écart : la constante est une cible, pas une
+  distance.
+* **L'animation de roulade est empruntée** aux clips de dash directionnels. Un
+  vrai clip de roulade existe dans les packs, non uploadé — bloqué par la même
+  panne. **La mécanique est complète, sa peau ne l'est pas.**
+
+## Le clash — proposé, pas codé
+
+La construction d'aujourd'hui a **corrigé mon esquisse** : la détection ne peut
+pas être « deux fenêtres actives qui se croisent », puisque cet état n'existe
+pas — le serveur voit deux **impacts**. Et ma fenêtre de 80 ms est trop courte :
+deux joueurs à latence normale voient leurs coups arriver à 120 ms d'écart.
+
+La ligne que tu as validée tient : **on ne défait pas un contact qu'un joueur a
+vu atterrir**. On superpose. Trois questions te sont posées plutôt que tranchées.
