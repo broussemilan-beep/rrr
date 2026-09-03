@@ -9965,3 +9965,80 @@ moins, le mécanisme est connu. Et c'est l'ultime qui en a besoin.
 grain vaut ici aussi : ajouter des couches de pack ne crée pas de la différence,
 ça crée du bruit. La différence vient de la géométrie, et la géométrie est à
 nous.
+
+---
+
+# 3 septembre 2026 — Vague 1 : la forme déduite du geste
+
+## D'abord, j'ai corrigé mon propre inventaire
+
+Les « 19 recettes sans forme » comptaient des recettes **mortes** et des
+**événements sans geste**. Vérifié avant de toucher quoi que ce soit :
+
+* les quatre compétences **délèguent à un module**, et le routeur retourne avant
+  d'atteindre ses propres entrées — celles-ci pointent les **anciennes**
+  recettes et ne peuvent jamais tirer. C'est le même défaut que les M1 avaient
+  avant leur correction du 30 août ;
+* « mort », « KO », « compteur de combo », « confirmation de coup » sont des
+  **événements**, pas des gestes. Ils n'ont aucune trajectoire, donc aucune
+  forme ne peut en être déduite. Ils gardent la gerbe, et c'est juste.
+
+**Cible réelle : quatre pièces vivantes, pas dix-neuf.**
+
+## Trois métriques, deux jetées — les témoins ont tranché
+
+Les quatre M1 servent de **témoins** : on sait ce qu'ils sont. Une mesure qui ne
+les reclasse pas correctement est fausse.
+
+1. **Position du membre** → « latéral 1,5 » pour les cinq pièces. Ce n'était pas
+   le geste, **c'était l'épaule**.
+2. **Écart à la pose de repos** → le direct sortait « latéral et haut ». Ce
+   n'était pas le coup, **c'était la garde** : au repos les bras pendent, donc
+   tout coup part déjà haut.
+3. **Déplacement pondéré par la vitesse** → retenue. Le direct donne +0,97 vers
+   l'avant, le finisseur −0,98 (il descend), et la première compétence +0,82
+   latéral pour ce que son propre commentaire appelle « une frappe horizontale
+   ample ». **Quatre corroborations indépendantes.**
+
+C'est le piège que j'avais écrit au registre le matin même, rencontré deux fois
+en une heure : **un instrument qui répond n'est pas un instrument qui répond à
+la bonne question.**
+
+## Ce que j'ai appliqué — et pourquoi pas plus
+
+| pièce | mesure | action |
+|---|---|---|
+| Frappe Céleste | +0,97 vers l'avant | la gerbe **remplacée** par le couloir |
+| Marche du Titan | +0,83 vers l'avant | couloir + la retombée |
+| Ultime | la pointe **descend** | la retombée seule |
+| Main du Colosse | +0,82 latéral | **inchangée** — plafond plein, forme déjà juste |
+| Jugement | **−0,93 : elle recule** | **inchangée** — aucune forme ne dit « qui recule » |
+
+Le plafond de lisibilité est la vraie contrainte, et il est serré : deux des
+quatre pièces étaient **pleines**. Le couloir **remplace** la gerbe au lieu de
+s'y ajouter, exactement comme sur le premier M1 il y a deux jours.
+
+Vérifié en jeu : les comptes correspondent exactement à la géométrie attendue.
+
+## La mesure contredit une de mes propres décisions
+
+Le troisième M1 porte la **colonne** depuis ce matin. Je la lui avais attribuée
+sur l'**intention** — « c'est un uppercut, sa direction est verticale ».
+
+**La mesure dit +0,92 vers l'avant et seulement +0,16 vers le haut.** Son poing
+voyage majoritairement en avant. Si la règle « la forme se déduit du geste »
+vaut, la colonne n'y est pas justifiée.
+
+**Je ne la retire pas de moi-même** : la pièce vient d'être livrée et Milan ne
+l'a jamais vue, l'animation pourrait être ré-autorée pour monter vraiment, et
+défaire une décision d'hier sur la foi d'une métrique qui a échoué deux fois le
+matin même mérite un avis.
+
+Deux issues, à trancher : rendre le couloir au troisième M1 et garder la colonne
+libre pour une pièce qui monte réellement, **ou** ré-autorer l'animation pour
+qu'elle fasse ce que son nom promet.
+
+## Le registre des manques s'allonge d'une entrée
+
+Chute, convergence, balayage aérien — et maintenant **le recul**, la forme d'un
+geste qui part en arrière, que la contre-attaque réclame.
