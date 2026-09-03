@@ -8635,3 +8635,73 @@ premier declenchement, duree du gel      cible 0,95 s
 
 **C'est prêt.** Frappe le mannequin une quinzaine de fois : la barre se remplit
 et ne redescend plus, le personnage s'embrase, et `R` déclenche l'ultime.
+
+---
+
+# L'astre était détruit par notre propre code
+
+## Pourquoi tu ne le voyais pas
+
+`DemiDieu_Astre` n'est pas un support invisible : c'est une **boule lumineuse de
+16 stud**, le corps du soleil lui-même.
+
+Or notre code faisait, sur tout effet cloné : *rendre la pièce invisible et la
+réduire à un dixième de stud*. C'est **juste pour 46 effets sur 47** — nos packs
+livrent des pièces-support qui ne portent que des particules, avec une boîte de
+présentation qu'il ne faut surtout pas montrer en jeu. Pour l'astre, ça
+**détruisait exactement ce qu'on voulait voir**.
+
+L'effet naissait, je le mesurais, je vérifiais qu'il se résolvait — et il ne se
+voyait pas. C'est précisément le piège qu'on traque depuis dix jours : **mes
+mesures étaient justes et ne disaient rien du problème.**
+
+## Et maintenant il raconte ton geste
+
+*« Elle apparaît puis explose sur le sol, comme si on lançait un soleil. »* Un
+objet qui apparaît et reste suspendu ne raconte pas ça. Mesuré en jeu :
+
+```
+il apparait, petit et bas          taille  6,5   hauteur  9,8
+il monte en grossissant            taille 16,5   hauteur 21,0
+il TIENT, immobile                 0,37 s        c'est le gel
+il s'abat, lent puis brutal                      hauteur  0,5
+il eclate et disparait             taille 39,5
+```
+
+Le corps ne survit pas à l'impact — un soleil posé au sol ferait « décor » au
+lieu d'« événement ».
+
+## Le rig : le garde existait, il n'était posé que d'un côté
+
+Bonne nouvelle d'abord : **aucun reste du saut supprimé.** La position du
+personnage est parfaitement stable pendant tout l'ultime.
+
+Le vrai défaut : une **petite animation d'inactivité** (le personnage qui incline
+la tête) démarrait un dixième de seconde **avant** l'ultime et continuait à
+bouger tête, bras et torse pendant une seconde et demie par-dessus.
+
+Notre code refusait déjà de *lancer* ces fioritures pendant une compétence — son
+propre commentaire dit qu'elles « corrompent visuellement les animations ». Mais
+il ne coupait pas celles déjà en cours. Corrigé.
+
+## L'aura : tu choisis la couleur
+
+Quatre variantes prêtes à essayer, un seul mot à changer : **origine** (les
+flammes du pack, réglage actuel), **doré** (la signature du kit), **blanc**
+(plus froid, plus « demi-dieu »), **pourpre** (registre menace).
+
+## Et le pack en double
+
+Tu avais re-déposé le pack de combat — 2 073 effets dans la zone de jeu. Il était
+à 46 stud de l'arène, donc sans rapport avec l'astre, et le jeu ne le consultait
+pas. Rangé, pas supprimé.
+
+## Ce que je n'ai pas réussi
+
+**Aucune image de l'astre en vol**, après cinq tentatives. La raison est bête et
+je la pose : mes commandes mettent trois secondes à faire l'aller-retour, et
+l'astre n'est à pleine taille que quatre dixièmes de seconde. Je peux le mesurer,
+pas le photographier.
+
+**Il faut que tu le regardes toi-même.** Les chiffres disent ce que tu verras ;
+ils ne remplacent pas ton œil.
