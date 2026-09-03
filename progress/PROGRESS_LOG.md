@@ -9090,3 +9090,84 @@ de 0,57.
 **Les repères d'impact ne sont pas une recopie** : les trois écarts entre valeur
 déclarée et pic mesuré sont sous la précision de ma propre mesure. Rien à
 recaler.
+
+---
+
+# Le temps mort, les étincelles, et 9 % de serveur récupérés
+
+## L'audit que tu demandais
+
+Durée du geste contre durée du verrouillage, mesurées en jeu :
+
+```
+piece    geste   verrou    ecart
+M1_1      0,55     0,34    -0,21   interruptible (voulu)
+M1_2      0,60     0,39    -0,21   interruptible (voulu)
+M1_3      0,65     0,42    -0,23   interruptible (voulu)
+M1_4      0,85     0,52    -0,33   interruptible (voulu)
+Skill1    0,70     0,55    -0,15   interruptible (voulu)
+Skill2    0,83     0,55    -0,28   interruptible (voulu)
+Skill3    0,97     1,10    +0,13   un peu long
+Skill4    0,57     1,30    +0,73   TEMPS MORT
+Ultime    4,50     4,50     0,00   aligne
+```
+
+**Sept pièces sur neuf sont saines.** Deux dépassent, une seule gravement.
+
+*(Neuf et non dix : l'aura de cast n'a pas de verrouillage.)*
+
+## L'argument qui tranche
+
+**Jugement a déjà le plus long temps de recharge du kit — 12 secondes.** Le prix
+de la compétence est payé là. Les trois quarts de seconde debout par-dessus ne
+sont pas de l'engagement : l'engagement se paie en recharge, pas en immobilité.
+
+Un geste qui dure une demi-seconde et bloque une seconde et demie ne pèse pas,
+**il traîne**.
+
+## Valeurs proposées — à toi de trancher
+
+Les sept pièces saines ont toutes un rapport verrou/geste entre **0,61 et 0,79**.
+
+```
+Marche du Titan   0,97 de geste   1,10 aujourd'hui  ->  0,75
+Jugement          0,57 de geste   1,30 aujourd'hui  ->  0,45
+```
+
+Je prends le haut de la fourchette : ce sont des compétences lourdes, elles
+doivent engager plus qu'un coup rapide. Mais jamais au-delà du geste.
+
+**Si tu veux que Jugement coûte plus cher, augmente sa recharge, pas son temps
+mort.**
+
+## Les étincelles : j'ai sur-corrigé, puis encadré
+
+```
+faible, tous les effets   ->  invisible
+fort,   tous les effets   ->  des PILIERS de lumiere qui avalent le personnage
+moyen,  ETOILES SEULES    ->  six eclats nets aux pieds       <- retenu
+```
+
+L'encadrement a révélé la cause : chaque satellite porte **une étoile à quatre
+branches** — celle de ta promo — **et quatre flammes verticales**. Ce sont les
+flammes qui faisaient les piliers. On les écarte.
+
+Correction de ce que j'affirmais hier : les satellites ne **sont** pas les
+étincelles de la promo, ils en **contiennent une sur cinq**.
+
+## 9 % de serveur récupérés
+
+```
+avec les 19 boucles : 36,2 images/s serveur
+sans                : 39,5
+```
+
+Neuf pour cent, pour animer une décoration à 875 stud que le jeu n'envoie même
+pas aux joueurs. **Désactivées, pas supprimées** — réversible d'un clic.
+
+Attention : c'est une modification de la place, elle attend une sauvegarde.
+
+## Pas fait ce tour
+
+La comparaison des quatre M1 maintenant que M1_2 a sa direction, et le second
+passage sur les packs pour le dash. En tête de liste.
