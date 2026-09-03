@@ -10281,3 +10281,58 @@ dossier de travail. Je les signale et **je ne les supprime pas** : c'est un
 dossier de travail, supprimer cent instances en fin de session sans accord n'est
 pas une décision à prendre seule, et la place n'est de toute façon pas
 sauvegardée. Le retrait de l'attribut **arrête l'accumulation**.
+
+---
+
+# 4 septembre 2026 — Les textures ouvertes : deux candidats sur six tombent
+
+## D'abord : la place a bien été sauvegardée
+
+Les six témoins ont survécu à la fermeture — les deux renommages (10 et 5
+émetteurs), un seul porteur `Sun` donc **pas de collision, l'astre reste
+visible**, les 42 effets rangés, le transfert, les 19 scripts désactivés. Et le
+dash retimé attend toujours dans son dossier de travail : ce travail-là n'est
+pas à refaire.
+
+**L'upload reste bloqué** — la commande n'est pas passée, l'outil est toujours en
+2.0.0. Donc la livraison d'animations n'avance pas ce tour, et je suis passée à
+l'étape suivante.
+
+## Ce que voir a corrigé
+
+J'avais écrit moi-même le trou : *« tout est mesuré sur ce que l'émetteur fait,
+rien sur ce qu'il montre »*. Il vient de coûter **deux candidats sur six**, dont
+le premier de la liste.
+
+**Mon meilleur candidat pour peindre le couloir du direct** — comportement
+mesuré : cône étroit, part vite, freine, donc « déplacement d'air ». **Ce que
+l'image montre : une étoile à quatre branches avec frange arc-en-ciel. Un reflet
+d'objectif.** Le comportement dit « souffle », l'image dit « éclat ». Écarté.
+
+**Le meilleur comportement du catalogue pour une forme qui voyage** — des
+griffures **noires**. Et là il y a un piège plus général : la teinte d'un
+émetteur **multiplie** sa texture. Une texture noire teintée en blanc **reste
+noire**. Toute texture sombre est donc inutilisable dans notre vocabulaire
+d'encre blanche, quel que soit son comportement. C'est au registre.
+
+Les quatre autres tiennent, et on connaît maintenant leur découpage.
+
+## La détection automatique de découpage ne marche pas
+
+Trois méthodes essayées, avec la vérité établie **en regardant** pour arbitrer.
+Toutes les trois se trompent au moins une fois.
+
+La première suppose que les images se touchent bord à bord — or dans l'une
+d'elles chaque motif flotte au milieu de sa case, **la couture passe dans le
+vide et ne saute pas**.
+
+Et aucune ne peut réussir sur un anneau : **un anneau centré *est*
+géométriquement quatre quarts d'arc identiques.** Ce n'est pas un défaut de
+méthode, c'est une ambiguïté réelle.
+
+**Conclusion : ça se lit à l'œil.** Je m'arrête plutôt que de construire un
+quatrième détecteur, et c'est écrit pour que personne ne recommence.
+
+## Rien n'a été servi dans une recette
+
+L'étape était d'ouvrir **avant** de servir. Elle vient de payer.
