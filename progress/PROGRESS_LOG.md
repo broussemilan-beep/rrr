@@ -9723,3 +9723,80 @@ deux joueurs à latence normale voient leurs coups arriver à 120 ms d'écart.
 
 La ligne que tu as validée tient : **on ne défait pas un contact qu'un joueur a
 vu atterrir**. On superpose. Trois questions te sont posées plutôt que tranchées.
+
+---
+
+# 3 septembre 2026 — Le clash, tranché sur trois points mesurés
+
+Rien n'est codé. Proposition complète : `2026-09-03_PROPOSITION_clash.md`.
+
+## 1. La superposition ne demande aucune ruse
+
+**Le client n'applique jamais de dégâts** — vérifié, zéro occurrence dans tout
+le code client. Les dégâts ne sortent que du serveur.
+
+Donc ce que les deux joueurs ont vu, c'est **une animation, un éclat, un
+hitstop — jamais des dégâts**. Le clash n'annule pas un contact : il empêche des
+dégâts **qui n'avaient pas encore été appliqués**, et ajoute par-dessus le
+contact déjà joué.
+
+Séquence perçue : *mon coup part → mon coup touche → ça se bloque.* Jamais :
+*mon coup touche → non, en fait, non.*
+
+C'était l'intuition qu'on partageait, et elle se trouve être **gratuite** : il
+n'y a rien à défaire parce qu'il n'y avait rien de fait.
+
+Le seul point à surveiller à l'œil : la barre de vie adverse. Elle est poussée
+par le serveur, donc elle ne baisse jamais avant le verdict.
+
+## 2. Le clash est autoritaire
+
+Il change l'issue de l'échange, donc c'est le serveur qui décide — dans le même
+endroit qui applique déjà les dégâts, juste avant de les appliquer.
+
+**Serveur** : annulation des dégâts, repoussement, entrée en récupération.
+**Client** : l'éclat au point de rencontre, le hitstop, la secousse, le son.
+
+Ça ne baisse pas son coût : la part autoritaire est courte, mais c'est elle qui
+doit être juste.
+
+## 3. L'horloge — et pourquoi ma fenêtre était fausse
+
+**Le serveur ignore l'horodatage envoyé par le client** — vérifié, il n'est lu
+nulle part. Le seul temps utilisé est celui du serveur, pris **à l'arrivée** de
+la requête.
+
+Donc la fenêtre ne compare pas des instants de frappe mais des instants
+d'arrivée, et **elle doit absorber l'écart de ping entre les deux joueurs, pas
+le ping**. Deux joueurs à 30 et 150 ms qui frappent au même instant réel
+arrivent à 120 millièmes d'écart : mes 80 les rataient — et pire, le clash
+serait devenu **plus difficile pour le joueur mal connecté**. Exactement
+l'injustice à éviter.
+
+**Retenu : horloge du serveur, fenêtre à 150 ms.** Non trichable, aucun champ
+nouveau.
+
+**Écarté : faire horodater le client.** Ça supprimerait l'écart de ping — mais
+c'est une valeur **fournie par le client**, donc falsifiable, et cette mécanique
+**supprime des dégâts**. Un client menteur pourrait annuler les coups qu'il
+reçoit. Je ne prends pas ce risque.
+
+## 4. Ce que je ne peux pas vérifier — dit avant de construire
+
+**Je ne peux pas simuler deux joueurs qui frappent en même temps.** Le pont
+n'adresse qu'un seul client, et les outils d'entrée simulée plafonnent — mesuré
+aujourd'hui — à 230 millièmes entre deux gestes.
+
+**Testable d'ici** : la règle de détection et ses cas limites, le rendu, et la
+non-régression (un échange normal ne clashe jamais).
+
+**Pas testable d'ici, et c'est le risque principal** : le repoussement arrive
+150 à 250 millièmes après le contact perçu, et je ne peux pas juger seule si ça
+se lit comme une **conséquence** ou comme une **correction**. Ni le taux de
+déclenchement réel, ni le comportement quand les deux pings diffèrent — c'est-à-
+dire précisément ce que la fenêtre est censée couvrir.
+
+**Recommandation** : construire détection et rendu, valider ce qui est
+validable, et **laisser le réglage de la fenêtre ouvert** jusqu'à un test à deux
+joueurs. La sortir en réglage nommé, et compter les quasi-clashs en jeu pour
+lire la vraie distribution avant de figer un chiffre.
