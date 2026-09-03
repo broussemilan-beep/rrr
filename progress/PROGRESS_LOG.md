@@ -11003,3 +11003,37 @@ Trois pièces du kit portaient ce défaut, pas seulement l'ultime.
 
 Ce que le geste fait sur sa seconde moitié. Il faut un instrument valide avant
 d'en dire quoi que ce soit.
+
+---
+
+# 2026-09-04 — le geste de l'ultime est planté
+
+Cinquième méthode, et la première qui répond. Plus d'instrument à calibrer :
+l'ultime joué **pour de vrai**, caméra fixe et indépendante, enregistrement de
+l'écran, une image toutes les huit. Cadrage vérifié **avant** la série, pas après.
+
+## Ce que la bande montre
+
+**Le personnage reste planté et debout du début à la fin.** Pas de bond, pas de
+bras levé visible, pas de frappe. Tout ce qui bouge dans le cadre est de l'effet
+— l'aura dorée autour de lui, l'anneau qui traverse le ciel. Le corps ne raconte
+rien.
+
+Ça déplace le problème, et ça colle à ce que Milan dit depuis trois jours : ce
+n'est pas la mise en scène d'un beau geste, c'est **l'habillage d'un geste qui
+n'existe presque pas**.
+
+**Réserve** : les vignettes sont vues de dos et mon recadrage coupe la tête. Je
+peux affirmer qu'il n'y a pas de grand mouvement ; je ne peux pas décrire les
+petits.
+
+## La règle du tour
+
+**L'image gagne sur la mesure.** Quand un relevé numérique et une capture du même
+instant se contredisent, la capture gagne — sans attendre d'avoir compris
+pourquoi le relevé se trompe.
+
+Et le corollaire, qui a coûté cher : **quand on a cassé trois instruments
+d'affilée, le quatrième instrument n'est pas la réponse.** La question n'était
+pas « quelles sont les valeurs des membres » mais « à quoi ressemble le geste ».
+Le dépôt avait déjà sa réponse : jouer la pièce pour de vrai et regarder.
