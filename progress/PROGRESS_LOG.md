@@ -9171,3 +9171,77 @@ Attention : c'est une modification de la place, elle attend une sauvegarde.
 
 La comparaison des quatre M1 maintenant que M1_2 a sa direction, et le second
 passage sur les packs pour le dash. En tête de liste.
+
+---
+
+# Les verrous, les M1, et le dash enfin rouvert
+
+## Ta valeur pour Jugement aurait cassé quelque chose
+
+Tu m'avais dit de vérifier la fenêtre d'enchaînement après coup. Bien vu :
+
+```
+Jugement   verrou 0,45   fenetre 0 ms   <<< ETROIT
+```
+
+Le repère d'impact de ce coup est à 0,47 seconde — **après** le nouveau verrou.
+Le joueur se serait déverrouillé **avant que son propre coup ne porte**.
+
+La cause est structurelle : **le contact de ce geste tombe à 83 % de sa durée**.
+Il n'existe donc aucune valeur qui donne à la fois zéro temps mort *et* la
+fenêtre confortable des coups rapides. Le maximum disponible est 99 ms.
+
+**Retenu : 0,57** — exactement la durée du geste. Zéro temps mort au lieu de
+0,73 seconde, et une fenêtre de 99 ms, la même famille que les deux premières
+compétences. C'est le meilleur compromis possible, et il est borné par
+l'animation elle-même.
+
+Marche du Titan à 0,75 : appliqué tel quel, rien à signaler. **Balayage final :
+aucune alerte sur les neuf pièces.**
+
+## Les quatre M1 : la comparaison donne quelque chose de net
+
+```
+coup   formes                 direction  couches  flash
+M1_1   eclat                  Couloir       0       —
+M1_2   anneau                 ArcSol        0       —
+M1_3   croissant, poussiere   —             0       —
+M1_4   debris, decharge       —             3     0,21
+```
+
+**Le quatrième n'est pas en défaut** : il n'a pas d'élément directionnel mais il
+a trois couches de sol et un flash, et sa direction *est* le sol.
+
+**Le troisième est le seul en défaut** — rien ne porte le sens du coup.
+
+**Mais je ne le retouche pas.** C'est un uppercut : sa direction est
+**verticale**. Or nos deux éléments directionnels ne savent pas la dire — l'un
+court à l'horizontale, l'autre est un éventail au sol. Lui coller l'un des deux
+serait retoucher pour retoucher.
+
+Le manque est réel et nommé ; **la pièce qui le comblerait n'existe pas encore**.
+C'est un chantier, pas un réglage.
+
+## Le dash : le constat est plus dur que prévu
+
+Il produisait, en tout et pour tout : une image rémanente, une secousse de
+caméra, et l'animation. **Aucun effet.** Il n'existe même aucune recette pour
+lui — zéro occurrence dans tout le fichier.
+
+**C'est la seule pièce du kit qui n'a jamais eu sa passe d'encre.** Ça explique
+enfin, et précisément, pourquoi on la tient pour la plus faible depuis le début.
+
+J'y ai mis deux éléments, dans la grammaire du reste : un couloir le long du
+vecteur de dash — le dash *est* une direction — et le trait effilé, une ligne de
+vitesse qui était déclarée depuis le début et n'avait jamais servi.
+
+## Mais je ne l'ai pas vu marcher
+
+**Le dash ne s'est pas déclenché du tout** sous mon entrée simulée : ni animation
+de dash, ni image rémanente — or l'image rémanente est du code qui existait
+avant moi. Ce n'est donc pas ma modification qui échoue, **c'est la touche qui
+n'arrive pas**.
+
+Le code compile et le module d'effets se résout bien. **Mais l'effet du dash n'a
+jamais été vu.** Je le marque comme non vérifié plutôt que de te le donner pour
+acquis.
