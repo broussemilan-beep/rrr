@@ -9409,3 +9409,74 @@ antérieure à tout ce que j'ai fait. Ce n'est pas un défaut de combat — mais
 remontant la piste, **le module qui la porte n'est chargé par rien**. Deux
 fichiers morts. Je ne les supprime pas de mon propre chef ; c'est consigné comme
 tâche séparée avec l'analyse déjà faite.
+
+---
+
+# 3 septembre 2026 — Note de reprise (pause)
+
+## La divergence des identifiants est close — et voilà pourquoi elle comptait
+
+Le fichier qui fait foi pour les identifiants d'animation portait la version
+**précédente** pour les cinq pièces les plus jouées du kit — les quatre M1 et le
+dash. Corrigé par la mesure, et recroisement complet : **plus aucune
+divergence** sur les 48 emplacements.
+
+Ce qu'il faut retenir, parce que c'est le cœur du problème : **un fichier de
+vérité qui ne dit pas ce que le code joue rendait l'hallucination possible au
+lieu de l'empêcher.** Quiconque aurait « vérifié » un identifiant dedans aurait
+validé un ancien, en toute bonne foi. Le jeu tournait, rien ne levait.
+
+Aucun test ne l'a trouvé. C'est le croisement de deux sources qui ne s'étaient
+jamais parlé qui l'a trouvé — **et ce croisement mérite d'être outillé**, c'est
+vingt lignes.
+
+**Un résidu que je laisse ouvert et écrit** : le dash porte deux identifiants
+différents tous deux décrits comme « la version précédente ». Un retour arrière
+écrit aujourd'hui restaurerait probablement la mauvaise. À mesurer avant tout
+rollback du dash — je ne tranche pas au jugé.
+
+## Un de mes commits mentait, c'est réparé
+
+Un commit annonçait trois choses et n'en portait qu'une. J'avais indexé les
+fichiers, puis fait un aller-retour de remisage pour vérifier qu'un avertissement
+était bien antérieur à mon travail — le retour restaure les fichiers **non
+indexés**, et je ne l'ai pas revérifié avant de valider. Réparé.
+
+## LA PLACE N'EST TOUJOURS PAS SAUVEGARDÉE — ce qui serait perdu
+
+Relevé **dans la place**, pas de mémoire :
+
+1. **La réorganisation des packs** — 42 émetteurs sortis du dossier « archive »
+   vers un dossier de production. Sans elle, 37 de nos 40 émetteurs redeviennent
+   tributaires d'un dossier dont le nom invite au ménage.
+2. **Les deux renommages** de l'astre et des satellites. Ils lèvent une collision
+   de noms où le jeu allait chercher un soleil à 1 émetteur au lieu du nôtre à
+   10. **Sans eux, l'astre de l'ultime redevient invisible.**
+3. **Le transfert de Milan**, rangé de côté pour éviter les doublons.
+4. **Les 19 scripts désactivés** — 9 % de temps serveur récupérés.
+
+Le code est committé et à l'abri. **Ces quatre points-là ne vivent que dans le
+fichier de place.**
+
+## Fait, mais que Milan n'a jamais vu
+
+* La **scène de l'ultime en cinq temps** — cadrage frontal, sortie de puissance,
+  soleil invoqué à la main droite, retour troisième personne, explosion.
+* Le **dash qui tire enfin** — c'était la seule pièce du kit sans effets.
+* La **colonne verticale** de M1_3, montée mesurée, en encre mate.
+* Les **verrous corrigés** — 0,73 seconde de temps mort supprimée sur une
+  compétence, sans refermer la fenêtre d'annulation.
+* L'**aura de surcharge** et son geste de montée à 100 de momentum.
+
+## Ce qui l'attend comme décision
+
+1. **Encre contre lueur** sur le couloir du direct et l'arc du crochet. La
+   planche est publiée, l'interrupteur est livré, **le défaut n'a pas bougé**.
+   Mon avis : l'encre. Le mat est là parce que c'est le changement minimal.
+2. **Le cadrage trois-quarts** de la scène d'ultime — retenu faute de mieux,
+   jamais validé à l'œil.
+
+## État à la pause
+
+Play arrêté, Studio laissé ouvert en édition. Sondes retirées et vérifié des
+trois côtés. Rien ne traîne en scène. Arbre de travail propre, tests au vert.
