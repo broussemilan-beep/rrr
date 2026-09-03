@@ -10487,3 +10487,61 @@ Puis, en voulant contourner, j'ai chargé le module depuis mon bac à sable : il
 répondait toujours « pas prêt » alors que l'écran affichait le maximum. **Mon
 bac à sable a son propre cache** — je mesurais un fantôme. La bonne voie était
 la vraie touche, et elle a marché du premier coup.
+
+---
+
+# 4 septembre 2026 — La référence Escanor : le monde répond enfin
+
+## Elle explique ma propre mesure
+
+J'avais trouvé que l'astre occupe **96 % de la hauteur d'écran** et conclu « ce
+n'est pas un problème de taille ». La référence dit pourquoi : chez Escanor le
+soleil occupe **moins** de cadre que le nôtre — et **il a repeint le monde
+entier**.
+
+**Notre astre est un objet lumineux posé dans un monde éclairé normalement. Le
+leur est une source qui réclaire tout.** C'est ça, « précaire ».
+
+## Le monde change de lumière — fait, et vérifié
+
+J'ai cherché l'existant d'abord, et il y en avait : le décor pose déjà une
+atmosphère, un halo, des rayons de soleil et une correction couleur. **Le
+nouveau module n'en crée aucun** — il les retrouve et les pilote. Et il ne
+touche pas à l'autre correction couleur, qui appartient à un module qui prévient
+lui-même de ne pas y toucher.
+
+**Il restaure ce qu'il a lu**, pas des valeurs écrites en dur : si quelqu'un
+change l'éclairage de base demain, la restauration suit.
+
+Vérifié en aller-retour complet — l'état d'après est identique à l'état d'avant.
+Planche : `2026-09-04_monde-repeint.png`. Le ciel vire, le lointain se perd dans
+la brume, **et le personnage lui-même est doré**.
+
+Et une scène interrompue rend aussi la lumière : sinon le monde resterait orange
+pour toujours.
+
+## La contre-plongée : codée, pas encore vue
+
+Le cadrage gagne un angle vertical — la caméra descend **et** son point de visée
+monte, sinon elle regarderait les pieds. Déclarée à −18° sur l'ultime. **Je n'ai
+pas rejoué la scène de bout en bout ce tour, donc je ne l'ai pas vue.**
+
+## Les braises : présentes, et fausses
+
+Attachées à la **caméra** et non au personnage — la référence montre des points
+dans tout le cadre, une aura de corps laisserait le reste vide dès qu'on regarde
+ailleurs.
+
+Premier essai : l'émetteur existait et **ne se voyait pas**. Corrigé en densité
+et en taille. Second essai : **elles se voient, et elles sont sombres.** Des
+points de suie, pas des braises.
+
+**Cause : j'ai réemployé une texture sans l'ouvrir.** Elle est sombre, et la
+teinte d'un émetteur **multiplie** — une texture sombre teintée en orange reste
+sombre. C'est le piège que j'ai écrit au registre avant-hier, refait deux jours
+plus tard.
+
+**Non résolu, et je ne devine pas la remplaçante** : en choisir une sans
+l'ouvrir serait refaire l'erreur une troisième fois. La mécanique est bonne, la
+matière est à trouver. La texture est enregistrée comme **en échec**, avec la
+raison.
