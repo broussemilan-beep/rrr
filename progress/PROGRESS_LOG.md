@@ -8782,3 +8782,81 @@ Si tu le trouves maigre après cette coupe, ce que je défendrais n'est pas de
 rajouter des couches autour : c'est **d'agrandir l'astre lui-même**, ce qui
 élargit aussi sa zone d'impact puisque les deux sont liés. Une seule idée, plus
 grande, plutôt que plusieurs idées empilées.
+
+---
+
+# Tu peux juger l'ultime sans être devant
+
+## Le blocage de capture est levé
+
+Je disais que je ne pouvais pas écrire d'image. C'était la mauvaise question :
+l'outil de capture macOS fonctionne très bien. Le vrai obstacle, c'était le
+**temps** — mes commandes mettent trois secondes à faire l'aller-retour, et
+l'astre n'est à pleine taille que quatre dixièmes de seconde.
+
+La solution est celle qu'on avait déjà employée pour les animations : **figer**.
+J'ai rejoué les cinq instants mesurés côte à côte, en statique, et je les ai
+photographiés d'un coup.
+
+**La planche est là. Tu peux juger le geste entier à ton retour.**
+
+*(Deux pièges au passage : ma première capture a photographié Safari au lieu de
+Studio, et les particules ne s'animent pas dans l'éditeur — il faut être en mode
+jeu. C'est la même confusion qui m'avait fait conclure de travers sur les
+satellites.)*
+
+## Les M1 : ce n'était pas une question de goût
+
+En comparant les quatre recettes, une différence saute aux yeux :
+
+**M1_1 est le seul à porter un élément de direction** — un couloir le long du
+coup, en plus de sa forme. Et M1_2 n'avait qu'une seule forme, la plus maigre
+des quatre.
+
+Ça correspond exactement à ton jugement sans que tu aies eu à l'expliquer. J'ai
+donné à M1_2 son propre élément directionnel : un éventail au sol, parce qu'un
+crochet balaie.
+
+Je n'ai pas touché aux deux autres : elles portent déjà deux formes et sont au
+plafond de lisibilité. Changer sans savoir ce qui échoue serait deviner.
+
+## La fluidité : la mesure contredit ce qu'on pensait
+
+J'ai appliqué ta piste — proportionner le fondu à la durée du geste — et elle est
+juste. Mais elle dit autre chose que prévu :
+
+```
+                          duree   avant   apres
+M1_1                       0,55   0,020   0,033
+Skill1                     0,70   0,050   0,050     <- ne bouge pas
+Skill2                     0,83   0,050   0,050     <- ne bouge pas
+Ultime                     4,50   0,080   0,180
+```
+
+**Les compétences ne bougent pas.** Elles durent moins d'une seconde, donc leur
+fondu proportionnel reste sous la valeur déjà écrite. **Le fondu n'explique donc
+pas le « saccadé » sur les compétences.** La règle reste bonne et profite surtout
+à l'ultime.
+
+## Les compétences : j'ai trouvé une cause mécanique
+
+Trois faits, dont un sérieux :
+
+- Deux compétences ont leur repère d'impact au même millième, sur des gestes de
+  durées différentes. Il a été posé par recopie, pas par le geste.
+- Leur fenêtre d'enchaînement est la plus courte du kit — elles « collent ».
+- **Le contrôle revient avant la fin du geste.** Les deux rendent la main à
+  0,55 seconde alors qu'elles durent 0,70 et 0,83. Le joueur peut relancer une
+  action pendant que l'animation tourne encore — et la nouvelle écrase l'ancienne
+  en plein mouvement.
+
+**C'est mécanique, pas esthétique**, et c'est très probablement ce que tu vois.
+Je n'ai rien changé : c'est le même genre de correction que celle du 29 août sur
+les M1, elle mérite le même soin.
+
+## Une décision qui t'appartient
+
+L'animation de l'ultime dure **4,5 secondes**, la mise en scène **2,6**. Elle
+traîne près de deux secondes après que tout s'est refermé. Deux issues :
+allonger la scène, ou accélérer l'animation. **C'est ton animation, je ne
+tranche pas.**
