@@ -10964,3 +10964,42 @@ latente.
 déjà l'état de panne.** Une valeur lue « avant » n'est valide que si personne
 d'autre ne touche à la même propriété. Quand deux systèmes partagent un état,
 restaurer une valeur fixe et connue est plus sûr que restaurer une valeur lue.
+
+---
+
+# 2026-09-04 — je n'ai pas réussi à voir les 2,74 s
+
+Objectif du tour : aller voir la seconde moitié du geste, que personne n'a jamais
+vue. **Je n'y suis pas arrivé**, et l'échec mérite d'être écrit — il a pris trois
+formes différentes en une heure.
+
+**Une piste arrêtée ignore les commandes.** Une animation non bouclée s'arrête en
+atteignant sa fin ; ma propre calibration l'y avait menée. Toutes mes demandes de
+pose suivantes étaient sans effet : je photographiais la posture de repos en
+croyant photographier le geste.
+
+**Je photographiais le mauvais corps.** Deux mannequins d'une session précédente
+se tenaient à moins de cinq mètres du personnage, debout et immobiles, et
+remplissaient le cadre serré.
+
+**Et pour finir, la mesure contredit l'image.** Un relevé stable, tenu près de
+deux secondes, dit que le torse est à l'horizontale ; une capture large du même
+instant montre un personnage parfaitement debout.
+
+**L'image gagne** — c'est la règle : un signal extérieur bat une cohérence
+interne. J'ai donc retiré le constat que j'allais publier et supprimé les deux
+planches, qui auraient été lues comme des faits. C'est la deuxième fois cette
+semaine qu'un verdict faux de ma part a failli être relayé.
+
+## Ce qui reste vrai
+
+La correction du gel tient : elle est mesurée sur la position et la vitesse de la
+piste, sans aucune lecture de posture. **L'animation va maintenant jusqu'à 4,08 au
+lieu de s'arrêter à 1,76.**
+
+Trois pièces du kit portaient ce défaut, pas seulement l'ultime.
+
+## Ce qui reste inconnu
+
+Ce que le geste fait sur sa seconde moitié. Il faut un instrument valide avant
+d'en dire quoi que ce soit.
