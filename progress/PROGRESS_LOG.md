@@ -10703,3 +10703,73 @@ quitte aussi la recette d'impact où elle **écrasait le cratère** par le plafo
 de lisibilité — j'avais répondu en relevant ce plafond, ce qui était un
 pansement sur une erreur de chronologie. Le plafond est revenu à sa valeur
 normale et le cratère est de retour.
+
+---
+
+# 2026-09-04 (fin de journée) — nous sommes à l'intérieur du soleil
+
+## Les trois suspects, mesurés dans l'ordre
+
+**Le flash d'écran est écarté par sa propre durée.** Relevé : **0,12 seconde**,
+68 % d'opacité au départ, fondu. Douze centièmes ne peuvent pas tenir une
+seconde et demie de blanc. Aucun réglage tenté — la mesure suffit.
+
+**L'astre est confirmé, et c'est pire qu'un voile devant l'objectif.** Géométrie
+échantillonnée toutes les 5 centièmes :
+
+```
++2,47 s   rayon  8,2   caméra à 20,5   il tombe, 68 % de l'écran
++2,66 s   rayon 12,1   caméra à  6,1   *** LA CAMÉRA EST DEDANS ***
++5,51 s   rayon 19,8   caméra à  6,1   toujours dedans
+```
+
+**Il se pose à 6,1 stud de la caméra avec un rayon de 8,2 : l'œil est déjà
+dedans en arrivant.** L'impact le gonfle à 19,8 et l'y garde près de trois
+secondes. Les particules naissaient donc **de tous les côtés de la caméra**.
+
+**Le personnage est dedans aussi.** Il ne peut pas rester une silhouette devant
+le soleil s'il est à l'intérieur.
+
+## Une seule chose changée, et le résultat dit honnêtement
+
+Émission coupée au moment où l'astre gonfle. Ni sa taille ni sa durée touchées —
+le geste appartient à Milan.
+
+```
+part sombre au pic :  avant 2,6 %   après 3,1 %   référence 9,2 %
+```
+
+**Réel mais marginal.** Conservé parce que c'est juste par construction — on
+n'émet pas dans l'œil — pas parce que ça règle le grief. Ce n'est pas une
+correction et je ne l'appelle pas ainsi.
+
+## Ce que la planche du pic montre, et que les nombres ne disaient pas
+
+Trois vignettes : la référence, notre pic, et **notre propre plan une
+demi-seconde plus tôt**. La troisième a un anneau blanc net, des ombres portées,
+un ciel qui a une couleur, le carton-titre lisible et le personnage visible.
+
+**Nous avons déjà le plan qui marche. Le pic l'efface pendant une demi-seconde.**
+Le problème est *localisé dans le temps*, pas général — c'est une conclusion très
+différente de celle de ce matin, et elle change ce qu'il y a à faire.
+
+## Deux règles gravées, valables au-delà de cet incident
+
+**Choisir une image par un extremum sélectionne le moment où la mesure est
+aveugle.** Mesurer « l'image la plus chaude » choisit par construction l'instant
+où la chaleur écrase tout le reste. Il faut mesurer toute la séquence et
+regarder la courbe — et publier au moins deux instants, le pic et un témoin.
+
+**Deux termes qui se croient indépendants et parlent du même nombre.** Le même
+piège deux fois dans le même fichier en un jour : la chronologie imbriquée
+(0,95 + 2,25 au lieu de 2,25) et la caméra (elle montait de 2,2, l'inclinaison
+la redescendait de 2,27, net −0,07). Rien ne lève, rien ne se contredit, et le
+résultat est la somme silencieuse.
+
+## Ce qui reste ouvert
+
+La recette d'impact demande encore plus de choses que le plafond n'en accepte,
+et **quelle pièce disparaît change d'une passe à l'autre** — une fois l'aura,
+une fois le cratère. Deux atomes en sont déjà sortis vers l'apogée. Ce qui reste
+est plus lourd à déplacer : trois couches achetées, la secousse de caméra et le
+flash.
