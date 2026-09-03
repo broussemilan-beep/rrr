@@ -10773,3 +10773,90 @@ et **quelle pièce disparaît change d'une passe à l'autre** — une fois l'aur
 une fois le cratère. Deux atomes en sont déjà sortis vers l'apogée. Ce qui reste
 est plus lourd à déplacer : trois couches achetées, la secousse de caméra et le
 flash.
+
+---
+
+# 2026-09-04 (suite) — le jeu ne tirait plus au sort, et la caméra est sortie du soleil
+
+## D'abord le plus grave, et il dépasse l'ultime
+
+Deux passes du **même** ultime, même code, même place :
+
+```
+passe A :  « plafond 6, déjà actifs 2 »  →  l'aura écartée, le cratère joue
+passe B :  « plafond 6, déjà actifs 3 »  →  le cratère écarté
+```
+
+**Un joueur qui lançait deux fois le même ultime voyait deux choses
+différentes.** Deux causes empilées :
+
+**Le budget d'un effet dépendait de l'historique.** Le nombre de places d'un
+ultime se calculait en retranchant les effets actifs *de tout le jeu* — donc ce
+qui traînait encore d'un coup lancé une demi-seconde plus tôt. Le plafond joue
+désormais sur la pièce, pas sur le passé.
+
+**Et le tri n'était pas stable — alors qu'un commentaire affirmait qu'il
+l'était.** Deux effets à égalité de priorité : lequel se retrouvait en queue,
+donc jeté, se tirait au sort à chaque coup. Corrigé par un rang de déclaration.
+Une recette qui dépasse son plafond perd maintenant **toujours la même chose**,
+et l'auteur peut le prévoir en lisant sa table de haut en bas.
+
+**La recette peut aussi trancher elle-même.** L'ultime déclare désormais son
+sacrifice : le cratère est le geste — « le soleil a cassé le sol » — donc
+intouchable ; le flash d'écran est déclassé, parce que la mesure du jour en fait
+l'élément le moins porteur de toute la recette.
+
+*Le plafond n'a pas été relevé.* Deux précédents disent maintenant la même
+chose : un plafond qui tronque parle de la chronologie, pas du budget.
+
+## La caméra est sortie du soleil
+
+```
+avant :  2,9 s à l'intérieur de l'astre (rayon 19,8 — caméra à 6,1)
+après :  0 image sur 20, marge la plus serrée +7,5 stud
+```
+
+Cadrage d'impact reculé au-delà du rayon final, retour de la caméra au joueur
+repoussé après l'éclatement, et l'astre détruit dès qu'il a fini de disparaître —
+il laissait jusque-là une bille **invisible** de 40 stud de diamètre posée sur
+l'arène pendant une seconde et demie.
+
+**Un test le vérifie sur toute la phase, image par image** : l'astre grossit
+pendant que la caméra est posée, donc « dehors au départ » ne prouve rien.
+Accord entre le test et le moteur : marge prédite 6,08, mesurée 6,1 puis 7,5.
+
+Trouvé en écrivant ce test : la constante du pack donne un rayon de 11,54 quand
+le moteur en rend **8,24** — elle surestime de 40 %. Le rayon est donc écrit
+comme une mesure datée, et la distance de caméra en est *dérivée*, jamais
+recopiée.
+
+## Le résultat, sans l'embellir
+
+```
+part sombre au pic :  3,1 %  →  3,1 %   INCHANGÉE
+```
+
+**Je ne dis donc pas que c'est réglé sur cet axe.** Et la réserve qui explique le
+chiffre : notre arène est un décor de plein jour, la référence est une
+illustration sombre. 9,2 % de noir est une propriété du **niveau**, pas de
+l'ultime — cet axe ne pouvait pas être atteint ici.
+
+Ce qui a bougé :
+
+```
+amplitude du dégradé   40  →  188      (référence : 165)
+part chaude          89,4 % →  55,3 %
+caméra dans l'astre   2,9 s →  0,00 s
+```
+
+Et surtout l'image : **l'arène existe**, le ciel est bleu en haut, l'explosion a
+un cœur sombre et des bords nets, le personnage est visible au centre. Avant :
+du brouillard uniforme.
+
+## Ce que cette journée a appris et qui vaut au-delà
+
+**Quand plusieurs réglages d'apparence successifs ne déplacent pas la mesure,
+arrêter de régler et vérifier la géométrie.** J'ai réglé la lumière, puis le
+flash, puis l'émission — trois passes, aucune ne bougeait le chiffre. Je réglais
+la densité d'un nuage en me tenant dedans. La question « dedans ou dehors » est
+binaire, se mesure en une ligne, et rendait inutiles des heures de réglage fin.
