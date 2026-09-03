@@ -9883,3 +9883,85 @@ lira les chiffres avant de trancher.
 **Et le risque principal reste entier** : le repoussement arrive un sixième de
 seconde après le contact perçu, et je ne peux pas juger seule si ça se lit comme
 une conséquence ou comme une correction. Il faut deux vraies connexions.
+
+---
+
+# 3 septembre 2026 — L'inventaire des formes. Rien touché.
+
+Rapport complet : `2026-09-03_INVENTAIRE_formes_vfx.md`. L'outil est dans le
+dépôt et se relance quand on veut.
+
+## La plainte de Milan est exacte, et voici le chiffre
+
+```
+45 recettes
+26 portent la gerbe radiale generique
+19 ne portent AUCUNE forme propre
+ 6 en portent une
+```
+
+« Aucune forme propre » veut dire : rien d'autre que la gerbe, la traînée sur le
+bras, les lignes de vitesse et l'image rémanente. **Ces quatre-là sont
+indifférents au geste** — ils produisent la même chose pour un direct, un
+balayage ou une chute.
+
+Dix-neuf pièces sur quarante-cinq ne portent que ça. C'est **littéralement** « la
+même gerbe à trois intensités ».
+
+Et le classement est un renversement parfait : les effets indifférents occupent
+tout le haut du tableau, ceux qui portent une forme occupent le bas. **L'effet
+qui dit « un direct » n'est employé que par une seule pièce.**
+
+## Ce qu'on possède sans le servir
+
+* **une seule forme d'encre est libre** — celle qui dit « retombée », qui vient
+  d'être libérée ce matin quand la colonne a pris sa place sur le troisième M1 ;
+* **220 effets de packs sur 312 ne sont employés par aucune recette.**
+
+Sur les 220, je pose ma propre réserve : une bonne part appartient à des
+**movesets complets** achetés comme des kits — les compter comme « disponibles »
+serait exagéré. Mais des familles entières (flammes, brume, foudre, eau : 24
+effets) sont là et notre kit n'en tire rien.
+
+## Mon outil a failli publier un faux mort
+
+Première version : il annonçait libre une forme que **le dash emploie déjà**,
+parce que je ne balayais que les recettes et que le dash l'appelle directement.
+
+**Un inventaire qui libère une forme déjà prise est pire qu'un inventaire
+absent** : il invite à la réutiliser ailleurs et à voler sa signature à une
+pièce. Corrigé, et la cause est écrite dans le fichier.
+
+## Le vrai résultat : ce qui MANQUE
+
+Nos formes couvrent quatre directions, dont une sert de fourre-tout :
+l'horizontale (le direct), l'éventail au sol (le crochet), la verticale montante
+(l'uppercut), et le radial — qui sert **par défaut à tout le reste**.
+
+Ce qu'on n'a pas, et que le kit réclame :
+
+1. **La convergence** — rien ne se contracte vers un point. Une saisie, une
+   aspiration, une charge n'ont aucun vocabulaire.
+2. **La chute** — rien ne descend. **L'ultime EST une chute, et il joue une
+   forme radiale parce que c'est tout ce qu'on a.**
+3. **Le balayage en l'air** — celui qu'on a rase le sol par construction. Un
+   revers à hauteur de poitrine n'a pas de forme.
+4. **Le résidu** — la forme libre dit exactement ça, et les neuf pièces qui
+   cassent le sol n'ont rien qui retombe.
+
+## Ce que je propose, sans l'avoir fait
+
+**(a) Redistribuer ce qu'on a déjà.** Dix-neuf recettes sans forme, quatre
+formes sous-employées. Aucune primitive nouvelle — seulement ce que chaque
+recette déclare. Le plus rentable et le plus sûr.
+
+**(b) Rendre la forme « retombée »** aux pièces qui cassent le sol.
+
+**(c) Construire la chute.** C'est la colonne avec l'axe inversé et la
+propagation retournée. La colonne a coûté un après-midi ; celle-ci coûtera
+moins, le mécanisme est connu. Et c'est l'ultime qui en a besoin.
+
+**Je ne propose pas de piocher dans les 220 effets inemployés.** La leçon du
+grain vaut ici aussi : ajouter des couches de pack ne crée pas de la différence,
+ça crée du bruit. La différence vient de la géométrie, et la géométrie est à
+nous.
