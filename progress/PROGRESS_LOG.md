@@ -11124,3 +11124,57 @@ recule, rien ne disparaît au hasard** — les trois pannes de la journée sont
 absentes de cette prise.
 
 C'est la première fois que quiconque voit l'ultime en entier.
+
+---
+
+# 2026-09-04 — chercher d'abord dans ce qu'on a
+
+Milan : *« problème de mémoire de ce que l'on a, gâchis de ce que l'on possède,
+complexité à savoir quoi choisir »*. Le décompte du dépôt donne la cause exacte :
+
+```
+6 registres, 5 133 lignes
+1 SEUL mécanisme automatique — le crochet de commit
+   … qui ne les consultait pas
+   … et qui se déclenche APRÈS que la chose est construite
+```
+
+**Voilà l'asymétrie.** Ce qui s'exécute tout seul arrive trop tard pour empêcher
+de reconstruire ; tout ce qui l'empêcherait est un document qu'il faut penser à
+ouvrir. Six fois cette semaine, personne n'y a pensé.
+
+Un septième document n'aurait rien réglé — « complexité à savoir quoi choisir »
+est déjà le symptôme de six index dans six formats.
+
+## Ce qui a été construit
+
+Un index **dérivé de la source** — 1 349 capacités : fonctions, modules,
+recettes, formes, animations vérifiées — que le crochet consulte sur les
+symboles **ajoutés** par le commit. Quand on ajoute quelque chose qui ressemble à
+ce qui existe, il l'affiche.
+
+Trois contraintes tenues : **il n'interdit jamais** (un crochet qui refuse est
+désarmé au premier faux positif) ; **il est rapide** (+0,84 s, le crochet passe
+de 1,0 à 1,8 s, et seulement quand du code est touché) ; **il ne se tient jamais
+à la main** — c'est tout l'argument, un document se périme en silence, un index
+dérivé ne peut pas mentir.
+
+## L'épreuve a trouvé deux défauts dans l'outil
+
+Validé comme les précédents : par panne délibérée, avec un témoin qui ne devait
+rien déclencher.
+
+Elle a montré que l'outil **n'indexait pas les modules**, seulement les fonctions
+qu'ils contiennent — alors que « il me faut un système d'arrêt sur image » est
+exactement la question qu'on se pose avant d'en réécrire un. Et que les
+mots-outils français rapprochaient n'importe quoi. Les deux corrigés, l'épreuve
+repassée, le témoin toujours muet.
+
+## Une piste éliminée sur les vidéos de référence
+
+Dans la référence, le personnage est rendu à l'encre **pendant que son
+adversaire reste normal, dans la même image**. Ce seul fait élimine le
+post-traitement — qui agit sur l'image entière — et le contour lumineux — qui ne
+fait qu'un contour. Restent le matériau et le clone.
+
+Deux pistes suivies depuis deux semaines, écartées par une observation.
