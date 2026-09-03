@@ -8946,3 +8946,81 @@ les 4,5 secondes entières au lieu de se refermer deux secondes trop tôt.
 Une conséquence à trancher : le temps suspendu passe de 0,40 à 0,75 seconde, et
 l'invulnérabilité qui lui est liée suit. C'est un effet de l'alignement, pas un
 choix d'équilibrage.
+
+---
+
+# Ton découpage de l'ultime — proposition, et trois choses que la mesure corrige
+
+## 1. L'impact frame se déclenche déjà — au mauvais moment
+
+Tu dis qu'elle ne tire pas dans l'ultime. **Elle tire** : je l'ai mesurée en
+jeu, elle apparaît à 1,9 seconde. Le problème n'est pas qu'elle manque, c'est
+qu'elle est accrochée à **l'explosion** alors que tu la veux au moment où le
+personnage **sort sa puissance**.
+
+Tes deux références sont les **deux polarités de la même silhouette** — blanc
+sur noir, et noir sur blanc. On utilise la première, c'est le bon choix pour un
+ultime.
+
+## 2. Le soleil est déjà à la bonne taille
+
+J'ai mesuré ta promo : le soleil fait **4,5 fois** la hauteur du personnage. Le
+nôtre en fait **4,6**.
+
+**Il n'est pas trop petit.** Ce qui manque, c'est le cadrage : ta promo est un
+plan serré de face où le soleil remplit le haut de l'image ; chez nous la caméra
+est reculée de 14 stud et le soleil est 18 stud plus haut — il est loin, donc
+petit à l'écran.
+
+**La réponse est la caméra, pas la taille.** Je retire donc ce que je proposais
+ce matin (agrandir l'astre) : on cadre d'abord, on jugera après.
+
+## 3. Les étincelles aux pieds, je les avais retirées
+
+Ta promo montre des étoiles à quatre branches autour des pieds du personnage.
+**Ce sont exactement les six satellites que j'ai supprimés ce matin** — je les
+avais retirés parce qu'ils étaient collés au soleil, à un stud et demi de sa
+surface.
+
+Ils n'étaient pas de trop. Ils étaient au mauvais endroit, et ta promo dit où
+ils vont.
+
+## La chronologie proposée
+
+```
+ 0,00  la camera COUPE vers une vue de face, 7 stud devant lui
+ 0,50  IL SORT SA PUISSANCE — impact frame + etincelles aux pieds
+ 0,95  LE SOLEIL NAIT DANS SA MAIN DROITE, petit
+ 1,85  il monte depuis la main, en grossissant
+ 2,25  la camera COUPE vers la troisieme personne
+ 2,60  le soleil s'abat et explose
+ 3,20  la camera est rendue
+ 4,50  fin
+```
+
+Chaque temps est posé sur un **temps fort mesuré** de ton animation, pas sur une
+estimation. Deux coupes franches, pas de mouvement de caméra : un balayage de
+180° donne le mal de mer.
+
+## Ce qui coince, et que je ne tranche pas
+
+**Une caméra de face te rend aveugle.** Tu vois ton personnage et ce qu'il y a
+derrière lui — donc plus l'arène où l'adversaire bouge. Pendant **2,25
+secondes**. Or ton invulnérabilité ne dure que 0,75 seconde.
+
+Tu serais donc aveugle **et** frappable pendant une seconde et demie.
+
+Trois issues : étendre l'invulnérabilité à toute la vue de face, raccourcir la
+vue de face (mais on perd le soleil invoqué vu de face, qui est le cœur de
+l'image), ou assumer.
+
+**Je recommanderais la première**, bornée : invulnérable tant que tu ne vois
+pas, frappable dès que la caméra revient. C'est une règle lisible. Mais c'est
+ton jeu.
+
+## Une inconnue honnête
+
+**Un personnage R6 vu de face est plat** — pas d'épaules articulées, pas de cou.
+Le plan serré de face est le cadrage le plus exigeant pour ce type de
+personnage. Je ne peux pas te garantir que ça rende bien avant de l'avoir posé.
+Tu jugeras à l'image.
