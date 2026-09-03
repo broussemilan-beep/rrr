@@ -10907,3 +10907,60 @@ en une ligne.
 
 **Une constante qui décrit une géométrie mesurable doit être une mesure datée.**
 La constante du pack donnait un rayon de 11,54 quand le moteur en rend 8,24.
+
+---
+
+# 2026-09-04 — « l'animation est bug » : 2,74 s n'avaient jamais été vues
+
+Milan a vu la scène et l'a dit sans détour. Il avait raison, et ce n'était pas le
+trou de 1,90 s.
+
+## La mesure
+
+Un échantillon toutes les 0,05 s de la position et de la vitesse de la piste :
+
+```
++0,34 s   position 0,48   vitesse 1,0
++0,63 s   position 0,07   vitesse 1,0   ← LA PISTE A RECULÉ
++0,93 s   position 0,22   vitesse 0,0   ← et elle gèle, 1,5 s
+...
++4,05 s   position 1,76   vitesse 0,0   ← gel DÉFINITIF
+```
+
+**L'animation dure 4,50 s. Elle n'atteignait jamais 1,76.** Les 2,74 dernières
+secondes du geste n'ont jamais été vues par personne — ni par nous, ni par Milan,
+qui l'a signalé sans pouvoir le nommer.
+
+## Deux causes, dans le même bloc
+
+**Deux systèmes gèlent l'animation à l'impact, chacun de son côté.** L'un la rend
+en remettant la vitesse à 1 ; l'autre en restaurant *la vitesse qu'il avait lue
+avant*. Quand le second lit pendant que le premier gèle, il lit **zéro** — et
+restaure zéro. La piste ne repart plus jamais.
+
+Les deux sont corrects isolément. C'est leur état partagé qui ne l'est pas.
+
+**Et le gel rembobinait la piste.** Sur un geste court c'est invisible ; sur une
+cinématique de 4,5 s, l'animation redémarrait au milieu de sa propre mise en
+scène. Ça se lit exactement comme « ça bug ».
+
+## Après
+
+```
+reculs de la piste            1  →  0
+gel                  1,5 s + définitif  →  0,50 s en deux temps voulus
+position atteinte      1,76 / 4,50  →  4,08 et elle avance encore
+```
+
+**L'animation de Milan n'est pas touchée** — ni sa vitesse, ni sa durée, ni son
+contenu. On a seulement arrêté de l'interrompre.
+
+Toutes les pièces du kit qui demandent un arrêt sur image portaient la même panne
+latente.
+
+## La règle qui en sort
+
+**Ne jamais mémoriser un état pour le restaurer sans vérifier qu'il n'est pas
+déjà l'état de panne.** Une valeur lue « avant » n'est valide que si personne
+d'autre ne touche à la même propriété. Quand deux systèmes partagent un état,
+restaurer une valeur fixe et connue est plus sûr que restaurer une valeur lue.
