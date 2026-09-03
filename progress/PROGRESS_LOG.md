@@ -11037,3 +11037,45 @@ Et le corollaire, qui a coûté cher : **quand on a cassé trois instruments
 d'affilée, le quatrième instrument n'est pas la réponse.** La question n'était
 pas « quelles sont les valeurs des membres » mais « à quoi ressemble le geste ».
 Le dépôt avait déjà sa réponse : jouer la pièce pour de vrai et regarder.
+
+---
+
+# 2026-09-04 — CORRECTION : « le geste est planté » était faux
+
+**Ce que j'ai écrit dans l'entrée précédente est à retirer.** J'ai dit que le
+personnage restait planté pendant tout l'ultime et que le corps ne racontait
+rien. C'est faux, et c'est la seule de mes erreurs de la journée qui ait été
+publiée avant d'être attrapée.
+
+Mesure sur la même animation, cette fois avec un indicateur qui peut la voir :
+
+```
+à la main, hors scène   : 1434° parcourus par le bras droit, écart max 120°
+PENDANT LA VRAIE SCÈNE  : 110° d'écart atteints dès les 0,7 premières secondes
+```
+
+**L'animation bouge, et elle bouge autant en jeu qu'isolée.**
+
+## Deux erreurs empilées
+
+**Une mesure aveugle à ce qu'elle devait voir.** Je mesurais la *distance* entre
+le bras et le tronc : 0,35 stud de variation, « donc le bras ne bouge pas ». Mais
+un bras pivote autour de son épaule — **sa distance au tronc est presque
+constante quelle que soit la pose**. Cette mesure ne pouvait pas détecter une
+rotation, par construction.
+
+**Un point de vue qui cachait le mouvement.** Ma caméra était derrière et à
+droite ; le geste balaye vers l'avant, le torse l'occultait. J'avais écrit la
+réserve « vue de dos, tête coupée » — mais je l'ai posée comme une précaution de
+style au lieu d'en tirer la conséquence, qui était de refaire la prise de profil
+avant de conclure. **Une réserve qu'on écrit sans en tirer la conséquence ne
+protège de rien.**
+
+## Ce qui reste vrai, et ce qui ne l'est plus
+
+Le gel de la piste était un vrai bug, il est corrigé, et cette mesure-là ne
+dépend d'aucune lecture de pose.
+
+**Tout le reste de ce que j'ai dit sur le geste est retiré.** La planche a été
+supprimée. Ce que fait l'animation sur sa seconde moitié reste inconnu — et il
+faudra une prise de profil pour le dire.
