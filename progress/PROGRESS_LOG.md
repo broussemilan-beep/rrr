@@ -8705,3 +8705,80 @@ pas le photographier.
 
 **Il faut que tu le regardes toi-même.** Les chiffres disent ce que tu verras ;
 ils ne remplacent pas ton œil.
+
+---
+
+# Retenue sur l'ultime : ce qui saute, et une erreur que j'ai attrapée à temps
+
+## D'abord un empilement que personne n'avait voulu
+
+En regardant ce que l'ultime empile, j'ai trouvé une fuite : **l'aura de
+surcharge n'était jamais retirée**. Les 65 émetteurs restaient sur le personnage
+pendant tout l'ultime — où la recette du rasage en ajoute encore une — puis
+restaient indéfiniment après.
+
+La cause : la consommation du momentum écrit « zéro » par un chemin qui
+court-circuitait le code chargé d'éteindre l'aura. Corrigé.
+
+## L'erreur que j'ai failli publier
+
+Première image, soleil + six satellites : le soleil apparaissait **brun et
+terne**. J'allais conclure que les satellites le noyaient — conclusion attendue,
+cohérente avec un cas qu'on avait déjà rencontré.
+
+**C'était l'ordre des captures.** Les particules s'accumulent avec le temps ; ma
+première image était simplement prise plus tôt. J'ai remis les satellites et
+repris la photo au même endroit : **le soleil est resté éclatant.**
+
+Ils ne noient rien. Je l'aurais écrit comme cause si je m'étais arrêté à la
+première image.
+
+## Mais ils sautent quand même, pour une autre raison
+
+```
+rayon du soleil          8,24
+rayon de leur couronne   9,81
+distance a la SURFACE    1,57
+```
+
+Ce ne sont pas des satellites **autour** du soleil : ce sont des décorations
+**posées sur son disque**. On les voit sur l'image — quatre étoiles blanches
+plaquées sur sa face, qui concurrencent sa propre texture.
+
+On pourrait les repousser plus loin pour qu'ils lisent comme une vraie couronne.
+Je ne l'ai pas fait : le geste, c'est **« on lance UN soleil »**, et une seconde
+idée visuelle autour dilue la première. Les 30 émetteurs restent dans le pack —
+**disponible n'est pas une raison.**
+
+## Deux effets d'impact sautent aussi
+
+- **La traînée de taille** : il n'y a aucune taille dans ce geste. L'astre tombe,
+  le personnage n'arme rien. C'était du vocabulaire de M1 posé sur un ultime
+  parce qu'il était là.
+- **La sphère lumineuse au point de contact** : l'astre explose désormais
+  lui-même en gonflant du simple au double avant de disparaître. Une seconde
+  sphère au même endroit au même instant est un doublon.
+
+## Ce qui reste, et pourquoi
+
+Les trois couches de sol — écrasement, poussière, fissures — **sont** ce que
+« raser la zone » veut dire ; sans elles l'impact n'a aucune conséquence
+visible. Les débris projetés. Et une aura sur le personnage, pour que le geste
+lui appartienne encore et pas seulement à l'astre.
+
+```
+phase montee / gel   40 effets  ->  10   (-75 %)
+phase impact          4 atomes  ->   2
+```
+
+**Rien ajouté.**
+
+## Une réserve honnête
+
+**Le soleil seul, je le trouve juste** — noyau clair, langues de flamme,
+silhouette nette. Il se lit comme un soleil dès la première image.
+
+Si tu le trouves maigre après cette coupe, ce que je défendrais n'est pas de
+rajouter des couches autour : c'est **d'agrandir l'astre lui-même**, ce qui
+élargit aussi sa zone d'impact puisque les deux sont liés. Une seule idée, plus
+grande, plutôt que plusieurs idées empilées.
