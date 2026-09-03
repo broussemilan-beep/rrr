@@ -9245,3 +9245,80 @@ n'arrive pas**.
 Le code compile et le module d'effets se résout bien. **Mais l'effet du dash n'a
 jamais été vu.** Je le marque comme non vérifié plutôt que de te le donner pour
 acquis.
+
+---
+
+# 3 septembre 2026 (suite) — Le dash tirait depuis le début, et la colonne existe
+
+## Je me suis trompé sur le dash, et voici comment je l'ai su
+
+J'avais écrit : « la touche n'arrive pas ». **C'est faux.**
+
+J'ai posé deux écoutes sur le chemin réel — l'entrée clavier côté joueur, et le
+message que le dash envoie au serveur. Résultat : **les deux répondent.** Le
+dash se déclenchait bel et bien.
+
+Ce que je prenais pour son absence — le personnage qui passe en marche puis en
+repos — était en réalité **sa conséquence** : la poussée du dash fait basculer
+le personnage en déplacement. **Je lisais la preuve du dash comme sa
+réfutation.**
+
+## Ce qui cassait vraiment : ma propre ligne, écrite dans le mauvais ordre
+
+J'avais passé la couleur là où la fonction attendait une longueur. Comparer une
+couleur à un nombre ne renvoie pas « faux » : **ça plante**. L'erreur partait
+donc juste avant l'animation — d'où l'animation manquante, que j'avais mise sur
+le compte du dash entier.
+
+Trouvée **à la relecture**, pas en jeu : l'essai de la veille ne pouvait rien
+dire de cette ligne puisqu'il n'avait rien pu observer. Deux pannes empilées,
+dont une seule visible.
+
+**Corrigé, et vu tirer :** le dash a maintenant son couloir et son trait effilé.
+
+## La colonne montante — la forme verticale qui manquait
+
+C'est la pièce que j'avais refusé d'improviser hier. Elle existe.
+
+**Ce qui fait qu'elle « monte » n'est pas une impression, c'est mesuré** : six
+étages naissent du bas vers le haut, hauteur strictement croissante, **neuf
+studs en 0,215 seconde**. Volontairement plus lent que le couloir du direct :
+à la vitesse de celui-ci, la montée passerait en cinq images — trop court pour
+se lire comme un trajet, ça redeviendrait une barre.
+
+Elle **remplace** la poussière de M1_3 au lieu de s'y ajouter : le coup léger ne
+porte que deux éléments, et un troisième aurait été écarté en silence. C'est
+exactement la panne qu'on a déjà eue sur le premier M1 il y a deux jours.
+
+## L'image m'a donné tort deux fois — et c'est elle qui a tranché
+
+**Premier tort, la matière.** J'avais réutilisé le grain commun aux deux autres
+formes, pour qu'elles soient de la même famille. Empilé à la verticale, ce grain
+donne un **panache de fumée lumineuse**. La colonne montait correctement — et
+elle montait en fumée, c'est-à-dire exactement la lueur qu'on retire des M1
+depuis deux jours. Le grain commun datait d'avant l'encre ; l'encre prime.
+
+**Second tort, l'orientation.** Quatre essais, comparés à l'image à chaque fois.
+Les traits restaient couchés en travers. Le troisième essai m'a appris ce que
+j'avais supposé à l'envers : **le trait est déjà debout dans sa propre image** —
+c'est pour ça que tout ce que je faisais pour le redresser le couchait.
+
+Le quatrième est le bon : des traits **debout, effilés, étroits en bas et
+largement ouverts en haut**. Ça dit « qui monte ».
+
+Planche des trois états : `2026-09-03_colonne-trois-etats.png`.
+
+## Une conséquence que je signale sans y toucher
+
+Si le panache venait du grain partagé, alors **le couloir du premier M1 et
+l'éventail du deuxième rendent eux aussi de la lueur, pas de l'encre.** C'est la
+suite directe de ce que je viens de mesurer.
+
+**Je n'y touche pas.** Le premier M1 est la pièce que tu juges lisible, et la
+rendre mate est une décision de direction artistique — la tienne, pas un
+réglage.
+
+## Ce qui reste sur la table
+
+La place n'est **pas sauvegardée** et porte la réorganisation des packs, les
+renommages, et les 19 scripts désactivés. Un enregistrement est nécessaire.
