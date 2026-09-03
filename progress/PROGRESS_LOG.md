@@ -11079,3 +11079,48 @@ dépend d'aucune lecture de pose.
 **Tout le reste de ce que j'ai dit sur le geste est retiré.** La planche a été
 supprimée. Ce que fait l'animation sur sa seconde moitié reste inconnu — et il
 faudra une prise de profil pour le dire.
+
+---
+
+# 2026-09-04 — l'ultime, vu en entier pour la première fois
+
+## D'abord l'outil qui l'a permis
+
+Le déclenchement vient maintenant **de l'intérieur du jeu**, par un attribut
+surveillé — le motif que le plugin d'export utilise depuis des mois, imité plutôt
+que réinventé. Ça lève le goulot qui bloquait toutes nos captures depuis quatre
+jours : on ne pouvait pas à la fois lancer un enregistrement et déclencher une
+scène de 4,5 secondes.
+
+Deux garde-fous, tous deux payés ce mois-ci : **le déclencheur s'efface dès sa
+lecture** (un ancien resté posé avait accumulé 90 copies d'une animation), et
+**rien n'agit tant qu'il n'est pas explicitement armé**. Vérifié désarmé après
+usage.
+
+Il rapporte aussi ce qu'il a fait — « déclenché » — pour qu'une vidéo vide ne
+puisse plus être lue comme « la scène ne rend rien ».
+
+*Piège réintroduit un cran plus haut, et noté : mon premier essai comptait son
+délai depuis l'armement et non depuis le début de l'enregistrement. La scène a
+joué pendant le trajet entre les deux appels.*
+
+## Et la scène
+
+Première prise de profil complète, caméra fixe, avec toutes les corrections de
+la journée :
+
+```
+0,50 s   le carton « COLÈRE DU SOLEIL »
+0,75 s   l'arrêt sur image manga — noir et blanc inversé, franc
+1,25 s   le monde vire à l'orange, l'astre descend
+2,75 s   il emplit le cadre juste au-dessus de lui
+3,00 s   impact, dégâts, or partout
+3,50 s   cratère et flammes au sol, le ciel revient
+6,75 s   la traîne finit de s'éteindre
+```
+
+Le personnage reste visible et planté face à la chose. **Rien ne se fige, rien ne
+recule, rien ne disparaît au hasard** — les trois pannes de la journée sont
+absentes de cette prise.
+
+C'est la première fois que quiconque voit l'ultime en entier.
