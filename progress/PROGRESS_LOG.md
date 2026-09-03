@@ -10610,3 +10610,96 @@ l'impact.
 l'image d'Escanor.** Elle m'a été décrite, pas transmise. Je peux produire notre
 côté sur les axes nommés — pour mettre les deux côte à côte, **il me faut le
 fichier**.
+
+---
+
+# 2026-09-04 (suite) — la cause arrivait après son effet
+
+## La plus grosse trouvaille : une seconde d'écart entre le soleil et le cratère
+
+Les deux `task.delay` qui font tomber puis éclater l'astre sont **imbriqués**
+dans celui de l'invocation, et gardaient des constantes de temps **absolues**.
+Ils tombaient donc à 0,95 + 2,25 = 3,20 s et 0,95 + 2,60 = 3,55 s, pendant que
+les dégâts partaient, eux, à 2,60 s.
+
+Naissances d'instances datées depuis le début de la scène, avant correction :
+
+```
++2,62 s   le sol se casse — 24 éclats, la fracture, la poussière
++3,20 s   l'astre COMMENCE seulement à tomber
++3,55 s   il éclate
+```
+
+**Le sol se cassait une seconde avant que le soleil ne l'atteigne.** À l'œil on
+voit une explosion et un cratère, et le cerveau les associe : personne ne
+l'aurait vu en regardant. Il fallait dater les naissances.
+
+Le détail qui rend la panne exemplaire : **les tweens du même bloc écrivaient
+déjà la forme relative correcte**. Le fichier était à moitié conscient de sa
+propre convention.
+
+## La même faute de forme, une seconde fois, dans la caméra
+
+La contre-plongée ne plaçait rien. La caméra montait de 2,2 (hauteur de tête)
+puis redescendait de 2,27 par l'inclinaison : **net −0,07**. L'angle était bon,
+le placement s'annulait. On regardait vers le haut *depuis la poitrine du
+personnage* — d'où un ciel qui remplit le cadre et un personnage qui ne domine
+rien.
+
+Deux termes qui se croient indépendants et qui parlent du même nombre. Corrigé
+en les séparant. Mesuré :
+
+```
+avant :  caméra à  0 / +2,2 stud du personnage,  visée +26,0°
+après :  caméra à -0,8 / -2,9 stud,              visée +31,2°
+```
+
+## Et ma propre planche mesurait le flash
+
+La planche du matin annonçait **« part sombre 2,6 % chez nous contre 9,2 % dans
+la référence — il ne nous reste plus d'ombre »**. J'en ai tiré un réglage de
+lumière entier.
+
+**C'était faux.** L'image mesurée était *la plus chaude de la rafale*, donc
+celle de l'impact, où le flash et l'astre saturent tout. Mesuré image par image,
+sur deux passes complètes :
+
+```
+hors du flash    : 17 à 23 % de part sombre  → nous sommes PLUS sombres
+                   que la référence (9,2 %), pas moins
+pendant le flash : 2,6 %, dans les DEUX versions, quel que soit l'ambiant
+```
+
+Diviser l'ambiant par 6 ne déplace pas le chiffre d'un dixième. Le réglage a été
+**annulé** — un changement sans bénéfice mesuré, fondé sur une prémisse fausse,
+ne reste pas.
+
+J'écrivais le matin même *« une planche est un instrument, et un instrument se
+calibre »*. J'avais calibré les seuils et le code, **pas l'instant**. Un
+instrument de mesure d'image a deux réglages, et choisir l'image par un extremum
+sélectionne par construction le moment où la chose qu'on veut mesurer ne se voit
+plus.
+
+**Ce que l'erreur a produit d'utile** : au pic de l'ultime, le cadre est peint
+par les particules de l'astre et par le flash d'écran ; l'éclairage du monde n'y
+pèse presque rien. Le prochain levier est là.
+
+## L'outil qui criait faux
+
+L'alarme « atome muet » comparait le monde avant et après le *retour* de
+l'appel : aveugle par construction à tout effet qui pose ses éléments dans le
+temps — c'est-à-dire à toutes nos formes qui se propagent. Deux fausses alertes
+de la même cause à une semaine d'écart, deux chasses à un bug inexistant.
+
+Le verdict est maintenant différé d'une demi-seconde et recompté avant de crier.
+Pas de liste d'exceptions : une liste se périme, et le prochain cas reproduirait
+la panne.
+
+## Ce qui a été servi
+
+La masse qui tombe part désormais **à l'apogée** et non à l'impact : elle
+touche à +2,47 s, le sol se casse à +2,61 s. La cause précède l'effet. Elle
+quitte aussi la recette d'impact où elle **écrasait le cratère** par le plafond
+de lisibilité — j'avais répondu en relevant ce plafond, ce qui était un
+pansement sur une erreur de chronologie. Le plafond est revenu à sa valeur
+normale et le cratère est de retour.
