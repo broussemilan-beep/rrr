@@ -9322,3 +9322,90 @@ réglage.
 
 La place n'est **pas sauvegardée** et porte la réorganisation des packs, les
 renommages, et les 19 scripts désactivés. Un enregistrement est nécessaire.
+
+---
+
+# 3 septembre 2026 (suite 2) — Le grain devient réglable, et tu tranches
+
+## Ce que tu m'as fait remarquer était le vrai sujet
+
+Si le panache venait du grain partagé, alors la bascule des M1 vers l'encre
+**n'a pas complètement abouti** : on a changé les textures et gardé le grain
+lumineux dessous. C'est exact.
+
+**Le grain est maintenant réglable, en trois états** — et **rien n'a bougé en
+jeu** : le défaut reste l'actuel tant que Milan n'a pas choisi. Un défaut qui
+changerait en silence serait exactement ce qu'on lui reproche.
+
+Planche : `2026-09-03_grain-partage-trois-etats.png`. Six panneaux, le couloir
+du direct et l'arc du crochet, chacun dans les trois états.
+
+**J'ai jeté deux bancs d'essai avant celui-là.** Au sol, le décor — mannequins,
+gravats, une colonne en travers — occupait la moitié du cadre : on aurait
+comparé le fond autant que le grain. Le banc final est monté à 30 studs
+au-dessus de l'arène, sur ciel. Même caméra, même origine, même direction,
+mêmes valeurs de recette : **la seule variable est le grain.**
+
+Ce que la planche montre :
+
+* **actuel** — l'arc est une masse blanche brûlée, sans bord lisible ;
+* **mat** — même silhouette, plus de halo, mais **ça reste de la fumée** :
+  retirer la lumière ne rend pas graphique une texture de nuage ;
+* **encre** — bords hérissés, tons francs, coupe nette. C'est le vocabulaire que
+  ces deux recettes portent **déjà par ailleurs**.
+
+**Mon avis si Milan le demande : l'encre**, pour la cohérence. Mais le mat est
+sur la planche parce que c'est le changement minimal — une seule variable — et
+qu'il a le droit de choisir ça. C'est sa direction, pas la mienne.
+
+J'ai aussi passé la barre lumineuse du couloir sous le même interrupteur : la
+laisser brillante au milieu d'un effet mat aurait faussé la comparaison sur la
+pièce la plus large de la forme.
+
+## Le dash : l'assemblage sur lequel tu m'interrogeais n'existe plus
+
+`Run` + `Forward Dash` a été remplacé le **1er septembre**, et le remplacement
+est mesuré :
+
+```
+           appui   poussee   ordre appui-puis-poussee
+  ancien    0.42      0.26    NON — le corps partait avant l'appui
+  actuel    3.13      1.72    OUI
+```
+
+**7,5 fois l'appui, 6,6 fois la poussée**, et l'ordre que la spec demande : le
+pied frappe le sol *puis* le corps se projette. Ce passage-là avait déjà élargi
+la recherche — le dash n'avait jamais cherché ailleurs que dans 19 clips, alors
+qu'un autre pack en contient 210.
+
+**Et les deux packs achetés ne peuvent rien pour ce point** : ce sont des packs
+d'effets, pas d'animation. Ce qui manquait au dash, c'étaient ses effets — c'est
+fait, et vérifié en jeu aujourd'hui.
+
+## Mais en le vérifiant, j'ai trouvé pire
+
+Le fichier qui fait foi pour les identifiants d'animation **portait la version
+précédente pour les cinq pièces les plus jouées du kit** — les quatre M1 et le
+dash. Le jeu tournait juste ; c'est le document qui avait décroché, en silence.
+
+C'est exactement le genre de dérive que ce fichier existe pour empêcher.
+
+Corrigé **par la mesure** : chaque animation rechargée sur le personnage réel,
+durée lue dans le moteur — pas recopiée d'un journal. Recroisement des 48 slots
+après correction : **aucune divergence.**
+
+## Deux pièges notés pour ne plus les repayer
+
+* **Lire la conséquence d'un mécanisme comme sa preuve d'absence** — le dash
+  d'hier. Ne jamais conclure depuis l'absence d'une trace attendue : aller
+  écouter le point de passage obligé et voir s'il passe.
+* **Deux pannes empilées n'en montrent qu'une** — un essai qui n'observe rien ne
+  disculpe rien.
+
+## Un rouge de longue date, compris
+
+L'analyseur signale une erreur depuis un moment. Vérifié : elle est
+antérieure à tout ce que j'ai fait. Ce n'est pas un défaut de combat — mais en
+remontant la piste, **le module qui la porte n'est chargé par rien**. Deux
+fichiers morts. Je ne les supprime pas de mon propre chef ; c'est consigné comme
+tâche séparée avec l'analyse déjà faite.

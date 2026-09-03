@@ -9,6 +9,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-03_ultime-cadrage-comparaison.png` | 592838 |
 | `2026-09-03_promo-the-creator.png` | 958681 |
 | `2026-09-03_primitives-trait.png` | 234928 |
+| `2026-09-03_grain-partage-trois-etats.png` | 674296 |
 | `2026-09-03_dore-au-palier-2.png` | 297159 |
 | `2026-09-03_contre-rotation-tete.png` | 429951 |
 | `2026-09-03_colonne-trois-etats.png` | 969851 |
