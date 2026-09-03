@@ -1,13 +1,13 @@
 # LATEST — where to actually read this project's state
 
-generated_utc: 2026-09-03T19:32:40Z
-content_commit: 01590c41ebd3429cbcfb9109f25619d2be81835f
+generated_utc: 2026-09-03T19:45:24Z
+content_commit: 38ed56f8480bc66acdc7118fd351721b757f2ead
 
 ## Read these (immutable — always fresh on first read)
 
-- progress log     : https://raw.githubusercontent.com/broussemilan-beep/rrr/01590c41ebd3429cbcfb9109f25619d2be81835f/progress/PROGRESS_LOG.md
-- screenshot index : https://raw.githubusercontent.com/broussemilan-beep/rrr/01590c41ebd3429cbcfb9109f25619d2be81835f/progress/screenshots/INDEX.md
-- screenshot base  : https://raw.githubusercontent.com/broussemilan-beep/rrr/01590c41ebd3429cbcfb9109f25619d2be81835f/progress/screenshots/<filename>
+- progress log     : https://raw.githubusercontent.com/broussemilan-beep/rrr/38ed56f8480bc66acdc7118fd351721b757f2ead/progress/PROGRESS_LOG.md
+- screenshot index : https://raw.githubusercontent.com/broussemilan-beep/rrr/38ed56f8480bc66acdc7118fd351721b757f2ead/progress/screenshots/INDEX.md
+- screenshot base  : https://raw.githubusercontent.com/broussemilan-beep/rrr/38ed56f8480bc66acdc7118fd351721b757f2ead/progress/screenshots/<filename>
 
 ## Why these URLs and not `.../main/...`
 
