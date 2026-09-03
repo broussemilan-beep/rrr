@@ -11236,3 +11236,42 @@ les effets : **on cherchait à les rendre plus intéressants alors qu'ils se voi
 à peine.**
 
 Aucun réglage n'est proposé ici. La mesure est établie ; la décision suit.
+
+---
+
+# 2026-09-04 (clôture) — l'upload est débloqué
+
+**Quatre jours de blocage pour une commande d'approbation.** `rokit add` refuse
+un auteur inconnu et n'a aucun drapeau automatique ; mais `rokit trust` accorde
+la confiance sans poser de question, et l'ajout passe ensuite. La commande était
+dans l'aide de l'outil, pas dans celle de la sous-commande qui échouait.
+
+Hypothèse fausse qui avait retardé la recherche : « l'auteur est déjà de
+confiance puisque son outil est installé ». Non — ce binaire venait d'un **autre
+gestionnaire d'outils**, qui ne sait rien du premier.
+
+**Débloqué n'est pas vérifié.** La lecture des fichiers d'animation est prouvée —
+190 fichiers, zéro erreur, le défaut qui bloquait l'ancienne version a disparu.
+Le chemin de publication, lui, n'a pas pu être essayé : tout l'existant est déjà
+publié, il n'y avait rien de neuf. C'est le premier geste de demain.
+
+## Ce qui reste ouvert, et où reprendre
+
+**La mesure du coup de base.** Les deux chiffres qui avaient lancé la piste — 1 %
+et 34 % — sont morts tous les deux : ils venaient d'un seuil de couleur qui
+comptait le décor de l'arène. Ce qui survit est l'instrument, et il est bon :
+**chaque image comparée à sa voisine**, fond parfaitement stable, rien à
+calibrer.
+
+Avec lui : notre coup de base pèse **0,50 %** de la vue, la référence **70,30 %**.
+
+Reprendre en refaisant les deux variantes de la Marche du Titan avec cet
+instrument — une passe, deux enregistrements. Mais le fond de l'affaire n'en
+dépend pas : l'effet d'impact est porté par 26 recettes sur 45.
+
+## Une faille de protocole, notée avec son remplacement
+
+Amener le jeu dans un état par un raccourci est légitime. **Mesurer** par ce même
+raccourci ne l'est pas — il sautait l'animation du client, donc ne montrait pas
+ce que voit un joueur. Le remplacement est déjà en place : le déclencheur appelle
+maintenant ce qu'un clic appelle.
