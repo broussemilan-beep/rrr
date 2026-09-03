@@ -10860,3 +10860,50 @@ arrêter de régler et vérifier la géométrie.** J'ai réglé la lumière, pui
 flash, puis l'émission — trois passes, aucune ne bougeait le chiffre. Je réglais
 la densité d'un nuage en me tenant dedans. La question « dedans ou dehors » est
 binaire, se mesure en une ligne, et rendait inutiles des heures de réglage fin.
+
+---
+
+# 2026-09-04 (fin) — le plan corrigé, et le trou mesuré
+
+## L'ultime, vu en entier
+
+Capture du pic avec le nouveau cadrage : le personnage se tient au centre, éclairé
+par en dessous, une colonne sombre monte derrière lui, l'anneau blanc traverse le
+ciel, les flammes courent au sol, l'arène est visible et le ciel bleu en haut.
+
+C'est le plan que le brouillard effaçait.
+
+## Le trou de 1,90 s : mesuré, plus petit qu'annoncé
+
+```
++3,34 s   la caméra revient au joueur, la lumière repart
++4,05 s   le monde est déjà revenu
++4,50 s   ... et l'animation joue encore
+```
+
+**Il n'était pas vide** : la traîne décroît de 67 à 25 objets et la lumière se rend
+à travers lui. Ce qui manquait, c'est que tout **finissait tôt** — une demi-seconde
+de geste dans un monde qui l'avait déjà oublié.
+
+Corrigé en calant la durée de retour de la lumière sur la fin exacte de
+l'animation. Coût : aucun effet supplémentaire.
+
+## Le plafond, après la correction de déterminisme
+
+**L'ultime ne tronque plus rien.** Seul `bris` est écarté, et pour une raison
+légitime : aucune pièce cassable à portée — ce n'est pas le plafond.
+
+Les quatre M1, eux, sacrifient toujours la même chose, mais désormais **toujours
+la même** : la secousse de caméra. À décider si c'est le bon sacrifice — le flash
+d'écran d'un coup léger dure six centièmes de seconde, la secousse est ce qui
+vend l'impact. C'est une décision de feel, pas un nombre à relever.
+
+## Deux règles gravées
+
+**Quand plusieurs réglages successifs ne bougent pas la mesure, vérifier la
+géométrie.** Trois passes — lumière, flash, émission — n'avaient rien déplacé,
+parce que la caméra était à l'intérieur de l'effet. « Dedans ou dehors » se mesure
+en une ligne.
+
+**Une constante qui décrit une géométrie mesurable doit être une mesure datée.**
+La constante du pack donnait un rayon de 11,54 quand le moteur en rend 8,24.
