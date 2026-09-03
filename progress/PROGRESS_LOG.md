@@ -10219,3 +10219,65 @@ servir un seul il faudra le voir et mesurer son découpage.
 
 **Et la piste gratuite reste fermée** tant que Milan n'a pas jugé la planche des
 trois grains.
+
+---
+
+# 3 septembre 2026 — Point d'arrêt
+
+## Le chiffre que tu as relayé à Milan est juste
+
+Tu me demandais si l'aveuglement du détecteur avait faussé l'inventaire.
+**Non.** Et j'ai vérifié avant de répondre, plutôt que de corriger par
+précaution.
+
+L'inventaire **ne lit que des fichiers source**. Il ne tourne pas en jeu, ne
+consulte aucune donnée d'exécution, et n'utilise pas le détecteur en cause. Il
+compte ce que les recettes **déclarent**. Le détecteur d'atome muet, lui, est un
+outil d'exécution servant au diagnostic. **Deux instruments différents, une
+seule panne.**
+
+Contre-vérifié par une seconde méthode complètement indépendante : concordance
+exacte sur les dix effets. **« L'arc au sol : 2 emplois » était juste et reste
+juste. Rien à corriger auprès de Milan.**
+
+## Mais les chiffres ont bougé — par le travail, pas par une erreur
+
+```
+                publie    aujourd'hui
+la gerbe          26          24
+le couloir         1           3
+l'encre            7           9
+l'arc au sol       2           2
+```
+
+**La redistribution a déjà déplacé le chiffre principal dans le bon sens.** Le
+couloir — l'effet employé par une seule pièce quand j'ai publié l'inventaire —
+en sert trois. C'est petit, et c'est mesuré.
+
+**Une réserve qui reste vraie, sans rapport avec le détecteur** : « déclaré »
+n'est pas « joué ». Le plafond peut écarter à l'exécution ce qu'une recette
+déclare. Le comptage par les sources est donc une **borne haute**. C'est une
+autre mesure, à faire.
+
+## Je ne peux pas sauvegarder la place
+
+Deux voies essayées, les deux refusées par le bac à sable. Le bouton
+d'enregistrement vit dans une partie de Studio qu'aucun script n'atteint.
+**C'est un `Ctrl+S` de Milan**, et voici ce qui disparaît sans lui :
+
+* les deux renommages — **sans eux, l'astre de l'ultime redevient invisible** ;
+* les 42 effets sortis du dossier « archive » ;
+* le transfert de Milan, rangé ;
+* les 19 scripts désactivés (9 % de temps serveur).
+
+## Un nettoyage, et ce qu'il a révélé
+
+Un attribut de déclenchement était resté posé depuis la tentative d'upload. Le
+plugin le relisait **à chaque chargement** et retentait l'export, qui échouait —
+c'est l'erreur qu'on voyait passer à chaque session sans l'expliquer. Retiré.
+
+**Il avait accumulé une centaine de copies de la même animation** dans le
+dossier de travail. Je les signale et **je ne les supprime pas** : c'est un
+dossier de travail, supprimer cent instances en fin de session sans accord n'est
+pas une décision à prendre seule, et la place n'est de toute façon pas
+sauvegardée. Le retrait de l'attribut **arrête l'accumulation**.
