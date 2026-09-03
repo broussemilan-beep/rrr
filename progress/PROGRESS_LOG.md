@@ -10545,3 +10545,68 @@ plus tard.
 l'ouvrir serait refaire l'erreur une troisième fois. La mécanique est bonne, la
 matière est à trouver. La texture est enregistrée comme **en échec**, avec la
 raison.
+
+---
+
+# 4 septembre 2026 — « Colère du Soleil », et deux erreurs que j'avais commises
+
+## Compter d'abord a payé
+
+Tu m'as dit de compter avant de régler. Le comptage a **écarté les deux causes
+probables** :
+
+```
+socle a 14 stud DEVANT la camera, au centre    -> pas hors champ
+dans le cadre : oui                            -> pas cache
+~217 particules en regime                      -> pas une question de densite
+```
+
+Il ne restait que la couleur. **Sans ce comptage j'aurais densifié un émetteur
+déjà dense.**
+
+## Et j'ai trouvé deux erreurs à moi, de la même cause
+
+**J'avais lu ma propre planche de textures à l'envers.** La caméra regarde vers
+l'avant, donc son axe droit est inversé par rapport aux coordonnées : l'ordre à
+l'écran est **l'inverse** de l'ordre où j'avais posé les panneaux. Cette fois
+j'ai fait dire l'ordre **par le moteur** avant de regarder.
+
+Deux conséquences :
+
+* **la « masse » que je sers depuis hier est un reflet d'objectif** — une étoile
+  à quatre branches — et non le bloc cerné que j'avais décrit ;
+* **et l'effet que j'avais écarté hier en le croyant un reflet est justement le
+  bloc cerné.** J'avais rejeté la bonne matière et servi la mauvaise.
+
+Les deux sont corrigées, et ma note d'hier est corrigée avec.
+
+## Les braises : couleur réglée, distribution encore imparfaite
+
+L'ancienne texture était sombre — réemployée **sans être ouverte**. Remplacée
+par un fichier du moteur, **ouvert avant emploi** : chaudes et visibles.
+
+Puis un second défaut est apparu : elles faisaient une **colonne au centre**,
+parce qu'elles naissaient d'un point. Corrigé en les faisant naître dans un
+volume.
+
+**Mieux, et pas encore l'air chargé de la référence.** Je m'arrête là plutôt que
+d'augmenter des nombres à l'aveugle.
+
+## Le carton-titre existait déjà
+
+Rien à construire — bandeaux, titre et fondu étaient là. Deux changements : le
+nom de Milan, **« COLÈRE DU SOLEIL »**, et surtout la **tenue** : le titre vivait
+les 4,5 secondes de la scène ; il paraît maintenant deux dixièmes après la
+bascule et se retire après 1,7 seconde. C'est la fenêtre que donnent **deux
+sources indépendantes**.
+
+## Ce que je n'ai pas fait
+
+**La contre-plongée n'a pas été vue** — codée et poussée, mais je n'ai pas
+rejoué la scène entière. **La chute n'est pas servie à l'apogée**, seulement à
+l'impact.
+
+**Et la planche comparative est impossible en l'état : je n'ai jamais reçu
+l'image d'Escanor.** Elle m'a été décrite, pas transmise. Je peux produire notre
+côté sur les axes nommés — pour mettre les deux côte à côte, **il me faut le
+fichier**.
