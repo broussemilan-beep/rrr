@@ -9800,3 +9800,86 @@ dire précisément ce que la fenêtre est censée couvrir.
 validable, et **laisser le réglage de la fenêtre ouvert** jusqu'à un test à deux
 joueurs. La sortir en réglage nommé, et compter les quasi-clashs en jeu pour
 lire la vraie distribution avant de figer un chiffre.
+
+---
+
+# 3 septembre 2026 — Le clash est construit
+
+## La règle vit à part, et c'est ce qui la rend vérifiable
+
+La logique du clash ne touche à rien de Roblox : elle ne prend que des nombres.
+Ce découpage n'est pas cosmétique, c'est **la seule raison** pour laquelle je
+peux vérifier les cas limites sans deux joueurs. Les mécaniques précédentes
+avaient leur logique noyée dans du code qu'on ne peut lancer qu'en jeu.
+
+**27 assertions, aucun échec.** La suite passe à 11 tests.
+
+## Les cas limites que tu as demandés — tous couverts
+
+```
+ultime contre M1 / competence / ultime      traverse
+M1 contre competence                        refuse
+attaquant mort / cible morte                refuse
+un seul des deux a portee                   refuse
+deux joueurs frappant un TROISIEME          refuse
+les deux bords de la fenetre                dans les deux sens
+double declenchement                        refuse, trois variantes
+```
+
+**Le double déclenchement m'a fait déplacer du code.** Le drapeau qui empêche un
+impact de re-clasher vivait au mauvais endroit : il n'était **pas testable**. Or
+une règle qu'on ne peut pas exercer est une intention, pas une règle. Je l'ai
+fait entrer dans la règle elle-même et retiré le doublon.
+
+C'est le cas le plus grave de la liste et le moins visible : sans lui, un seul
+échange produirait deux clashs, puis trois — **deux joueurs qui échangent
+normalement deviendraient invulnérables l'un à l'autre.**
+
+## J'ai cassé le test exprès, trois fois
+
+Un test vert qui ne peut pas virer au rouge ne vaut rien. Trois sabotages, tous
+rattrapés.
+
+**Et l'un des trois m'a appris quelque chose** : désactiver l'exclusion de
+l'ultime ne produit **qu'un** échec sur trois, pas trois. Les cas mixtes sont
+rattrapés ailleurs ; seul **ultime contre ultime** passerait. Le garde-fou ne
+sert donc qu'à un seul cas — mais c'est exactement celui que « il traverse »
+interdit. C'est écrit dans le fichier pour que personne ne le retire en le
+croyant superflu.
+
+## Le rendu — j'ai dû chercher une forme libre
+
+**Aucun effet des packs n'était disponible.** Relevé dans la place : tous les
+effets assez fournis des trois packs sont déjà employés par les 44 recettes. En
+reprendre un aurait donné au clash l'allure d'un impact déjà vu — le contraire
+de ce que tu demandais.
+
+**Ce qui était libre : l'encre angulaire** du pack combat, déclarée depuis la
+bascule et **servie nulle part**. C'est la seule forme du vocabulaire qui
+n'appartenait à personne, et sa géométrie brisée dit « rencontre » là où l'éclat
+dit « contact ».
+
+Trois couches, une colonne qui monte **du point de rencontre** et pas d'un
+corps, une secousse forte, un flash plus long et moins fort que celui du
+finisseur — un temps suspendu, pas une détonation.
+
+Vérifié en jeu : 62 tirs produisent exactement le compte attendu. Planche :
+`2026-09-03_clash-forme-reservee.png`.
+
+## Non-régression
+
+Un échange normal rend « touché », et le compteur de clashs reste à zéro. La
+voie des dégâts est intacte.
+
+*La vie du mannequin ne prouvait rien — il est immortel. J'ai donc regardé la
+voie **empruntée**, pas son effet.*
+
+## Ce qui reste ouvert, délibérément
+
+**150 millièmes n'est pas figé** : c'est un réglage nommé, avec le raisonnement
+à côté et un compteur qui donnera la distribution réelle des écarts en jeu. On
+lira les chiffres avant de trancher.
+
+**Et le risque principal reste entier** : le repoussement arrive un sixième de
+seconde après le contact perçu, et je ne peux pas juger seule si ça se lit comme
+une conséquence ou comme une correction. Il faut deux vraies connexions.
