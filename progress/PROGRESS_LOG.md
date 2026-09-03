@@ -11178,3 +11178,61 @@ post-traitement — qui agit sur l'image entière — et le contour lumineux —
 fait qu'un contour. Restent le matériau et le clone.
 
 Deux pistes suivies depuis deux semaines, écartées par une observation.
+
+---
+
+# 2026-09-04 — le coup de base occupe 0,50 % de l'écran
+
+Même instrument des deux côtés — la différence d'une image à la suivante, en part
+de la vue 3D, à vingt images par seconde :
+
+```
+NOUS       un M1 ordinaire, caméra de jeu   plancher 0,00   médiane 0,00   PIC  0,50 %
+RÉFÉRENCE  12 premières secondes            plancher 0,00   médiane 8,46   PIC 70,30 %
+```
+
+**Un facteur 140 sur le pic.** La médiane de la référence vaut dix-sept fois
+notre pic.
+
+## Ce qui a d'abord été réfuté : mon propre chiffre
+
+L'observation qui a lancé ce tour — « la variante proche à 1 % » — **était du
+bruit**. Mesuré sur l'arène **sans aucun effet**, le sable et les planches
+donnent déjà 1,3 %. Mon seuil comptait le décor ; notre effet était sous le
+plancher de l'instrument.
+
+## Trois instruments, deux mensonges
+
+Une couleur absolue comptait l'arène. Un écart à une image de référence dérivait
+avec elle. Seule la troisième version — **chaque image comparée à sa voisine** —
+donne un fond parfaitement stable (0,00 %) et fait ressortir un effet bref comme
+un pic. Elle n'a besoin d'aucune calibration : c'est ce qui la rend fiable.
+
+## Deux vérifications avant de conclure
+
+**L'effet naît bien** — quatre émetteurs comptés à chaque coup. Ce n'est pas un
+câblage cassé, c'est un effet petit. La distinction compte : densifier quelque
+chose d'absent n'aurait rien donné.
+
+**Le chemin est le bon** — le déclenchement passe par ce qu'un clic appelle. Ma
+première version court-circuitait l'animation du client et ne montrait donc pas
+ce que voit un joueur.
+
+## La réserve
+
+La vidéo de référence contient du mouvement de caméra, nous non. Une part de sa
+médiane est du déplacement, pas de l'effet. Cela n'explique pas le facteur 140
+sur le pic — mais cela interdit de comparer les médianes.
+
+## Ce que ça implique
+
+L'effet d'impact est porté par **26 recettes sur 45**. Si le contact de base se
+voit à un demi pour cent de l'écran, la majorité des coups du jeu sont quasi
+invisibles — et « c'est très en surface » cesse d'être une impression pour
+devenir un chiffre.
+
+C'est aussi l'explication la plus économique de trois semaines de travail sur
+les effets : **on cherchait à les rendre plus intéressants alors qu'ils se voient
+à peine.**
+
+Aucun réglage n'est proposé ici. La mesure est établie ; la décision suit.
