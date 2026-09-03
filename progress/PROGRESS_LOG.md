@@ -10412,3 +10412,78 @@ conclure quoi que ce soit.
 Corrigé en relevant le plafond de cette pièce d'un cran — la limite forcée était
 antérieure à la chute et ne l'avait pas prévue. **Revérifié : le cratère est
 revenu et la chute est là.**
+
+---
+
+# 4 septembre 2026 — Diagnostic de l'ultime, avant la référence
+
+**Aucune mise en scène touchée.** La référence de Milan n'est pas arrivée ; ceci
+prépare la comparaison, ça n'y répond pas.
+
+## Le résultat qui change la discussion : l'astre n'est pas trop petit
+
+Calcul avec les valeurs réelles de la scène et le champ de vision mesuré :
+
+```
+a l'apogee    l'astre occupe  96 % de la hauteur d'ecran
+a la main     il occupe      167 %  —  il DEBORDE du cadre
+```
+
+**Donc « pas spectaculaire » n'est pas un problème de taille.** Et ça écarte la
+piste que **je** défendais moi-même il y a deux jours — « si Milan le trouve
+maigre, j'agrandirais l'astre ». À ne pas rouvrir.
+
+**L'hypothèse qui reste : il est immense et creux.** Sa taille annoncée est la
+*portée des particules*, pas un disque plein — et au pic on compte **trente
+émetteurs** pour toute la scène. Trente émetteurs étalés sur cette largeur, on
+voit à travers. Un soleil de référence est **dense**.
+
+**Quand l'exemple arrivera, ce n'est donc pas la taille qu'il faudra comparer,
+c'est la densité.**
+
+## Le précaire : la fin n'est pilotée par personne
+
+La montée fait **deux dixièmes de seconde** — il y a bien une rampe, ce n'est pas
+un interrupteur. Mais elle est courte, et surtout **la descente se fait en
+marches** : chaque palier correspond à une durée de vie qui expire de son côté.
+
+**Personne ne dirige la fin de l'effet.** Une chose qui s'éteint par épuisement
+se lit comme une chose qui s'arrête, pas comme une chose qui retombe. C'est très
+probablement une bonne part du « précaire ».
+
+## Le pas-cinéma : 1,3 seconde sans rien
+
+Le dernier temps déclaré de la scène est à **3,20 s**. L'animation de Milan fait
+**4,50 s**. Entre les deux : **ni caméra, ni effet, ni son.** Le geste continue à
+l'écran pendant que la réalisation a lâché.
+
+## Et une réserve levée, qui contraint la réponse
+
+J'avais dit « mon arithmétique de plafond est fausse ». Vérifié : **le plafond
+tronque bel et bien**, et l'ultime est maintenant **à 6 pour un plafond de 6**.
+La marge est nulle.
+
+**Donc la réponse au grief ne pourra pas être « empiler davantage »** sans une
+décision explicite sur ce nombre. Elle passera plutôt par la **densité** et par
+une **fin dirigée** — qui ne coûtent aucune place.
+
+## Ce que je n'ai pas mesuré, et que je ne devine pas
+
+* **le rapport ultime / M1** : l'échantillonneur a capté l'ultime et raté le M1
+  trois fois de suite, sans que je comprenne pourquoi. Je préfère ne rien
+  publier plutôt qu'un rapport faux ;
+* **la fin de la traîne** : ma fenêtre s'est fermée alors qu'il restait encore
+  des effets vivants. Ce qui est sûr : environ **trois secondes** de traîne, là
+  où la référence du genre en garde quatre à huit.
+
+## Deux erreurs de méthode, toutes deux des récidives
+
+J'ai lu un appel protégé réussi comme « l'ultime a été lancé » — alors que la
+fonction rendait « momentum pas prêt » et que **je ne lisais pas sa valeur de
+retour**. C'est le piège documenté depuis des mois sur les animations, appliqué
+à autre chose donc non reconnu.
+
+Puis, en voulant contourner, j'ai chargé le module depuis mon bac à sable : il
+répondait toujours « pas prêt » alors que l'écran affichait le maximum. **Mon
+bac à sable a son propre cache** — je mesurais un fantôme. La bonne voie était
+la vraie touche, et elle a marché du premier coup.
