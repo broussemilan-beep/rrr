@@ -10123,3 +10123,99 @@ est faux, les images sont simplement coupées de travers.
 formes d'un coup, et **Milan n'a pas encore jugé la planche des trois grains qui
 l'attend depuis ce matin**. Ouvrir un second axe sur la même fonction avant
 qu'il ait tranché le premier rendrait son jugement impossible.
+
+---
+
+# 3 septembre 2026 — Le catalogue, rangé par ce à quoi ça sert
+
+Rapport : `2026-09-03_CATALOGUE_par_fonction.md`. Il **remplace** mon rangement
+par famille d'élément d'il y a une heure. Aucune recette modifiée.
+
+## La correction de Milan change l'outil, pas seulement l'étagère
+
+« Flammes / brume / foudre » est un rangement de **vendeur**. La bonne question
+est **à quoi sert l'émetteur** — et il se trouve que **c'est mesurable** :
+vitesse, traînée, gravité, durée de vie, ouverture, croissance, alignement sur
+le déplacement. Ces propriétés disent ce que l'effet fait **voir**, quelle que
+soit sa couleur et quel que soit son pack.
+
+Balayage sur **4 800 émetteurs, dix packs, sans frontière de pack.**
+
+## Un piège dès le premier tri
+
+Mon classement remontait des vitesses à 11 000, des tailles à 999, des durées de
+50 secondes, des luminosités négatives. **Ce ne sont pas des candidats** : ce
+sont des effets réglés pour la scène de démo de leur propre pack, où la taille
+du support fait tout le travail.
+
+**Classer sans borner remonte le plus bruyant, pas le plus utilisable.** Une fois
+borné à notre échelle : **2 088 sur 4 800 sont exploitables — 44 %.** Plus de la
+moitié de ce qui a été acheté est hors d'échelle pour nous. Ce n'est pas un
+défaut des packs, c'est qu'ils sont faits pour autre chose.
+
+## Les sept fonctions
+
+```
+ce qui dit le DEPLACEMENT D'AIR      240 candidats
+ce qui dit la MASSE / le POIDS       163
+ce qui dit le RESIDU qui retombe      56
+ce qui dit l'INSTANT du contact       10
+ce qui dit la TRAJECTOIRE            339
+ce qui dit l'ONDE qui s'ouvre         75
+matiere MATE (filtre transversal)    758
+```
+
+**Deux résultats que le rangement par élément cachait :**
+
+* **L'instant du contact n'a que dix candidats sur deux mille** — et c'est
+  précisément la fonction où **nous sommes déjà riches**. Sans cette grille, on
+  serait allés piocher là par réflexe, pour remplacer ce qu'on a de mieux.
+* **758 effets sont exactement sans lumière**, soit un tiers de ce qui est
+  utilisable. En rangeant par élément j'écrivais « la plupart sous 0,40 » ; le
+  vrai chiffre est bien meilleur que ça.
+
+## Les pistes, avec leur prix
+
+Les meilleures sont **mates** et sur de **petits supports** :
+
+* **le déplacement d'air** → un effet dont le support ne contient **qu'un seul
+  émetteur**. Le prendre entier ou seul revient au même : c'est le moins cher du
+  catalogue ;
+* **le résidu qui retombe** → deux candidats mats, sur des supports de cinq et
+  six émetteurs, avec une gravité et une durée mesurées. **Nos neuf pièces qui
+  cassent le sol n'ont rien qui retombe** — ce sont les deux meilleures pistes
+  concrètes ;
+* **la trajectoire** → un effet mat qui se comporte comme notre trait de dash,
+  en plus long et plus lent. La meilleure matière pour une forme qui voyage.
+
+## Ce que ça change pour nos formes
+
+```
+peindre le couloir (le direct)     -> deplacement d'air
+peindre l'arc au sol (le balayage) -> deplacement d'air + residu
+peindre la colonne (l'uppercut)    -> deplacement d'air, axe vertical
+donner du residu aux 9 pieces      -> les deux candidats mats
+construire la chute (l'ultime)     -> masse + residu
+```
+
+**Aucune de ces pistes ne remplace une forme par un effet acheté.** Un couloir
+peint reste un couloir : mêmes stations, même propagation, même géométrie. Seule
+la matière change — **et repeindre ne coûte aucun émetteur de plus.**
+
+## Une collision de noms m'a piégée pendant la mesure
+
+J'ai demandé un effet nommé « Hit » : il en existe au moins deux dans deux packs
+différents, et la recherche a rendu le mauvais. **Le résolveur rend le premier
+trouvé** — le même défaut que pour le soleil et le vent, rencontré une troisième
+fois. Ici ça n'a coûté qu'une ligne fausse dans un tableau, que je corrige en la
+signalant. En production, ça coûte un effet qui n'est pas celui qu'on croit.
+
+## Ce que je n'ai toujours pas fait
+
+**Je n'ai regardé aucune texture à l'image.** Tout est mesuré sur le
+**comportement** — ce que l'effet *fait*, pas ce qu'il *montre*. Les deux se
+recoupent souvent et les fonctions tiennent sur cette base, mais avant d'en
+servir un seul il faudra le voir et mesurer son découpage.
+
+**Et la piste gratuite reste fermée** tant que Milan n'a pas jugé la planche des
+trois grains.
