@@ -8860,3 +8860,89 @@ L'animation de l'ultime dure **4,5 secondes**, la mise en scène **2,6**. Elle
 traîne près de deux secondes après que tout s'est refermé. Deux issues :
 allonger la scène, ou accélérer l'animation. **C'est ton animation, je ne
 tranche pas.**
+
+---
+
+# Trois vérifications, trois surprises
+
+## 1. Ce n'était pas un défaut — et j'avais tort
+
+Tu m'as demandé de vérifier avant de corriger. Bien vu : **la correction du
+2 septembre est intacte**, ligne pour ligne. Le verrou se lève tôt, mais le
+retour à l'immobilité attend la fin réelle du geste. Son propre commentaire dit
+qu'une nouvelle action écrase la piste **à dessein**.
+
+J'avais signalé comme défaut un comportement qu'on a construit exprès.
+
+## 2. Ton hypothèse ne tient pas non plus — mesurée
+
+Ta lecture était que la coupure se voit plus sur un geste ample que sur un jab.
+J'ai mesuré l'écart de pose au moment exact où le joueur reprend la main :
+
+```
+jab              618
+Main du Colosse  619
+Frappe Celeste   656
+```
+
+**C'est le même saut.** Une compétence ne se coupe pas plus brutalement qu'un
+coup rapide. Et Main du Colosse a même *moins* de geste restant qu'un jab.
+
+## 3. Ce que la mesure a trouvé à la place
+
+```
+Marche du Titan   animation 0,97 s   verrou 1,10 s   ->  0,13 s de blanc
+Jugement          animation 0,57 s   verrou 1,30 s   ->  0,73 s de blanc
+```
+
+**Jugement bloque le joueur plus de deux fois plus longtemps que son propre
+geste ne dure.** Ce n'est pas une coupure trop brutale — c'est l'inverse : le
+geste finit, puis il ne se passe plus rien pendant trois quarts de seconde.
+
+C'est très probablement ce qui fait « pas premium ». **Je n'ai rien changé** :
+c'est un réglage d'équilibrage, pas une réparation.
+
+## 4. Les repères d'impact étaient justes
+
+Tu m'avais dit d'y aller — deux valeurs identiques au millième, ça sent la
+recopie. J'ai mesuré l'instant où le bras va le plus vite, dans chaque
+animation :
+
+```
+                    mesure    declare    ecart
+Main du Colosse     0,4317     0,4375    6 ms
+Frappe Celeste      0,4288     0,4368    8 ms
+Marche du Titan     0,5173     0,5089    8 ms
+```
+
+Les trois écarts sont **sous la précision de ma propre mesure**. Les deux
+compétences frappent réellement vers 0,43 seconde — la ressemblance est un fait
+sur les animations, pas une paresse de transcription.
+
+**Je n'ai rien recalé.** Corriger des valeurs déjà justes aurait été du bruit.
+
+## 5. L'ultime : la scène suit enfin le geste
+
+En mesurant l'animation image par image, j'ai trouvé ceci :
+
+```
+0,50 s   premier elan
+0,95 s   arret complet
+1,85 s   second elan
+2,25 s   LES MAINS AU PLUS HAUT
+2,75 s   immobilite
+4,50 s   fin
+```
+
+**L'astre s'abattait à 1,40 seconde — presque une seconde avant le sommet du
+geste**, pendant que le personnage levait encore les bras. Voilà le vrai
+désalignement.
+
+Chaque phase est maintenant posée sur un temps fort mesuré, et la scène couvre
+les 4,5 secondes entières au lieu de se refermer deux secondes trop tôt.
+
+**Ton animation n'est pas touchée** — ni sa vitesse, ni sa durée.
+
+Une conséquence à trancher : le temps suspendu passe de 0,40 à 0,75 seconde, et
+l'invulnérabilité qui lui est liée suit. C'est un effet de l'alignement, pas un
+choix d'équilibrage.
