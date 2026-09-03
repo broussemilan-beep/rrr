@@ -10042,3 +10042,84 @@ qu'elle fasse ce que son nom promet.
 
 Chute, convergence, balayage aérien — et maintenant **le recul**, la forme d'un
 geste qui part en arrière, que la contre-attaque réclame.
+
+---
+
+# 3 septembre 2026 — Exploration des packs : la matière, avec son prix
+
+Rapport complet : `2026-09-03_EXPLORATION_packs_matiere.md`. Aucune recette
+modifiée.
+
+## Le coût d'abord — parce qu'il change les conclusions
+
+**Je me suis trompée il y a une heure** : j'ai dit que le plafond comptait « les
+atomes + la caméra + le flash ». Il compte **aussi les couches de pack**. Ça
+change tout le calcul :
+
+```
+ajouter une forme au registre de textures    plafond 0   emetteurs 0
+la servir dans une recette                   plafond 1   emetteurs 1
+REPEINDRE une forme existante                plafond 0   emetteurs 0
+prendre une couche de pack entiere           plafond 1   emetteurs 2 a 40
+```
+
+**Repeindre est gratuit sur les deux axes.** C'est le résultat principal de
+l'exploration, et il sort de la mécanique, pas d'une préférence. Un couloir en
+flamme reste un couloir, et il ne coûte **rien de plus** qu'un couloir.
+
+## Un chiffre inquiétant que je refuse de valider
+
+En recomptant couches comprises, **huit recettes du Demi-Dieu sur onze dépassent
+leur plafond** — la première compétence déclare huit éléments pour un plafond de
+quatre.
+
+**Mais j'ai activé l'audit et tiré cette compétence : il n'a signalé aucun
+écartement.** Le tableau est donc dérivé du code et **non confirmé en
+exécution**. Je le rapporte comme suspicion, pas comme fait, et **je ne bâtis
+rien dessus** avant de l'établir.
+
+## Un outil qui ment, et c'est confirmé
+
+L'audit a crié en gros : *« ATOME MUET — l'éventail au sol a été joué et n'a
+produit aucun objet. »*
+
+**C'est faux.** J'ai compté indépendamment sur la même diffusion : **onze objets
+créés.** Nos trois formes directionnelles posent leurs éléments **en différé**,
+et le détecteur ne compte que ce qui apparaît pendant l'appel. Il est donc
+aveugle **précisément aux trois formes qu'on vient de répartir dans le kit**.
+
+Quelqu'un qui suit cette alerte cherche un bug qui n'existe pas. C'est au
+registre.
+
+## Le gisement : 61 textures, en pièces détachées
+
+**Il n'est pas dans les gros assemblages** — feu au sol (12 émetteurs), nuage
+(12), impact d'eau (8). Ceux-là sont des *compositions*, pas de la matière ; les
+prendre entiers coûte une place **et** douze émetteurs pour un geste qui n'est
+pas le nôtre.
+
+**Il est dans les vingt-deux porteurs à un seul émetteur** — flamme, brume,
+brume qui monte, brume en volute, foudre, trait de foudre, pluie, flamme
+dirigée, eau, fumée noire stylisée. Une bibliothèque de textures déjà triée par
+ce qu'elle représente, **et la plupart déjà peu lumineuses** — donc proches de
+l'encre, sans le halo qu'on passe des semaines à retirer.
+
+**Deux choses qui ne se voyaient qu'en allant regarder :**
+
+* le trait effilé qu'on emploie déjà pour le dash **vient d'un pack d'eau**. On
+  puisait dans ces familles sans le savoir ;
+* **un identifiant du pack est malformé** (une apostrophe en trop). Il ne peut
+  pas charger. Ce n'est pas notre faute et ça ne nous affecte pas — noté pour ne
+  pas le recopier.
+
+## Ce que je n'ai pas fait, et pourquoi
+
+**Je n'ai regardé aucune de ces textures à l'image.** Les noms et la luminosité
+sont mesurés ; ce qu'elles *montrent* ne l'est pas. Avant d'en servir une, il
+faudra la voir et mesurer son découpage — Roblox ne signale rien si le découpage
+est faux, les images sont simplement coupées de travers.
+
+**Et je n'ai pas ouvert la piste gratuite.** Elle touche le grain de trois
+formes d'un coup, et **Milan n'a pas encore jugé la planche des trois grains qui
+l'attend depuis ce matin**. Ouvrir un second axe sur la même fonction avant
+qu'il ait tranché le premier rendrait son jugement impossible.
