@@ -10336,3 +10336,79 @@ quatrième détecteur, et c'est écrit pour que personne ne recommence.
 ## Rien n'a été servi dans une recette
 
 L'étape était d'ouvrir **avant** de servir. Elle vient de payer.
+
+---
+
+# 4 septembre 2026 — L'arbitrage appliqué, et la chute construite
+
+## Ta question : combien de M1 portent le couloir ? **Deux sur quatre**
+
+Le premier et le troisième. Le deuxième garde son éventail au sol, le quatrième
+n'a pas d'atome de direction — le sol *est* sa direction. **On n'a donc pas
+remplacé « tout est la gerbe » par « tout est le couloir ».**
+
+## Mais ton hypothèse de fond est juste
+
+Les quatre trajectoires, mesurées sur le même instrument :
+
+```
+M1_1   avant +0.97   lateral +0.07   haut -0.23    -> AVANT
+M1_2   avant +0.85   lateral +0.52   haut -0.07    -> AVANT
+M1_3   avant +0.92   lateral +0.35   haut +0.20    -> AVANT
+M1_4   avant +0.06   lateral +0.19   haut -0.98    -> BAS
+```
+
+**Trois des quatre coups de la chaîne vont droit devant.** Seul le quatrième
+fait autre chose : il descend.
+
+**Le vocabulaire des effets est désormais plus différencié que les gestes ne le
+sont.** Le problème est remonté d'un cran : il n'est plus dans les VFX, il est
+dans **l'animation**. C'est exactement le chantier des variantes directionnelles
+qui attend.
+
+## Servi — et seulement où c'était justifié
+
+**Les rochers** (quatre rochers peints, découpage 2×2 lu à l'œil) vont au
+quatrième M1 : le seul qui descend, qui casse trois couches de décor, et qui
+**n'avait rien qui retombe**.
+
+**Le bloc cerné** devient la matière de la chute. C'est la seule fonction du
+catalogue où nous n'avions **aucun candidat mat** — les 163 effets qui disent le
+poids sont tous lumineux.
+
+**Les deux autres ne sont pas servis** : ils font doublon avec ce qu'on a déjà.
+Deux places vides valent mieux que deux doublons.
+
+## La chute existe
+
+Ce n'est pas la colonne à l'envers. Elle **se resserre** en tombant au lieu de
+s'ouvrir — une masse se concentre vers son point d'impact quand une colonne
+s'évase — et elle **s'aplatit à l'arrivée**, sans quoi elle traverserait le sol.
+
+Mesuré : neuf étages, hauteur strictement décroissante, **14 studs en 0,209
+seconde** — plus vite que la colonne, parce qu'une masse qui tombe accélère.
+
+## Et elle a failli tuer le cratère
+
+Compte avant / après sur la même diffusion :
+
+```
+avant : ... EclatTerrain=24 ...
+apres : ...                 ... ChuteFX=9
+             ^^^^^^^^^^^^^^^ les 24 eclats du cratere, DISPARUS
+```
+
+**Le plafond de lisibilité tronque réellement**, et il choisit ce qu'il jette.
+Une heure plus tôt j'avais *retiré* cette suspicion parce que « tout tirait » —
+mais mon compteur ne regardait qu'un seul endroit, et trois des huit éléments
+naissent ailleurs : l'aura sur le personnage, le flash dans l'interface, la
+secousse sur la caméra.
+
+**Deux erreurs successives, la seconde commise en corrigeant la première avec un
+instrument partiel.** C'est au registre, avec le garde-fou : compter avant *et*
+après chaque ajout, et énumérer où chaque élément est censé naître avant de
+conclure quoi que ce soit.
+
+Corrigé en relevant le plafond de cette pièce d'un cran — la limite forcée était
+antérieure à la chute et ne l'avait pas prévue. **Revérifié : le cratère est
+revenu et la chute est là.**
