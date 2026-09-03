@@ -9575,3 +9575,70 @@ programmé est refusé par le bac à sable, et l'aller-retour jusqu'à la captur
 dure deux fois plus longtemps que les effets. Le dash reste vérifié **par le
 comptage** sur le vrai chemin — c'est une preuve, mais pas une image. Je le dis
 plutôt que de fabriquer une capture qui ne montrerait pas ce qu'elle prétend.
+
+---
+
+# 3 septembre 2026 (suite) — Ton hypothèse sur le dash était la bonne
+
+## Les quinze candidats, mesurés
+
+Rapport complet : `2026-09-03_MESURE_dash_15_candidats.md`.
+
+Tout est mesuré **sur le même mannequin**, un clone monté à 40 studs. Les
+animations du pack sont posées article par article et **c'est le moteur qui
+calcule le squelette** ; la version actuelle est jouée sur le même mannequin et
+balayée. Un seul instrument des deux côtés, sinon la comparaison ne vaut rien.
+
+**Un piège évité de justesse** : les articulations sont **inertes sur un
+mannequin entièrement figé**. Vérifié avant de mesurer quoi que ce soit — un bras
+tourné de 80° se déplaçait de **zéro**. Il faut ne figer que le bassin. Sans
+cette vérification, les quinze candidats auraient rendu des chiffres identiques
+et parfaitement crédibles, et j'aurais publié un classement de bruit.
+
+## Ton hypothèse tient, et le défaut est anormal
+
+```
+                    appui        poussee       recul
+ACTUEL (v2)        2.07 a 67%   +0.43 a 100%   -1.29   <- recule 3x plus qu'il n'avance
+FrontDash          1.91 a 48%   +0.79 a  39%   +0.39
+AirDashForward2    2.00 a  0%   +0.99 a  40%   -0.00
+```
+
+**La version actuelle est la seule animation vers l'avant dont le buste recule
+de plus d'un stud.** Tous les autres candidats avant tiennent entre −0,22 et
++0,39. Les deux seuls autres reculs marqués du corpus sont le dash **arrière**
+(c'est sa fonction) et une animation qui n'est pas un dash.
+
+Donc ce recul n'est pas une figure normale du dash : **c'est la signature de sa
+source**, un saut par-dessus un obstacle où le recul est l'anticipation du saut.
+Et il est **trois fois plus ample que la projection finale**.
+
+C'est un très bon candidat pour « ce qui rend le dash faible depuis le premier
+jour ».
+
+## Mais aucun candidat n'est meilleur sur tout
+
+`FrontDash` corrige exactement les deux défauts — **poussée doublée, aucun
+recul**, appui comparable. Mais il échoue sur le critère qui avait fondé tout le
+choix précédent : l'ordre appui-puis-poussée.
+
+**Et je dois une réserve sur ma propre mesure** : ce candidat porte 15 poses sur
+0,73 s. L'écart qui le condamne fait **moins de deux poses**. Je ne peux pas
+affirmer que son ordre est inversé — seulement que je ne peux pas affirmer qu'il
+est correct. Le défaut de la version actuelle, lui, fait 1,29 stud et se voit.
+
+## Ce que je recommande, sans l'avoir fait
+
+**Basculer sur `FrontDash`, retimé à 0,45 s.** Ça demande un upload (gratuit pour
+les animations), un retime, et surtout le **bake du marqueur** — sans lui, le
+dash joue sans déplacer le corps, exactement le piège refermé ce matin. La
+version actuelle est conservée comme retour arrière.
+
+**Et un A/B à l'œil.** Ces trois nombres disent que la version actuelle recule ;
+ils ne disent pas laquelle des deux *se joue* mieux. C'est Milan qui tranche,
+comme pour le grain.
+
+Je ne recommande **pas** `AirDashForward2` malgré ses meilleurs chiffres bruts :
+son appui culmine à la toute première image, donc il n'y a pas d'appui *dans* le
+clip — et c'est un dash aérien. On a déjà écarté un saut pour cette raison
+exacte ; refaire l'erreur en la connaissant serait pire que l'avoir faite.
