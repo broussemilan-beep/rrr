@@ -9024,3 +9024,69 @@ ton jeu.
 Le plan serré de face est le cadrage le plus exigeant pour ce type de
 personnage. Je ne peux pas te garantir que ça rende bien avant de l'avoir posé.
 Tu jugeras à l'image.
+
+---
+
+# La scène est construite
+
+Ton découpage, mesuré en jeu, dans ton ordre :
+
+```
++0,21  le bandeau se ferme
++0,40  LA CAMERA COUPE vers le personnage
++0,76  IL SORT SA PUISSANCE — impact frame
++1,21  LE SOLEIL NAIT DANS SA MAIN DROITE, et six etincelles aux pieds
++2,64  RETOUR EN TROISIEME PERSONNE
++2,86  L'EXPLOSION
++3,48  la camera t'est rendue
+```
+
+Les cinq temps y sont. Le décalage régulier d'un quart de seconde est le
+va-et-vient réseau.
+
+## Ce que j'ai vérifié avant de coder
+
+L'attache de la main droite **existe** sur notre personnage. Je l'ai lue en jeu
+plutôt que de la supposer — c'est ce qui autorise l'invocation depuis la main.
+
+## Un défaut que j'ai créé et corrigé dans le même tour
+
+Le retour en troisième personne était **défait deux dixièmes de seconde plus
+tard** : le recul de caméra de l'explosion reprenait la main. Mesuré, corrigé —
+le recul ne s'applique plus que pendant la phase cadrée.
+
+## Invulnérable tant que tu ne vois pas
+
+De 0 à 2,25 seconde, exactement la durée pendant laquelle la caméra te cache
+l'arène. **Tu redeviens frappable à l'instant où tu revois.**
+
+## Le cadrage : trois-quarts
+
+J'ai comparé plein face et trois-quarts au même instant, même distance, même
+hauteur — seul l'angle change.
+
+**Je retiens le trois-quarts.** De face, un personnage R6 est un rectangle :
+sans épaules articulées ni cou, la silhouette s'aplatit. À trois-quarts le corps
+prend du volume et le bras droit — celui qui invoque — se lit.
+
+**Mais je ne surjoue pas** : la différence est réelle et **modeste**, et le
+mannequin d'entraînement s'est replacé dans l'un des deux cadres malgré mon
+déplacement. C'est un argument, pas une démonstration écrasante. Tu trancheras.
+
+## Ce que je n'ai pas pu confirmer
+
+Les six étincelles aux pieds **sont posées** — je les ai comptées. Mais **je ne
+les distingue pas** sur les captures : le personnage et l'interface occupent le
+bas du cadre. Elles sont peut-être trop discrètes. À régler si tu ne les vois
+pas non plus.
+
+## Deux rappels
+
+**Le contrôle qui revient avant la fin du geste n'est pas un défaut** — c'est la
+correction de mardi, intacte, et elle est voulue. Ce que la mesure a trouvé à la
+place, c'est du **temps mort** : Jugement te bloque 1,30 seconde pour un geste
+de 0,57.
+
+**Les repères d'impact ne sont pas une recopie** : les trois écarts entre valeur
+déclarée et pic mesuré sont sous la précision de ma propre mesure. Rien à
+recaler.
