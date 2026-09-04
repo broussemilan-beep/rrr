@@ -11397,3 +11397,27 @@ avant et après : une ponctuation, pas un état.
 **Le témoin a trouvé sa propre panne** — l'effet masque tout l'affichage, et le
 témoin en faisait partie. Il se supprimait lui-même. Sans ce garde-fou, on
 concluait « ça ne rend rien » et on refermait la porte une seconde fois.
+
+## Le plafond comptait le son
+
+Vingt recettes sur quarante-sept jetaient du travail écrit. Après avoir cessé de
+compter la secousse de caméra, le flash d'écran et **la pile audio** : cinq.
+
+Aucun palier n'a bougé. La doctrine du 16 mai (commit `aca4a33`) parle de ce
+qu'on **voit** — « jamais 10 VFX simultanés ». Une secousse ne se superpose pas à
+l'image, elle la bouge ; un flash ne s'ajoute pas aux effets, il les remplace ; un
+son ne se voit pas du tout. Le troisième n'était pas dans la piste demandée, je
+l'ai inclus par le même raisonnement et signalé plutôt qu'étendu en silence.
+
+**Vérifié à l'œil, pas au compteur.** `DemiDieu_Skill2_Impact` passait de justesse
+à deux effets sur quatre, il en laisse cinq maintenant. Une seule gerbe dorée,
+lisible, dissipée en 1,1 s. Un coup, pas quatre effets qui se disputent l'image.
+
+La maxime est remise dans `CLAUDE.md` avec sa date et son commit. Elle avait
+disparu d'une réécriture : la règle survivait dans le code sans sa justification,
+et on a passé une journée à croire ces quatre nombres arbitraires. Une règle sans
+son pourquoi finit contournée ou vénérée, jamais comprise.
+
+`Skill1_Impact` est **morte** : citée par un seul script, sa propre déclaration.
+Troisième « chose qu'on croit posséder » de la semaine. Non supprimée — c'est une
+décision, pas un nettoyage.
