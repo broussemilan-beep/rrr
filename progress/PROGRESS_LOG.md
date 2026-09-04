@@ -12258,3 +12258,34 @@ Skill3_Impact   EclatTerrain x20                             → ses débris
 Le test a changé de rôle : il ne surveille plus un poids déclaré, **il surveille
 que les formules recopiées dans le plafond suivent celles des primitives.** La
 duplication reste délibérée ; ce test en paie le prix.
+
+## Les deux paliers : le mécanisme est juste, l'effet est minuscule
+
+Je n'envoie pas de planche, et voici pourquoi — mesuré, pas supposé.
+
+**Le mélange fonctionne exactement comme Milan l'a demandé** : au palier 1 le M1
+crée **1 part**, au palier 2 il en crée **2** — l'encre et son jumeau doré, côte à
+côte. Ni remplacement, ni couleur intermédiaire.
+
+**Mais l'étendue à l'écran est de zéro.** Une part, c'est un point : le M1 tout
+entier est **un seul émetteur**. Le mélange le double, donc deux. Sur une image
+fixe, ça fait onze pixels dorés de différence.
+
+```
+palier 1   1 part   étendue 0 × 0 px
+palier 2   2 parts  étendue 0 × 0 px
+doré mesuré : 4 px de fond au palier 1, 15 px au pic du palier 2
+```
+
+**Ce n'est pas un défaut, et c'est ce qui rend la décision délicate.** La bible dit
+du M1 : « petit flash blanc au contact, quelques particules solaires… pas de
+grosse explosion, le M1 doit rester la couche de base ». Un M1 minuscule est
+conforme.
+
+**Mais alors une planche fixe est le mauvais instrument** — troisième fois
+aujourd'hui que je le constate. Ce qui ferait lire le doré, c'est le **mouvement
+et la répétition** : quatre coups par seconde, des éclats dorés qui apparaissent
+quand la jauge est pleine. C'est une vidéo de chaîne complète, pas deux images.
+
+Je m'arrête avant de fabriquer une planche qui ne montrerait rien — on a passé la
+journée à apprendre ce que ça coûte.
