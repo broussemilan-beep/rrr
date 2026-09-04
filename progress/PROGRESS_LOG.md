@@ -11623,3 +11623,28 @@ mesure a montré un reste — `CharacterRemoving` ne tire qu'au respawn, donc
 **Et ma première épreuve disait « ça va »** : scène de 6 s, lecture après 15 s.
 C'est le minuteur qui avait rendu la caméra. Une épreuve plus longue que le
 phénomène teste son extinction, pas le phénomène. Au registre.
+
+## Main du Colosse : la verticalité, étape 1 sur 2
+
+`Colonne` — construite le 3 septembre, jamais utilisée par cette pièce — remplace
+`Impact Burst`. On remplace, on n'ajoute pas : le plafond `medium` vaut 4 et la
+doctrine dit Hero(1) + Supporting(2) + Ambient(1).
+
+Ce qui est **solide** : la colonne monte à **10,1 stud** au-dessus du point
+d'impact, soit deux fois la hauteur du personnage. La planche le montre — un jet
+doré traverse le cadre là où il n'y avait qu'une poussière au sol.
+
+Ce qui n'est **pas** établi : le pourcentage d'écran. J'ai cassé trois instruments
+en essayant de le chiffrer — un détecteur de pixels dont j'ai raté la fenêtre, un
+témoin cyan indiscernable de la barre de stamina, et une boîte englobante qui
+mesurait la dispersion des débris (220 % pour l'AVANT, ce qui ne veut rien dire).
+Le quatrième n'est pas la réponse : je livre l'image.
+
+**Il reste la largeur.** La colonne est un ruban vertical, pas une masse. La
+verticalité était l'étape qui manquait ; l'élargissement est la suivante, et
+c'est là que les plafonds d'`ArcSol` et `GroundChunks` entreront en jeu.
+
+Deux erreurs de ma part sur la même racine : j'ai posé le drapeau `ancrage` dans
+la branche `Couloir` au lieu de `Colonne` — un `replace` sur une chaîne présente
+deux fois. Et j'ai cherché la synchro pendant que le jeu tournait, alors que rojo
+alimente le datamodel d'édition : il faut relancer Play pour voir un changement.

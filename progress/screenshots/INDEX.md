@@ -10,6 +10,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-05_m1-avant-apres.png` | 502048 |
 | `2026-09-05_encre-essai.png` | 262385 |
 | `2026-09-05_colosse-zoom-impact.png` | 901770 |
+| `2026-09-05_colosse-colonne.png` | 637637 |
 | `2026-09-05_colosse-avant-apres.png` | 803652 |
 | `2026-09-04_ultime-profil.png` | 4502376 |
 | `2026-09-04_ultime-pic-corrige.png` | 1804884 |
