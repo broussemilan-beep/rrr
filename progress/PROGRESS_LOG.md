@@ -12741,3 +12741,67 @@ avant la bascule**. Le cadran s'éteint, un souffle de rien, puis tout part.
 Nouveau champ `silence` (défaut 0, rien d'autre ne bouge) ; l'ultime le pose à
 0,18 s. Le HUD est rendu dans `surFin`, la seule fonction appelée à coup sûr —
 un HUD caché par une scène interrompue serait un joueur sans barre de vie.
+
+## 2026-09-05 — « Une mesure qui s'améliore ne prouve pas qu'on va dans le bon sens »
+
+Le doute soulevé sur la première planche d'arène était **fondé**, et la mesure le
+confirme durement. Même prise, même effet tenu, effet contre pourtour :
+
+```
+                          ecart saturation   ecart luminance
+origine                        -14,4              +35,9
+"clair" (desat + sol releve)    +0,1              +22,3
+                                -----              -----
+                                +14,5              -13,6
+```
+
+**On avait échangé un contraste contre un autre, presque un pour un.** Et le
+signe qui ne trompe pas : l'effet occupait 9 % du cadre avant, 4 % après. Il se
+lisait MOINS bien.
+
+**La cause** : on a copié la référence sur le mauvais axe. Leur sol est clair —
+mais un fond clair sert un effet sombre et dessert un effet clair, et les nôtres
+sont jaune-blanc. **On avait pris leur valeur sans prendre leur relation.**
+
+### Les trois états, mesurés au même instrument
+
+```
+1. ORIGINE                ecart lum +25,8   effet 4,7 % du cadre
+2. CLAIR desature         ecart lum +21,4   effet 4,1 %   PIRE
+3. GRIS MOYEN desature    ecart lum +26,5   effet 5,3 %   MEILLEUR
+```
+
+Le gris moyen est **le seul des trois où l'effet occupe plus de cadre qu'à
+l'origine**. Mais la marge est petite, et il faut le dire.
+
+### RÉTRACTATION — les cœurs sombres ne sont pas confirmés
+
+L'hypothèse « leurs effets ont des cœurs sombres » ne tient pas à la mesure. Sur
+`03_stagnant_rage`, les 10 % de pixels les plus saturés donnent :
+
+```
+f047   coeur 92,6   effet entier 86,3   -> coeur PLUS CLAIR
+f044   coeur 82,0   effet entier 85,1   -> coeur plus sombre, de 3 points
+```
+
+C'est mitigé, donc ce n'est pas la bonne explication.
+
+### CE QUE LA MESURE DIT VRAIMENT, ET C'EST PLUS UTILE
+
+```
+luminance de LEURS effets   82 - 92
+luminance des NOTRES        68 - 69
+```
+
+**Leurs effets sont beaucoup plus lumineux que les nôtres.** Un sol clair leur
+va parce que leurs effets le surpassent encore. Les nôtres, à 68, ne le
+surpassent pas.
+
+Donc : le fond gris est le bon choix **pour nos effets tels qu'ils sont
+aujourd'hui**. Mais la piste plus profonde n'est pas le fond — **c'est de monter
+la luminance de nos effets vers 85**. Ça se joue dans les recettes, pas dans
+l'arène, et ça ne demande pas Milan.
+
+Planche : `artifacts/2026-09-05_arene_trois_etats.png`. Les trois états sont
+basculables : `workspace:SetAttribute("ArenePaletteFond", false / "clair" / "gris")`.
+Laissé **désactivé**.

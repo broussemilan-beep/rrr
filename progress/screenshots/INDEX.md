@@ -15,6 +15,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-05_kit-virage-etendu.png` | 1399543 |
 | `2026-09-05_jugement-et-m1-4.png` | 761916 |
 | `2026-09-05_encre-essai.png` | 262385 |
+| `2026-09-05_emission-negative.png` | 979886 |
 | `2026-09-05_debris-forme-du-geste.png` | 704864 |
 | `2026-09-05_colosse-zoom-impact.png` | 901770 |
 | `2026-09-05_colosse-resserre.png` | 706370 |
