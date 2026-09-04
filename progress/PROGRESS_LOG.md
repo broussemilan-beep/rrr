@@ -11961,3 +11961,46 @@ du §10 redit la doctrine du 16 mai, et « tester en caméra gameplay normale »
 le critère de capture qu'on vient d'inscrire.
 
 Détail complet : `artifacts/2026-09-05_ECART_BIBLE_DEMIDIEU_SOLEIL.md`.
+
+## (a) La branche de miss — câblée sur les quatre, vérifiée
+
+Avant aujourd'hui, les compétences tiraient leur package d'impact sous
+`if hitTarget and hitPosition then`. **La branche du miss existait et elle était
+vide** : au coup dans le vide, le monde ne réagissait pas du tout. L'animation,
+elle, continuait déjà — elle est cliente et ne dépend d'aucun hit, donc cette
+moitié était conforme.
+
+Une recette `DemiDieu_Miss` (palier `light`, deux atomes : une vague au sol et un
+petit cœur) et un `else` sur `Skill1`, `Skill2`, `Skill3`, `Skill4`. Pour
+`Skill4`, la vague naît **sur** le personnage et non devant : sa parade n'est pas
+un coup à côté, c'est une garde qui se referme sur rien.
+
+**Palette : blanc au cœur, jaune autour, pas d'orange.** La bible réserve l'orange
+à la destruction, et un coup dans le vide n'en est pas une. C'est une pièce
+neuve — lui donner le doré historique aurait été la créer sciemment fausse.
+
+**Vérifié en jeu** : compétence lancée hors de portée, le remote reçoit bien
+`DemiDieu_Miss`.
+
+## Et la capture n'est pas livrable — voici pourquoi, et c'est une trouvaille
+
+Deux prises montées au nouveau critère (adversaire dans le cadre, contact
+visible, trois quarts, assez près). **Le cadrage est bon.** Mais hit et miss sont
+**indiscernables** : les deux sont noyés sous la même nappe de flammes jaunes.
+
+En cherchant d'où elle vient plutôt qu'en supposant :
+
+```
+408 émetteurs actifs en permanence dans workspace
+   53 x RightStar     47 x LeftStar     27 x SUN
+   + BZ1 Poison, BLOODSKY NOVA, CRIMSON RITUAL…
+```
+
+**Ce sont des props de démo laissés dans l'arène**, sans rapport avec le combat.
+C'est le même 404 mesuré il y a deux jours, et il explique beaucoup : nos effets
+se battent contre quatre cents émetteurs ambiants. Quand Milan dit « il ne s'y
+passe rien », l'écran est déjà plein — d'autre chose.
+
+**Je ne livre donc pas de planche.** Le câblage est prouvé par la mesure ; la
+démonstration visuelle attend une arène nettoyée, ce qui est une décision de
+portée et pas un réglage.
