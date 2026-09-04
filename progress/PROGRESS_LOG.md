@@ -12096,3 +12096,37 @@ phase blanche (le premier tiers de 0,4 s). Un vrai noyau demanderait **un petit
 élément blanc distinct au point de contact** — c'est-à-dire un atome de plus, que
 le plafond interdit aujourd'hui. **Ça renvoie à la refonte du plafond**, déjà
 identifiée et différée.
+
+## Le M1 de Milan : le code faisait exactement l'inverse
+
+Milan : *« pas 100 % doré — un mélange des deux, encre + doré. »*
+
+**Le portail de momentum faisait déjà quelque chose au palier 2, et c'était le
+contraire.** `dorer()` **remplace** la couleur — `Color3.new(DORE_R × k, …)` —
+donc l'atome d'encre devenait *entièrement* doré. C'est très exactement le
+« 100 % doré » qu'il refuse.
+
+Et une couleur intermédiaire aurait été pire : un gris clair mêlé à du doré donne
+un brun sale, pas deux matières qui coexistent.
+
+**Corrigé en mélange** : l'atome d'encre reste tel quel et reçoit un **jumeau
+doré**. Deux éléments joués ensemble.
+
+```
+palier 0   Encre[encre]  Couloir[encre]
+palier 1   SlashTrail[encre]  Encre[encre]  Couloir[encre]
+palier 2   SlashTrail[encre] + [DORÉ]   Encre[encre] + [DORÉ]   Couloir[encre] + [DORÉ]
+```
+
+En jeu, ce qui apparaît réellement au palier 2 : **+1 encre et +1 doré**, côte à
+côte. Le mélange se voit.
+
+**Les jumeaux sont en priorité basse** : si le plafond doit trancher, c'est le
+doré qui part, jamais l'encre qui porte le geste. `M1_4` a une marge nulle — il
+n'en prendra pas, et c'est cohérent : il a déjà la salve d'encre pour marquer le
+palier.
+
+**Un instrument cassé en chemin, dit** : mon premier comptage donnait « 0 encre,
+16 dorés », l'inverse de l'intention. Le filtre ne regardait que des parents
+nommés `*FX` et ramassait des restes du tir précédent. Recompté par différence
+avant/après, sans filtre de nom.
