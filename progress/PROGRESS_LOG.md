@@ -11894,3 +11894,47 @@ la place par mots-clés (bible, soleil, agent, milan, référence, demidieu).
 
 `scripts/animator_ai/agents/vfx_agent.py` existe mais date du 20 mai et vient de
 notre phase β — ce n'est pas un dépôt récent de Milan.
+
+## La sélection VFX de Milan — relevé, rien modifié
+
+**1. D'où viennent les captures.** Le banc d'essai sur fond bleu quadrillé est le
+`100+ Combat VFX Pack` : un dossier `Platform` + 96 effets + un dossier `Trails`.
+
+**Et c'est un doublon.** Le pack était déjà dans la place avant son transfert :
+
+```
+ServerStorage._SAFE_PACKS.Combat_VFX_100                        2505 desc.
+ServerStorage._REFERENCE_TRANSFERTS.Combat_VFX_100_transfert_Milan_2   2504 desc.
+```
+
+**Un obstacle structurel, et il compte pour la suite** : les 96 effets s'appellent
+tous `VFXTemplate`, et les 2073 émetteurs tous `ParticleEmitter`. **Le pack n'a
+aucun nom sémantique.** Or `SpawnVFXLayer` et `CombatFXBroadcaster.findVFXByName`
+adressent par le nom — cette sélection est donc **inutilisable telle quelle par
+notre chemin existant**. Il faudra identifier chaque effet à l'œil et le renommer.
+
+`The_Creator_VFX_transfert_Milan` est autre chose : un rig R6 nommé « The
+Creator », pas un pack d'effets.
+
+**2. Les sept formes, croisées avec ce qu'on possède :**
+
+| forme de Milan | chez nous | état |
+|---|---|---|
+| sphère solaire à couronne | `DemiDieu_Astre` | servie (ultime) |
+| explosion radiale à pointes | atome `Impact` (24 recettes) | servie |
+| rubans de feu en spirale | `SpiralTrail` (Workspace) | **DORMANT — jamais référencé** |
+| anneaux de choc | `ArcSol` (3) + `Encre_anneau` | **partiel — un arc, pas un tore** |
+| traînées de braises | `TEX_braise_ambiante` + `GroundChunks` | servie |
+| lame de flamme | `Couloir` (4 recettes) | approchant, pas exact |
+| nuées de flammes hautes | `Colonne` (3 recettes) | servie, peu employée |
+
+Deux manques réels : le **tore** (on n'a qu'un arc au sol) et la **spirale** (on
+a `SpiralTrail` et il dort). Le reste existe.
+
+**3. La « bible » et l'agent VFX : toujours pas trouvés.** Le dépôt n'a aucun
+fichier modifié depuis le 1er septembre hors les miens, le dossier d'uploads rien
+de Milan après le 3, `.claude/agents/` est vide, et la place ne rend rien sur
+`bible`, `soleil`, `agent`, `milan`, `référence`. Il faut lui demander où.
+
+**Et la décision de palette reste entière** : sa sélection dit le feu, sa spec dit
+l'or. Personne ne tranche à sa place.
