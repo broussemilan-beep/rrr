@@ -9,6 +9,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-05_prise-milan.png` | 1358440 |
 | `2026-09-05_paliers-momentum.png` | 888249 |
 | `2026-09-05_palette-soleil.png` | 350130 |
+| `2026-09-05_marque-au-sol.png` | 869339 |
 | `2026-09-05_m1-vs-skill3.png` | 506790 |
 | `2026-09-05_m1-avant-apres.png` | 502048 |
 | `2026-09-05_kit-virage-etendu.png` | 1399543 |

@@ -12501,3 +12501,60 @@ perd. C'est le sens du virage (« on n'hésite pas ») et je ne redescends pas d
 moi-même — mais c'est l'arbitrage de Milan, pas le mien.
 
 **Reste** : le chantier débris.
+
+## 2026-09-05 — Le cœur blanc, et les débris qui suivent le geste
+
+**Le cœur blanc en contre-jour.** `Soleil_Coeur` (index 23 du catalogue, flash
+blanc franc à rayons nets, 0,24 s, 2 émetteurs), posé sur `Frappe Céleste` et
+`Marche du Titan` avec un `decalage = -4.5` : il naît **derrière** le point
+d'impact et rétro-éclaire la silhouette au lieu de la noyer. On ajoute du
+contraste, on ne retire pas de puissance. Le paramètre `decalage` a été posé aux
+**deux** points d'appel dans le même commit — la règle du registre.
+
+Retenu **après l'avoir ouvert à l'écran** : sur les huit candidats sortis par la
+fonction déduite, **six étaient faux**. « Gerbe montante » était en réalité un
+point rouge, un anneau violet, un éclair. Les huit sont maintenant marqués
+vérifiés à l'image, les six écartés compris.
+
+### LA SURPRISE — et elle change le plan des débris
+
+`bris` branché sur les deux recettes qui n'en avaient pas : les appels passent
+de **1 à 5**. Le branchement marche. Mais :
+
+```
+5 appels | 1 piece cassee | pic 14 eclats
+```
+
+**L'arène est quasi vide de cassables autour du combat.** Le plus proche est un
+monolithe à 12,5 studs ; j'ai replacé le combat devant lui et j'ai quand même
+obtenu une seule pièce sur quatre casts — parce qu'une pièce brisée reste cachée
+jusqu'à sa restauration, désormais à 11,5 s. **Monter la persistance réduit
+mécaniquement la fréquence des bris.**
+
+Conséquence : `BrisTrajectoire` ne peut pas porter le ressenti de destruction
+tant que l'arène est ainsi. **La couche qu'on voit à chaque coup, c'est
+`GroundChunks`** — celle que Milan jugeait. C'est donc elle qui devait recevoir
+le geste, pas seulement l'autre.
+
+### Ce qui a été fait sur `GroundChunks`
+
+- **Dalle au lieu de gravier** : deux grandes dimensions, une petite. Trois
+  dimensions du même ordre donnent des cailloux ; un morceau de sol arraché est
+  large et mince.
+- **`CastShadow = true`** : l'ombre est ce qui sort la dalle du plan. Sans elle
+  c'est un autocollant.
+- **La forme vient du geste** — `dir` et `forme` traversent depuis la recette :
+  `eventail` pour le balayage du Colosse, `cratere` pour la frappe au sol de
+  Frappe Céleste, `couloir` pour la charge du Titan. Sans ces champs, le
+  comportement radial d'origine ne bouge pas.
+- **L'impulsion suit le décalage réel de l'éclat.** L'ancien code tirait un angle
+  radial indépendant de la position : un éclat posé devant pouvait voler vers
+  l'arrière.
+
+Même travail sur `BrisTrajectoire` (ombre, dalle, persistance 2,6 → 10,5 s).
+
+Planche : `artifacts/2026-09-05_debris_forme_du_geste.png`, vue haute, après la
+gerbe — c'est la forme au sol qu'on doit lire, pas le flash.
+
+**Reste** : le décalque de brûlure au sol, le seul module neuf ; et la question
+de l'arène, qui est un problème de niveau, pas de code.
