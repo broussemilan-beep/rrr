@@ -12856,3 +12856,50 @@ L'interrupteur reste en place et **désactivé** : il a servi à prouver que le 
 n'était pas la cause, ce qui est déjà utile.
 
 Planche : `artifacts/2026-09-05_emission_negative.png`.
+
+## 2026-09-05 — Le recensement de l'émission négative, et le défaut symétrique
+
+### Le balayage : combien dorment ailleurs ?
+
+```
+                                emetteurs   negatifs        pire
+Combat_VFX_100                     2073        389 (18,8 %)  -50,00
+03_Mixed_Packs                     1312         37 ( 2,8 %)  -10,00
+00_EN_PRODUCTION (ce qu'on sert)   1012        116 (11,5 %)  -50,00
+05_Movesets_Anime                   451         34 ( 7,5 %)  -10,00
+The_Creator_VFX                     111         41 (36,9 %)   -2,00
+06_Free_Animations                   80         10 (12,5 %)  -10,00
+                                  ------      -----
+TOTAL                              5182        637 (12,3 %)
+```
+
+**637 sur 5182, soit 12,3 %.** Et dans ce qui est réellement servi,
+`00_EN_PRODUCTION` : **116 sur 1012**, avec un pire cas à −50.
+
+Mon correctif ne couvre que les couches déclarées `continu`. **Les couches
+pulsées gardent leur émission négative** — je le dis avant de corriger, comme
+demandé.
+
+### Le défaut symétrique, trouvé sur `Main du Colosse`
+
+Six couches réglées quand chacune était terne. L'émission corrigée, elles se
+lisent toutes d'un coup et l'empilement crame :
+
+```
+                          blanc plat median   pire     part de cadre
+avant (magnitudes hautes)       36,6 %        56,7 %       55,0 %
+apres (divisees par deux)        5,9 %        23,3 %       16,3 %
+reference                        0,3 %
+```
+
+Un cadre à moitié blanc ne porte plus aucune forme. **Raison technique énoncée**,
+pas une redescente par prudence — et on n'a rien perdu : l'effet occupe encore
+16,3 % du cadre contre 4,7 % avant le correctif d'émission.
+
+**Piège d'instrument, encore** : ma première mesure disque donnait 0,4 % de blanc
+plat et contredisait mon œil. La boucle était terminée quand j'ai enregistré —
+la capture montrait une arène vide. C'est en mesurant le PIRE de 96 images pendant
+que la boucle tournait que le 56,7 % est apparu. *Une mesure sur un instant qu'on
+n'a pas choisi ne mesure rien.*
+
+Planche : `artifacts/2026-09-05_colosse_equilibre.png`.
