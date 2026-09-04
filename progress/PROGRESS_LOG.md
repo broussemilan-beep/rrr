@@ -11648,3 +11648,30 @@ Deux erreurs de ma part sur la même racine : j'ai posé le drapeau `ancrage` da
 la branche `Couloir` au lieu de `Colonne` — un `replace` sur une chaîne présente
 deux fois. Et j'ai cherché la synchro pendant que le jeu tournait, alors que rojo
 alimente le datamodel d'édition : il faut relancer Play pour voir un changement.
+
+## Main du Colosse, étape 2 : la largeur
+
+`ArcSol` passe de 9 à 15 de rayon, `GroundChunks` n'est plus raboté à 8.
+
+**Et je m'étais trompée de plafond.** J'avais annoncé `ArcSol` bridé par un
+`math.clamp(…, 4, 9)` : ce clamp appartient à un autre atome (`Impact`), sur un
+chemin que cette pièce n'emprunte pas. Son `ArcSol` n'a jamais été raboté — il
+était simplement demandé petit. J'ai annulé l'élargissement du mauvais chemin,
+qui aurait changé d'autres recettes en douce.
+
+`GroundChunks`, lui, rabotait vraiment : quatre recettes demandaient 10 à 16 et
+recevaient 8. La vieille raison écrite — « au-delà on sort du cadre de combat » —
+était un jugement ; elle est **remplacée dans le fichier** par la mesure.
+
+**Une autre chose que mes planches précédentes ne montraient pas** : je ne
+passais pas de `dir` dans le contexte, et `ArcSol` en exige un. Il n'avait donc
+jamais rendu dans aucune de mes prises. En jeu il en reçoit un. Les planches
+d'avant comparaient deux pièces amputées de la même façon — la comparaison
+tenait, mais l'image ne montrait pas la pièce réelle.
+
+La planche finale est vérifiée sur les **deux** rangées avant publication : la
+première tentative avait une rangée « avant » vide, à 613 pixels constants,
+c'est-à-dire le décor. L'effet avait tiré avant le début de l'enregistrement.
+
+La raison du magenta est maintenant **à côté de la constante** : j'avais refait
+un témoin cyan, et la barre de stamina du HUD est cyan.
