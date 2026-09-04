@@ -11827,3 +11827,70 @@ un peu plus exigeantes, c'est le prix assumé.
 Le biais de +0,10 s au maximum reste ; la valeur vraie est donc entre 0,31 et
 0,41. Les ~0,05 s au-dessus du `recovery` déclaré persistent, nommés et non
 expliqués — comme convenu, je ne les cherche pas.
+
+## Où déposer les livrables visuels — contrainte de configuration, pas préférence
+
+**Milan n'ouvre pas les liens du miroir.** Il lui faut le fichier lui-même, en
+pièce jointe. Le miroir reste l'archive et le canal entre sessions ; il n'est pas
+le canal vers Milan.
+
+Donc, systématiquement, **tout livrable visuel va aux DEUX endroits** :
+
+```
+1. le miroir      scripts/sync_progress_log.sh <fichier>
+2. les uploads    .../agent/local_ditto_<id>/uploads/
+```
+
+Le dossier se retrouve par son contenu, pas de mémoire : c'est celui qui porte
+les trois `.mov` de référence et les images d'Escanor. Quatre dossiers `uploads`
+coexistent sous la session — trois sont vides de ces fichiers.
+
+    /Users/nalim/Library/Application Support/Claude/
+      local-agent-mode-sessions/517c549b-8338-4a3e-be66-a0316acfd297/
+      c26030f0-bee8-447b-a7c9-a783a1e3bcee/
+      agent/local_ditto_c26030f0-bee8-447b-a7c9-a783a1e3bcee/uploads/
+
+**Et le format compte aussi** : le miroir n'accepte que des images (magic bytes),
+donc GIF animé pour lui ; le dossier d'uploads accepte tout, donc on y met **le
+mp4 en plus du GIF** — Milan a signalé que les GIF lui résistent.
+
+## La secousse tire et ne se voit pas — l'écart, en pixels
+
+Converti dans l'unité de la référence (pixels de défilement par image rendue,
+normalisés en % de hauteur d'écran, puisque leurs vidéos sont en 1920 vertical
+et les nôtres en 588) :
+
+```
+référence, soutenu    0,73 à 0,99 %/image
+notre M1, moyenne     0,032 %   → facteur ~25 en dessous
+notre M1, pic         0,13 %    → facteur ~6
+notre Skill3, pic     1,60 %    → au-dessus ! mais 0,16 % en moyenne
+```
+
+**Et la vraie différence n'est pas l'amplitude, c'est la nature.** Leur caméra
+défile en continu ; la nôtre fait un sursaut bref qui retombe. Notre pic de
+Skill3 dépasse leur valeur soutenue — et reste invisible, parce qu'il dure trois
+images.
+
+Donc le chantier n'est pas « monter le gain de la secousse » : c'est **mettre la
+caméra en mouvement continu pendant l'échange**. Rien n'est réglé ce tour.
+
+## Ce que Milan a déposé — trouvé partiellement
+
+**La sélection VFX : trouvée, dans la place.**
+
+```
+ServerStorage._REFERENCE_TRANSFERTS
+  Combat_VFX_100_transfert_Milan_2      2504 desc., 98 enfants (Platform, Trails, VFXTemplate…)
+  The_Creator_VFX_transfert_Milan        213 desc. — un rig R6 nommé « The Creator »
+```
+
+Elles correspondent aux deux `.rbxm` du 2 septembre dans le dossier d'uploads.
+
+**La « bible » et l'agent VFX : PAS trouvés.** Cherchés dans : le dépôt (aucun
+fichier modifié depuis le 1er septembre hors les miens), le dossier d'uploads
+(rien de Milan après le 3 septembre), `docs/`, `.claude/agents/` (vide), et toute
+la place par mots-clés (bible, soleil, agent, milan, référence, demidieu).
+
+`scripts/animator_ai/agents/vfx_agent.py` existe mais date du 20 mai et vient de
+notre phase β — ce n'est pas un dépôt récent de Milan.
