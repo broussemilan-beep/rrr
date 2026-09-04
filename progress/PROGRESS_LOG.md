@@ -12289,3 +12289,106 @@ quand la jauge est pleine. C'est une vidéo de chaîne complète, pas deux image
 
 Je m'arrête avant de fabriquer une planche qui ne montrerait rien — on a passé la
 journée à apprendre ce que ça coûte.
+
+## 2026-09-05 — Le jumeau doré du momentum : lisible, et mélangé
+
+Milan : « le doré du M1 ne vient que quand le momentum est à 100 %. Et pas 100 %
+doré — un mélange des deux, encre + doré. » Deux planches ont été nécessaires
+pour l'obtenir, et chacune a échoué d'une manière différente.
+
+**Première planche — le plan entièrement doré.** Le jumeau était un `Impact`
+complet. Son `PointLight` porte à `size * 8`, soit 17,6 studs à size 2,2, et
+repeint de sa couleur tout ce qu'il touche : décor et personnages compris.
+Mesure : 585 pixels dorés contre 0 au palier 1 — l'effet était bien lisible,
+mais il ne se *mélangeait* pas, il recouvrait. Exactement le refus de Milan.
+
+**Deuxième planche — le plan délavé.** Lampe bornée à 0,3, et l'image est encore
+pire : ciel, piliers, personnages, tout blanchi, l'encre disparue. Le
+post-traitement était plat (`ColorCorrection` b=0 s=0,12, bloom 0,22, exposure 0
+sur toute la fenêtre — sonde image par image). Ce n'était donc pas la lumière du
+jeu. Le relevé de pixels donnait *0 doré ET 0 sombre* au palier 2 : un relevé
+parfaitement inverse est un instrument, pas une découverte. Sonde des `BasePart`
+créées devant la caméra :
+
+    PART Shockwave t=0.82 d=8.6 s=14.1 rgb=255,205,92 Neon
+
+Un anneau Neon de 14 studs vu à 8,6 studs de la caméra. `Impact` en émet deux —
+l'externe à `size * 4` de rayon, 17,6 studs de diamètre. À transparence 0,82 il
+ne se lit pas comme doré : il voile l'image entière.
+
+**Ce qui a été corrigé, et pourquoi ce n'est pas un réglage.** La lampe n'était
+qu'une moitié du problème, et un second nombre à régler aurait suivi. `Impact`
+dit « quelque chose a été frappé ici » avec trois moyens : des éclats, une lampe
+à l'échelle du décor, un anneau à l'échelle du décor. Le jumeau doré n'annonce
+pas un coup — le coup est déjà annoncé par l'encre, sous lui, au même instant.
+Il dit seulement « ta jauge est pleine ».
+
+`CombatVFX.Impact` prend donc un quatrième argument `accent: boolean?`, défaut
+`false` : rien ne bouge pour les recettes qui appellent à trois arguments. À
+`true`, il garde ses 65 particules et abandonne les deux réactions du monde.
+Une intention, pas deux nombres.
+
+**Résultat.** Planche `artifacts/2026-09-05_paliers_momentum.png`, mêmes instants
+(+0,07 / +0,15 / +0,25 s), même cadrage, seule la jauge change. Les échardes
+d'encre du palier 1 sont **toujours là** au palier 2 ; le doré se pose dessus.
+La scène garde ses couleurs.
+
+**Note d'instrument.** Le compteur de pixels dorés (`r>225, 150<g<225, b<150`)
+donne 13 sur la bonne planche et 585 sur la mauvaise. Il est trop étroit : le
+doré incandescent des éclats est presque blanc et passe sous le seuil, tandis
+qu'un voile Neon uniforme le sature. Sur cette question, **c'est l'image qui
+tranche, pas le compteur** — le compteur n'a servi qu'à repérer que quelque
+chose clochait.
+
+**Le plafond comme outil de conception.** Le jumeau tient parce qu'il est unique
+et rangé au rang 1 : `M1_1` 2,7 + 1,0 = 3,7 pour un plafond de 5 ; `M1_4`, le
+plus chargé, 4,0 + 1,0 = 5,0 — pile au plafond. Un jumeau par atome d'encre
+faisait 6,0 et se faisait tronquer, ce qui ne laissait qu'un point de 11 pixels.
+C'est le plafond qui a dit combien on pouvait en poser.
+
+## 2026-09-05 — Le virage : les héros viennent des packs
+
+Milan a zoomé sur la planche du Colosse, désigné la colonne jaune : « ça dégage,
+ça ne fait pas du tout premium ». Il avait raison, et l'erreur était de
+direction, pas de réglage.
+
+**Ce qui n'allait pas.** Toute la journée a servi à polir NOS primitives —
+plafonds, poids, rayons, hauteurs. Or elles émettent des PARTICULES : des
+points, nombreux, sans dessin propre. Les packs que Milan a achetés émettent des
+VOLUMES TEXTURÉS. À aucune amplitude un nuage de points ne devient une flamme
+peinte. Mauvaise famille d'effet, pas mauvaise taille.
+
+**Le pack n'était pas adressable.** Le `100+ Combat VFX Pack` livre 88 effets
+utilisables **tous nommés `VFXTemplate`**, leurs émetteurs tous nommés
+`ParticleEmitter`, sans un attribut. `SpawnVFXLayer` résout par nom : rien n'y
+était donc atteignable. Les 88 ont été joués en grille et photographiés (7
+planches), quatre retenus à l'œil, copiés sous un nom parlant dans
+`00_EN_PRODUCTION.DemiDieu_Soleil_Pack100` — dans l'espace que `findVFXByName`
+balaie. Unicité vérifiée, noms ajoutés au manifeste (le test rouge l'a exigé).
+
+**Le défaut qui rendait le pack invisible.** Câblées, les quatre couches ne
+donnaient RIEN à l'écran. `SpawnVFXLayer` pulse `12 × magnitude` particules une
+fois — juste pour une gerbe d'impact, faux pour ces pièces de vitrine réglées
+pour TOURNER (`Rate` de 5 à 61, particules de 50 studs). Laissées en `Enabled`,
+les mêmes pièces blanchissent le cadre entier. D'où `mode = "continu"` sur la
+couche : le défaut ne bouge pas pour les 46 recettes existantes.
+
+**Une charge que j'ai annoncée fausse.** J'avais écrit « 5,0 pour un plafond de
+7 » en comptant chaque couche pour 1,0. L'audit l'a relevé : `Fire` instancie
+les couches côté serveur puis les RETIRE du payload avant que `VFXLibrary.Play`
+— seul porteur du plafond — ne les voie. **Les couches de pack ne sont comptées
+nulle part.** Charge réelle : 1,0/7. On s'en tient quand même à la valeur
+stricte (7,0/7 avec les six couches) : se servir d'un trou de comptage pour
+empiler serait contourner la règle en s'abritant derrière un bug. Dette nommée.
+
+**Réserve.** Licence commerciale du `100+ Combat VFX Pack` NON confirmée.
+Prototype seulement.
+
+**Observation pour Milan, pas une correction :** à six couches la pièce remplit
+le cadre et le personnage devient une silhouette noire dans un dôme doré. C'est
+ce qui a été demandé (« on n'hésite pas ») et je ne redescends pas de moi-même —
+mais c'est son arbitrage, pas le mien.
+
+**En attente, non abandonné :** la capture de l'arrêt sur image manga, et le
+renommage `encre` (le grain vs l'arrêt sur image) — les deux demandés avant le
+virage.
