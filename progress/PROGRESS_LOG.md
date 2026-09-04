@@ -11675,3 +11675,30 @@ c'est-à-dire le décor. L'effet avait tiré avant le début de l'enregistrement
 
 La raison du magenta est maintenant **à côté de la constante** : j'avais refait
 un témoin cyan, et la barre de stamina du HUD est cyan.
+
+## La salve d'encre est câblée, et vue
+
+Un panneau plein écran, deux images rendues, sur le finisher M1_4 au palier
+surchargé. La frontière de doctrine est écrite dans le fichier : l'arrêt sur
+image garde la 3D lisible et refuse le panneau opaque ; la salve fait disparaître
+la 3D entièrement et **le panneau est son mécanisme**. Deux effets, pas deux avis.
+
+Les quatre contrôles de la spec sont passés :
+
+    témoin magenta      présent, PAR-DESSUS le panneau opaque
+    couverture          tout le viewport, aucun liseré de jeu
+    durée               2 images rendues, comptées côté jeu
+    animation après     Speed = 1,00, la position avance
+
+Le piège annoncé était réel et il est évité par un seul nombre : le témoin vit
+dans son propre `ScreenGui` à `DisplayOrder = 10000`, le panneau à 50. `ZIndex`
+n'ordonne qu'à l'intérieur d'un `ScreenGui`. La raison est maintenant écrite à
+côté des deux valeurs.
+
+L'ID `rbxassetid://136441647359118` vient d'un vrai upload asphalt, avec une
+entrée `[inputs.planches_encre]` **écrite et éprouvée dans le même tour** — la
+spec la proposait sans l'écrire, notant qu'une config non éprouvée est un réglage
+mort de plus.
+
+Réserve : l'animation testée était `Idle`. L'interaction avec `HitstopController`
+sur un vrai M1_4 reste à voir.
