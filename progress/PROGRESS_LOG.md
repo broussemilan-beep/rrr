@@ -12192,3 +12192,34 @@ elle était voulue.
 rayon déclaré d'`ArcSol` sur cette pièce jusqu'à ce que la charge passe sous 5.
 On choisit alors ce qu'on abandonne, au lieu de laisser le tri le choisir — et on
 ne relève aucun plafond.
+
+## La mise en règle a AMÉLIORÉ la pièce — c'est la surprise du tour
+
+Comparaison au même cadrage, chaque image au pic de son effet :
+
+**Avant** — une nappe de flamme jaune étalée au sol, les deux personnages à
+moitié noyés dedans.
+
+**Après** — une colonne dorée verticale nette, des débris projetés avec leurs
+étincelles orange, **et les deux personnages parfaitement lisibles.**
+
+Je m'attendais à devoir défendre une dégradation. C'est l'inverse : en retirant
+la couche d'ambiance et en resserrant l'arc, la pièce dit enfin ce qu'elle est —
+une colonne de lumière et du sol qui se soulève, pas une flaque de feu.
+
+Réserve honnête : ce sont deux prises différentes, chacune à son pic. Le
+jugement porte sur la lisibilité, pas sur une mesure.
+
+## Et un constat qui change l'ordre des chantiers
+
+Les resserrements **n'ont aucun effet sur la charge tant que le poids est par
+`kind`** : `ArcSol` vaut 3,5 que son rayon soit 15 ou 6.
+
+```
+poids par kind         Colonne 3,0 + ArcSol 3,5 + GroundChunks 1,0 = 7,5  > 6
+poids par paramètres   Colonne 2,6 + ArcSol 2,2 + GroundChunks 1,0 = 5,9  ✓
+```
+
+**Le poids par paramètre n'est donc pas une amélioration à remettre à plus tard :
+c'est un prérequis.** Les plafonds restent non branchés — les brancher
+maintenant tronquerait la pièce qu'on vient de mettre en règle.
