@@ -12425,3 +12425,41 @@ taille des particules. Correctif réel, indépendant du point ci-dessus.
 
 **Et Milan a raison sur les débris.** L'image le montre sans discussion : des
 cubes verts et bruns, génériques, identiques quel que soit le coup.
+
+## 2026-09-05 (fin) — L'option qui existait d'un côté et pas de l'autre
+
+L'écart sonde / image est résolu, et ce n'était aucune des deux hypothèses
+principales — mais les deux pistes ont chacune trouvé un vrai défaut en chemin.
+
+**Ce que la piste `garderCorps` a trouvé (vraie, mais pas la cause).** Le
+traitement générique fait deux gestes : `Transparency = 1` et
+`Size = Vector3.one * 0.1`. La transparence suffit à cacher la boîte ; la
+réduction, elle, écrase le **volume d'émission** — les particules naissent
+toutes au même point. Mesure côte à côte : ~60 studs telle quelle contre ~5
+studs après réduction. Les couches `continu` gardent désormais leur taille.
+
+**Ce que la durée a trouvé (vraie aussi).** Une pièce de vitrine est vue à son
+régime ; un cast dure 0,42 s et n'a pas le temps d'y monter. Les émetteurs
+continus sont maintenant **amorcés à la densité de régime** (`Rate × Lifetime`,
+borné à 300 par émetteur).
+
+**LA CAUSE.** `Fire` — le chemin emprunté par les compétences — reconstruit ses
+propres options et **ne transmettait pas `mode`**. `mode` avait été ajouté à
+`VFXLibrary._spawnVFXLayer`, l'autre point d'appel, et à lui seul. En jeu, les
+couches déclarées `continu` étaient donc **pulsées à 18 particules**.
+
+C'est le motif qui nous coûte le plus cher : *une option qui existe à un endroit
+et pas à l'autre ne signale rien, elle se contente de ne pas agir.* Troisième
+instance recensée après la secousse morte et les deux modules homonymes. Le banc
+isolé montrait la pièce à sa vraie taille, la touche F une gerbe minuscule, et
+tous les réglages intermédiaires paraissaient justes — c'est exactement ce qui
+rend ce motif si long à voir.
+
+**Mesure** : surface claire au pic, même cadrage, même cast — **401 pixels
+avant, 11 179 après**.
+
+**Leçon de méthode, à mettre au registre** : *une mesure prise sur un banc qui
+répète n'est pas une mesure du jeu.* Ma première capture montrait un dôme doré
+plein cadre ; c'était ma boucle qui empilait les copies toutes les 0,55 s.
+
+**Reste** : le catalogue par fonction des 88 effets, puis le chantier débris.
