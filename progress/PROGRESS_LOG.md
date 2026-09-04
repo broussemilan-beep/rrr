@@ -11421,3 +11421,36 @@ son pourquoi finit contournée ou vénérée, jamais comprise.
 `Skill1_Impact` est **morte** : citée par un seul script, sa propre déclaration.
 Troisième « chose qu'on croit posséder » de la semaine. Non supprimée — c'est une
 décision, pas un nettoyage.
+
+## Quatre recettes à tailler — proposition, rien de coupé
+
+Milan ne monte pas les paliers, et il a raison sur l'arithmétique : *Hero(1) +
+Supporting(2-3) + Ambient* fait quatre ou cinq. `medium = 4` est la doctrine
+écrite en chiffres.
+
+Le tri proposé, pour les quatre pièces au-dessus du plafond :
+
+| pièce | Hero | coupé | pourquoi |
+|---|---|---|---|
+| Main du Colosse 6→4 | `Impact Burst` | `Dust` + `Wind` | deux atmosphères pour le même nuage |
+| Frappe Céleste 5→4 | `GroundSmash` | `Dust` | dure 1,1 s quand le Hero dure 0,7 |
+| Marche du Titan 7→6 | `Shockwave Impact V` | `Encre` poussière | doublon de `CraterDust`, et en encre sur une pièce dorée |
+| M1_4 5→4 | `GroundSmash` | `CraterDust` | du doré sur la seule pièce volontairement achromatique |
+
+**Quatre des cinq coupes sont de la poussière.** Ce n'est pas un problème de
+hiérarchie, c'est une habitude : chaque recette a ajouté un nuage parce qu'un
+impact fait de la poussière, sans voir que les débris déjà projetés en font un.
+
+## `Skill1_Impact`, morte et datée
+
+Tuée le 2026-08-27 par `bff2d62`, quand le kit Demi-Dieu a pris sa place sans la
+retirer. Marquée dans le fichier et au registre, **pas supprimée** — c'est l'appel
+de Milan.
+
+En la marquant j'ai trouvé mieux : elle est **déclarée deux fois sous la même
+clé**, la seconde écrasant la première. Même vivante, la moitié n'a jamais joué.
+
+Le compte des « choses qu'on croit posséder » est maintenant tenu au registre,
+avec deux formes séparées : celle qu'on possède sans le savoir (coût : du travail
+en double) et celle qu'on croit posséder et qui est morte (coût : une fausse
+conclusion). Six entrées.
