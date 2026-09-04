@@ -11734,3 +11734,35 @@ poids vient d'ailleurs : la caméra défile de 14 à 19 px par image *pendant*
 l'impact. Notre caméra, elle, ne bouge pas. **Couper le gel sans ajouter du
 mouvement risque de rendre les coups mous, pas plus secs.** Les deux chantiers
 sont liés — c'est la caméra qu'on avait mise de côté.
+
+## Le hitstop et la caméra, ensemble
+
+**Les paliers sont en images, plus en secondes.** `Light` passe de 3 images à 1,
+`Medium` de 4 à 2. Les paliers hauts ne bougent pas — un ultime a le droit d'être
+l'exception, et on ne change qu'une chose à la fois. L'attente se fait sur
+`RenderStepped` et non sur `task.delay`, qui ne s'aligne pas sur le rendu.
+
+**La bombe de la capitale est désamorcée.** `TierDuration("light")` rendait
+`0,000 s` — pas d'erreur, pas de gel. La casse est normalisée à la lecture :
+`"light"` rend 1, `"MEDIUM"` rend 2.
+
+**Et la secousse de caméra n'avait jamais tiré.** Onzième réglage écrit et jamais
+joué de la semaine :
+
+    PlayerScripts.Combat.CameraShakeController      ShakeRaw = nil
+    ReplicatedStorage.Combat.CameraShakeController  ShakeRaw = function
+
+`VFXLibrary` ne cherchait que sous `PlayerScripts`, et son garde
+`type(CS.ShakeRaw) == "function"` échouait donc toujours, en silence — alors que
+23 recettes déclarent un `shake_progressive`.
+
+**Attribution propre, personnage totalement immobile :**
+
+    au repos                          0,0000 stud par image
+    recette M1_1 (avec la secousse)   0,1237 max, 0,0280 de moyenne
+
+Une planche fixe ne peut montrer ni une caméra qui bouge ni un gel d'une image :
+le livrable est une vidéo courte, pas une image.
+
+Réserve : je n'ai pas déplacé de fichier. Deux modules du même nom sont une dette
+à traiter pour elle-même, pas au milieu d'un réglage de game feel.
