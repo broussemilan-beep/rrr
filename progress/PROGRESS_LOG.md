@@ -12805,3 +12805,54 @@ l'arène, et ça ne demande pas Milan.
 Planche : `artifacts/2026-09-05_arene_trois_etats.png`. Les trois états sont
 basculables : `workspace:SetAttribute("ArenePaletteFond", false / "clair" / "gris")`.
 Laissé **désactivé**.
+
+## 2026-09-05 — `LightEmission` était négatif. Ce n'était pas le fond.
+
+**La cause du 68.** Les pièces du pack arrivent avec un `LightEmission` NÉGATIF :
+−5,00 sur `Soleil_Coeur`, −1,94 sur `Soleil_Jugement`, −1,19 sur
+`Soleil_Detonation`. À 0 une particule subit l'éclairage de la scène ; à 1 elle
+s'éclaire elle-même ; **en négatif elle est assombrie**. Nos effets étaient
+ternes par construction, sur un réglage de vitrine qu'on avait recopié sans le
+lire.
+
+Ce n'était ni la couleur déclarée (elle est écrasée par `tint_rgb` de toute
+façon), ni la transparence, ni le recouvrement des particules. C'était le premier
+suspect, et c'était le bon.
+
+**Correctif** : on ne descend jamais sous 0 pour une couche `continu`, et une
+option `emission` permet de monter plus haut. Posée aux **deux** points d'appel
+dans le même commit.
+
+### La mesure, avec son garde-fou
+
+Même arène, même caméra, même effet tenu, même magnitude :
+
+```
+                  lum effet   ecart au pourtour   PART DE CADRE
+avant                 77,6          +25,8              4,7 %
+apres                 95,2          +40,8             11,8 %
+```
+
+**Les deux mesures montent ensemble** — c'est exactement ce que la leçon du tour
+précédent demandait de vérifier. La part de cadre a plus que doublé.
+
+### ET LE CLASSEMENT DES FONDS A CHANGÉ
+
+Avec les effets corrigés, sur la même prise :
+
+```
+1. ORIGINE       ecart +40,8   part de cadre 11,8 %
+2. GRIS MOYEN    ecart +42,7   part de cadre 11,6 %
+3. CLAIR         ecart +24,7   part de cadre  4,0 %
+```
+
+**L'arène d'origine vaut désormais le gris** — +1,9 d'écart contre −0,2 de part
+de cadre, c'est un match nul. La désaturation n'apporte plus rien.
+
+> **Ce n'était pas le fond qu'il fallait changer, et on a failli demander à Milan
+> de repeindre son arène pour compenser un réglage de particule.**
+
+L'interrupteur reste en place et **désactivé** : il a servi à prouver que le fond
+n'était pas la cause, ce qui est déjà utile.
+
+Planche : `artifacts/2026-09-05_emission_negative.png`.
