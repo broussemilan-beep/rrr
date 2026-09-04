@@ -25,6 +25,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-05_coeur-blanc.png` | 324885 |
 | `2026-09-05_chaine-m1-mouvement.gif` | 708542 |
 | `2026-09-05_cadence-et-secousse.gif` | 402719 |
+| `2026-09-05_arene-avant-apres.png` | 932735 |
 | `2026-09-04_ultime-profil.png` | 4502376 |
 | `2026-09-04_ultime-pic-corrige.png` | 1804884 |
 | `2026-09-04_ultime-geste-vrai-chemin.png` | 1578716 |

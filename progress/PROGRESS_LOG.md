@@ -12601,3 +12601,143 @@ brûlure est un jour vérifiée.
 
 **Reste** : `Skill4_Jugement`, `M1_4` et l'ultime au virage ; puis M2 en crochet
 ascendant.
+
+## 2026-09-05 — Jugement, M1_4, et la formation du soleil
+
+**`Skill4_Jugement`.** Héros pris au catalogue par fonction : une pointe
+verticale massive, portée 374 studs, taille de particule 68,8 — index 55, **vue
+à l'écran** et non déduite. Baptisée `Soleil_Jugement`. Plus le cœur blanc en
+contre-jour.
+
+**`M1_4_Impact`.** Le seul M1 qui méritait une pièce de pack — mais sous une
+contrainte que le fichier portait déjà : Milan avait coupé `CraterDust` le
+2026-09-02 **uniquement parce que sa teinte posait du doré sur la seule pièce
+volontairement achromatique**. On prend donc une pièce **blanche nativement**
+(`Soleil_Coeur`) et on ne la teinte pas. La chaîne reste de l'encre ; l'or n'y
+revient qu'au momentum plein.
+
+### La dette `garderCorps` a mordu exactement là où c'était annoncé
+
+`Soleil_Coeur` posé **pulsé** ne recevait que 12 × magnitude particules sur ses
+**deux** émetteurs — invisible — et le rétrécissement générique écrasait en plus
+son volume d'émission. Correctif appliqué aux quatre poses, **sans
+rediagnostic** : c'était la consigne, et elle a fait gagner le tour.
+
+### Deux erreurs d'instrument, pas d'effet
+
+1. `Skill4` ne montrait rien à la touche R : c'est un **contre**, son impact
+   n'existe que s'il pare une attaque, et le mannequin n'attaque pas. Vérifié en
+   jouant la recette par `Fire`, le vrai chemin.
+2. Mon repère temporel de capture était faux deux fois — un `glob` qui ne
+   couvrait que les cent premières images, puis une prise terminée avant mon
+   tir. *La salve était là, le compteur regardait ailleurs.*
+
+### La formation du soleil — ÉCRITE, PAS ENCORE VUE
+
+La bible : « le bras monte et commence à former une masse solaire, le personnage
+lutte visuellement contre le poids de l'énergie ». L'ultime était déjà au niveau
+en intensité (86 % du cadre au pic) ; ce qui manquait était de la
+**construction**. L'astre apparaissait d'un coup à la main, à 0,18 de sa taille.
+
+On remplit donc le trou de la chronologie entre l'élan (0,50 s) et l'invocation
+(0,95 s) : pendant ces 0,45 s la masse se forme **dans** la main, de 0,02 à 0,18,
+en croissance quadratique — lente d'abord, elle s'emballe — et elle **suit** la
+main. Aucun nouvel effet, aucun nouvel AssetId : la même pièce, plus tôt et plus
+petite.
+
+**Elle passe le relais** à la pièce d'ascension au moment de l'invocation, qui
+détruit le germe : deux soleils dans la main pendant une image se liraient comme
+un scintillement, pas comme une transmission.
+
+**Honnêtement : je ne l'ai pas encore vue en jeu.** Tests et lint passent, le
+code est en place, mais la capture de l'ultime n'a pas abouti dans ce tour.
+C'est la première chose à vérifier au prochain.
+
+**Reste** : M2 en crochet ascendant.
+
+## 2026-09-05 — Le `Ctrl+S` rendu inutile, la scène de l'ultime, le gate gaucher
+
+**1. La place est redevenue jetable.** `PackBaptemes` (dépôt) porte les huit
+effets baptisés — index, nom, rôle, **et leur nombre d'émetteurs comme
+signature**. `PackBaptemeService` reconstruit le dossier à chaque démarrage,
+idempotent, et se tait quand tout va bien.
+
+*Vérifié par une panne délibérée* : dossier supprimé dans la place, redémarrage,
+**8 effets reconstruits, les huit résolvent.**
+
+*Et le canari a chanté* : signature falsifiée à 999 sur `Soleil_Coeur` →
+`SIGNATURE DIFFERENTE a l'index 23 : 2 emetteurs, 999 attendus — NON baptise`,
+`7 baptises, 1 refuses`, et le préchauffage tombe à 55/56. Un garde qu'on n'a
+jamais entendu n'est pas un garde.
+
+*Le piège en passant* : j'ai écrit le service dans `src/server/Services/` — que
+**personne ne charge**, `ServiceLoader` ayant été retiré pour V1. Troisième fois
+qu'un service correct dort dans un dossier que personne ne lit. Réveillé à la
+main dans `init.server.lua`, **en premier**, parce que `findVFXByName` met ses
+résultats en cache.
+
+**2. La mise en scène de l'ultime.** Le carton naissait à +0,20 s et tenait
+1,70 s : il couvrait exactement la formation (0,50 → 0,95). J'avais construit une
+anticipation que personne ne voyait. Nouveau champ `titreDelai` (défaut 0,20,
+rien d'autre ne bouge) ; l'ultime le pose à l'invocation + 0,15 — le titre nomme
+ce qu'on vient de voir naître. L'arrêt sur image passe lui aussi à l'invocation :
+il sert un impact, pas une montée en puissance.
+
+**3. Le gate gaucher.** `mirror_targets` dérive les cibles par miroir sagittal ;
+`evaluate` s'y met quand `attack_limbs` déclare le bras gauche. La donnée
+existait déjà, mesurée — c'est le juge qui ne la lisait pas.
+
+`M1_2` : **53,71 → 93,0**, amplitude et asymétrie parfaites. Et une fois capable
+de juger un gaucher, l'outil a trouvé un vrai défaut : le bras libre partait en
+arrière au lieu de garder. J'avais aussi laissé les **étiquettes de phase du
+cross** — le gate regardait l'image 9, déjà en pleine montée, en croyant voir
+l'armement. Mon document lui mentait sur où regarder.
+
+**L'audit répond oui** : `M1_2` et `M1_4` étaient animées droitières alors que
+leurs recettes déclarent le bras gauche. `M1_2` est corrigé ; `M1_4` et
+`Skill1_Impact` restent à trancher.
+
+## 2026-09-05 — Le décor était le problème, pas les effets
+
+Résultat d'une session d'analyse, même instrument des deux côtés :
+
+```
+nos effets, saturation   73-75   les leurs 77      -> a egalite
+nos effets, luminance    +65     les leurs +41     -> MEILLEURS
+ce qu'il y a AUTOUR      50-56   chez eux 20-25    -> le probleme
+```
+
+Et le chiffre qui fait mal : un détecteur de couleurs d'avatar trouve **2 % de
+leur image** et **60 % de la nôtre**. Notre décor est peint dans les couleurs de
+nos personnages — d'où des débris gris-violet invisibles sur des blocs
+gris-violet. *Notre arène a été conçue comme une image, la leur comme un fond.*
+
+**Nos effets n'ont jamais été faibles.** Notre M1 met 1,90 % de pixels chauds à
+l'écran contre 0,48 % pour leur coup critique : quatre fois plus.
+
+### `ArenePalette` — une proposition, pas une refonte
+
+- **Pas de `ColorCorrection`** : il emporterait les effets avec le décor. On
+  désature les **couleurs des matériaux**, pièce par pièce, liste blanche de
+  préfixes de décor — aucune partie de personnage n'y entre.
+- **Réversible au dixième près.** Chaque pièce garde sa couleur d'origine dans un
+  attribut. Mesuré après retour arrière : Floor 36,3/58,0, Monolith 35,5/46,7,
+  Drift 34,6/35,8, Lowland 40,7/25,9 — **identique au relevé d'avant**.
+- **Basculable à chaud** : `workspace:SetAttribute("ArenePaletteFond", true)`.
+  Les deux sens marchent en pleine partie, ce qui permet une comparaison sur
+  **la même prise** — seule façon honnête de faire juger un décor.
+
+**Mesure :** saturation du décor 35-41 % → **19,8 %** (cible ≤ 20). Et le sol
+cesse d'être la partie sombre du cadre : Floor 58 → **74,5 %**, Lowland
+25,9 → **62 %**.
+
+**L'état est laissé DÉSACTIVÉ.** L'arène appartient à Milan, il n'est pas là
+pour juger, et ceci n'est pas une refonte — c'est un interrupteur.
+
+### Le HUD s'efface pendant la scène
+
+Ils effacent leur interface 4,4 s, et il y a **0,18 s sans aucun effet juste
+avant la bascule**. Le cadran s'éteint, un souffle de rien, puis tout part.
+Nouveau champ `silence` (défaut 0, rien d'autre ne bouge) ; l'ultime le pose à
+0,18 s. Le HUD est rendu dans `surFin`, la seule fonction appelée à coup sûr —
+un HUD caché par une scène interrompue serait un joueur sans barre de vie.
