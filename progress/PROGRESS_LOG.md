@@ -11454,3 +11454,39 @@ Le compte des « choses qu'on croit posséder » est maintenant tenu au registre
 avec deux formes séparées : celle qu'on possède sans le savoir (coût : du travail
 en double) et celle qu'on croit posséder et qui est morte (coût : une fausse
 conclusion). Six entrées.
+
+## Les cinq coupes, et la planche qui a failli mentir
+
+Les quatre recettes sont taillées, aucun palier monté. Plus aucune recette du kit
+ne tronque.
+
+**La planche montre l'inverse de ce que je craignais** : la matière est toujours
+là — les quatorze morceaux de sol volent pareil. Ce qui *apparaît*, c'est le
+héros : le cœur orange vif de `Impact Burst` se lit enfin, alors qu'il était noyé
+avant. L'ambiance mangeait le coup.
+
+Réserve : une seule prise par colonne, et l'éparpillement des débris varie d'un
+cast à l'autre. La planche établit **la lisibilité du héros**, pas un compte.
+
+Trois instruments cassés en route, tous dits dans le commit — dont une rangée
+« après » entièrement vide que j'ai failli lire comme « la coupe a tout enlevé ».
+C'était `RecipeRegistry.resolve`, qui n'existe pas. Le témoin a prouvé que la
+prise était bonne : l'effet était absent, pas la fenêtre.
+
+## L'encre était déjà câblée. En entier.
+
+Les trois déclencheurs que Milan voulait existent, et le verrou aussi :
+
+    ultime            → Ultimate_DescenteDuDemiDieu:460   (polarité « ombre »)
+    Jugement réussi   → Skill4_Jugement:225               (« encre »)
+    M1_4 palier 2     → CombatService:508                 (« encre »)
+    verrou global     → VERROU_S = 7,0 s
+
+Sa fourchette était « 6 à 8 s ». Le verrou vaut 7,0. Personne ne le savait.
+
+**Septième « chose qu'on croit posséder » de la semaine**, et la plus coûteuse :
+le prix n'est pas du code en double, c'est une priorité qui occupe la tête de la
+liste sans raison. Un seul `grep impactFrame` répondait.
+
+Ce qui n'est **pas** établi : que chacun des trois tire vraiment en jeu. Deux sont
+derrière une condition de jeu (palier 2, parade réussie).
