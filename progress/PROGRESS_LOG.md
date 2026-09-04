@@ -12558,3 +12558,46 @@ gerbe — c'est la forme au sol qu'on doit lire, pas le flash.
 
 **Reste** : le décalque de brûlure au sol, le seul module neuf ; et la question
 de l'arène, qui est un problème de niveau, pas de code.
+
+## 2026-09-05 — Le décalque au sol : la marque qui reste
+
+Le seul module neuf du chantier débris, et chez nous le plus important : mesure
+du même jour, l'arène est quasi vide de cassables — 5 appels à `BrisTrajectoire`
+pour une pièce brisée. **Sur un sol qui ne casse pas, le décalque est la seule
+trace qui subsiste après un coup.** Les éclats retombent et disparaissent ; la
+brûlure dit qu'il s'est passé quelque chose ici.
+
+**Aucun AssetId.** La tentation était une texture de brûlure ; on n'en a aucune
+de vérifiée et inventer un identifiant est interdit — il serait rejeté en
+silence et on aurait un décalque invisible de plus. La tache est donc composée de
+plusieurs disques plats superposés, tailles et orientations tirées au hasard.
+Irrégulier sans asset, et remplaçable par une vraie texture le jour où on en
+vérifiera une.
+
+**Le carrelage est couvert, pas remplacé.** Les disques flottent 0,03 stud au
+dessus du sol et gardent une transparence de 0,42 à 0,64 : le motif du sol reste
+lisible dessous. Une tache opaque effacerait l'arène au lieu de la marquer, et
+sur plusieurs échanges on finirait avec un sol noir.
+
+**Il suit le geste**, comme les éclats : `eventail` pour le balayage, `cratere`
+pour la frappe au sol, `couloir` pour la charge.
+
+**Hors plafond de lisibilité**, et pour la même raison que la traînée : il ne se
+superpose pas au geste. Il est plat, au sol, sous les pieds — il n'encombre pas
+l'image, il la date.
+
+**L'accumulation est bornée**, c'est tout l'intérêt et c'est le seul risque de
+coût. Plafond de 14 marques vivantes, la plus ancienne s'efface. Mesure sur six
+coups enchaînés : **pic de 21 parts**, soit 14 vivantes plus 7 en cours de
+disparition — la charge est constante quelle que soit la durée du combat.
+
+Planche : `artifacts/2026-09-05_marque_au_sol.png`, un / trois / quatre / six
+coups.
+
+**Réserve honnête** : sans texture, les taches se lisent comme des disques. La
+forme d'ensemble et la persistance fonctionnent ; le bord est net là où il
+devrait être rongé. C'est le premier candidat à remplacer si une texture de
+brûlure est un jour vérifiée.
+
+**Reste** : `Skill4_Jugement`, `M1_4` et l'ultime au virage ; puis M2 en crochet
+ascendant.
