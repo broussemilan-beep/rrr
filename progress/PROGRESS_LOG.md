@@ -11490,3 +11490,28 @@ liste sans raison. Un seul `grep impactFrame` répondait.
 
 Ce qui n'est **pas** établi : que chacun des trois tire vraiment en jeu. Deux sont
 derrière une condition de jeu (palier 2, parade réussie).
+
+## L'encre : les trois tirent. Vérifié en moteur.
+
+Observé sur `Events.Combat.CombatFX` — le remote que le vrai receveur écoute, pas
+une copie — chacun déclenché par son vrai chemin :
+
+    ultime          kind=DemiDieu_Ultimate_Puissance  ombre  0,30  pose 0
+    Jugement paré   kind=DemiDieu_Skill4_Counter      encre  0,20  pose 0,20
+    M1_4 palier 2   kind=DemiDieu_M1_4_Impact         encre  0,22  pose 0,3667
+
+**Et le verrou se voit dans les chiffres** : 2 encres pour 4 M1_4, 1 pour
+6 parades. Il ne laisse pas passer les rafales — c'est exactement son travail.
+
+La note « not verified in-engine » que `Skill4_Jugement` portait depuis le
+2026-08-27 est remplacée par ce qui a été mesuré. C'était le même genre d'aveu
+écrit et jamais relu que le commentaire de `Wind` : une incertitude qui survit
+devient une vérité admise.
+
+**La plus vieille demande de Milan est finie.**
+
+Quatre instruments cassés en chemin, tous dits : `require` depuis le bac à sable
+rend un `MomentumService` fantôme (mon palier 2 était faux, le vrai montait par
+les coups) ; un attribut posé par le client ne remonte pas au serveur ; `Damage`
+au lieu de `damage` dans `MoveConfig` ; et l'observateur lui-même, éprouvé sur un
+M1 ordinaire avant d'être cru.
