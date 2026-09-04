@@ -12944,3 +12944,84 @@ une pièce plus longue et plus large qu'une frappe.
 Planche : `artifacts/2026-09-05_titan_mur_jaune.png`.
 
 **Reste de la tournée** : `Frappe Céleste`, `Jugement`, `M1_4`.
+
+## 2026-09-05 — Le dash : deux griefs sur trois réparés, mesurés
+
+| | avant | après |
+|---|---|---|
+| distance (8 déclarés) | **0,61 stud** | **8,53 / 9,11 studs** |
+| latence entrée → mouvement | **0,237 / 0,260 s** | **0,047 / 0,009 s** |
+| vitesse de pointe | 30,6 st/s, une image | 17-19 st/s, tenue |
+| fuite de contrainte | — | aucune |
+
+**« système nul »** — la vélocité écrite sur un `Humanoid` est un vœu : il
+l'amortit à zéro en ~50 ms. Remplacée par une **`LinearVelocity`**, résolue par
+le solveur physique au même titre que la gravité. Mode `Vector` avec une force
+nulle sur Y : on impose l'horizontale, la gravité reste intacte.
+
+*Le mode `Plane` a été essayé d'abord et ne poussait pas du tout — 0,16 stud
+mesuré. Gardé comme trace dans le code : sur cette contrainte, c'est `Vector` qui
+répond.*
+
+**« pas fluide »** — la poussée attendait le marqueur `Plant` de l'animation.
+Elle part maintenant à l'appui, et dure toute la pièce au lieu de sa seconde
+moitié : même distance, vitesse deux fois moindre, départ immédiat. *C'est
+l'animation qui s'aligne sur le mouvement, pas l'inverse.*
+
+**Filet de sécurité** : la contrainte est détruite par un `task.delay` en plus du
+`Heartbeat`. Un dash qui laisserait sa poussée derrière lui enverrait le joueur
+en ligne droite pour toujours — le pire défaut possible sur une pièce de
+mobilité. Vérifié : aucune fuite sur les trois tirs.
+
+**« pas adapté » reste ouvert** : la direction est toujours lue une fois puis
+figée, en quatre directions relatives au corps. Ce n'est pas un défaut mais un
+**choix de feel** — dash relatif au corps ou dash vers la visée — et il revient
+à Milan.
+
+## 2026-09-05 — Point d'arrêt
+
+### Acquis aujourd'hui, et vérifié
+
+- **Le dash ne dashait pas.** 0,61 stud parcouru pour 8 déclarés : la vélocité
+  écrite sur un `Humanoid` est amortie à zéro en 50 ms. Remplacée par une
+  `LinearVelocity` → **8,53 et 9,11 studs**. Départ à l'appui : **0,24 s → 0,009 s**.
+- **`LightEmission` était négatif** sur les pièces de pack — nos effets étaient
+  ternes par construction. Corrigé, la luminance passe de 77,6 à 95,2 et la part
+  de cadre **double**.
+- **La tournée du kit** : cinq pièces mesurées et rééquilibrées sur deux
+  critères (blanc plat, aplat de couleur).
+- **`M1_2`** uploadé et vérifié en moteur (0,567 s, marqueurs entendus).
+- **Le `Ctrl+S` est devenu inutile** — les baptêmes se reconstruisent depuis le
+  dépôt, vérifié par une panne délibérée.
+- **`CLAUDE.md`** porte une tête d'une page.
+
+### Où reprendre exactement sur `Poing scintillant`
+
+Tout est dans `artifacts/2026-09-05_PROPOSITION_POING_SCINTILLANT.md`.
+**Rien n'est découpé, rien n'est écrit.** Le premier geste de la reprise :
+
+1. Découper `SeriousPunch` (`_SAFE_PACKS/07_Sprint_V1_Uploads_2026-05-19`) en
+   **deux** : `0,55 → 1,90 s` retimé à 0,55 s (setup + charge, la pose tenue
+   1,09 s avec le torse à zéro), et `3,70 → 4,75 s` retimé à 0,30 s (la
+   propulsion, bras +118).
+2. **REGARDER le clip avant de s'y fier** — sa forme est lue numériquement, pas
+   vue. C'est la réserve en tête du document.
+3. Le déplacement vient de la `LinearVelocity` du dash. Ne rien réinventer.
+4. Écrire l'atome `Aspiration` — le seul morceau neuf de toute la pièce
+   (voir `artifacts/2026-09-03_INVENTAIRE_formes_vfx.md`).
+
+### Ce qui attend Milan
+
+1. **La direction du dash** — relatif au corps (aujourd'hui) ou vers la visée.
+   C'est un choix de feel, pas un défaut.
+2. **La palette d'arène** — trois états basculables, **laissés désactivés**. Une
+   fois les effets corrigés, l'arène d'origine vaut le gris : il n'a rien à
+   repeindre.
+3. **116 émetteurs à émission négative encore servis** — sur 72 couches de pack
+   déclarées, 17 ont l'opt-in et **55 dorment**. L'ultime en porte trois. Une
+   pièce à la fois, jamais en bloc.
+
+### État de la place
+
+Play arrêté, aucun script de session, aucune marque au sol, aucune contrainte de
+dash restante, aucun attribut de pilotage. Palette rendue. 13/13, lint propre.
