@@ -11796,3 +11796,34 @@ Réserve sur ma mesure : je martelais toutes les 0,10 s, ce qui ajoute jusqu'à
 0,10 s de retard artificiel. À 0,03 s le déclencheur ne suit plus et rien ne part
 — la mesure basse est donc bornée, pas exacte. Même après correction du biais, il
 reste ~0,05 s au-dessus du `recovery` déclaré, que je n'explique pas.
+
+## La cadence resserrée, sous sa contrainte
+
+Les quatre `recovery` descendent, avec une **marge uniforme de 0,13 s** entre le
+marqueur `Impact` et la libération — environ huit images.
+
+```
+coup   Impact    recovery         fenêtre
+M1_1   0,1815    0,340 → 0,311    0,13
+M1_2   0,2280    0,390 → 0,358    0,13
+M1_3   0,2145    0,420 → 0,345    0,13
+M1_4   0,3230    0,520 → 0,453    0,13
+```
+
+**`M1_4` ne peut pas atteindre 0,35 et je ne force pas.** Son marqueur `Impact`
+vaut à lui seul 0,323 : viser 0,35 lui laisserait moins de deux images de
+fenêtre. Le finisher reste plus lent que les trois autres — une cadence
+irrégulière vaut mieux qu'un coup qui se libère avant d'avoir touché.
+
+Les fenêtres valaient 0,159 / 0,162 / 0,205 / 0,197 — irrégulières sans raison.
+0,13 les aligne en cédant 0,03 s sur la plus serrée : les annulations deviennent
+un peu plus exigeantes, c'est le prix assumé.
+
+**Mesuré, même instrument et même biais qu'avant :**
+
+    avant   min 0,434   médiane 0,473   moyenne 0,493 s
+    après   min 0,353   médiane 0,406   moyenne 0,438 s
+
+Le biais de +0,10 s au maximum reste ; la valeur vraie est donc entre 0,31 et
+0,41. Les ~0,05 s au-dessus du `recovery` déclaré persistent, nommés et non
+expliqués — comme convenu, je ne les cherche pas.
