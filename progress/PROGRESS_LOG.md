@@ -11321,3 +11321,37 @@ qui la produit. Quand une mesure ne varie pas, la première hypothèse doit êtr
 ## Retours arrière
 
 Une ligne pour revenir, dans les deux cas, écrite à côté du code.
+
+---
+
+# 2026-09-05 — le coup de base, en image
+
+Deux vignettes, même cadrage, même caméra de jeu, même place, à l'instant de
+l'impact. Pas un chiffre — la question « est-ce que ça se voit » se tranche à
+l'œil.
+
+**La compétence produit une gerbe dorée ample** : étincelles, gravats, poussière.
+**Le coup de base produit un filet de fumée et un « 6 ».** C'est celui que le
+joueur voit quatre fois par seconde.
+
+Le comptage dit la même chose : quatre émetteurs contre cinquante, et le coup de
+base n'émet pas en continu.
+
+## Ce que ça règle
+
+Trois semaines de « les VFX ne sont pas bons » trouvent une cause simple : sur la
+pièce la plus vue du jeu, **il n'y a presque rien**. Ce n'était ni une question
+de forme, ni de pack, ni de palette.
+
+## La règle la plus coûteuse de la semaine
+
+**Une porte fermée ne se rouvre pas toute seule.** Quand on construit en double,
+on s'en aperçoit. Quand on élimine à tort, personne ne revient jamais.
+
+On a écarté une technique en la croyant limitée — alors que notre propre code
+l'implémentait depuis trois jours, essai à l'image et coût mesuré inclus. Une
+session entière a cherché ce qu'on avait déjà écrit. Deux semaines.
+
+L'index de nos capacités aurait donné la réponse en une commande. Il existait la
+veille. Personne ne l'a interrogé, **parce qu'on ne pense à chercher que quand on
+va construire**.
