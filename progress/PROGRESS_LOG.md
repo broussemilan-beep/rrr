@@ -12130,3 +12130,35 @@ palier.
 16 dorés », l'inverse de l'intention. Le filtre ne regardait que des parents
 nommés `*FX` et ramassait des restes du tir précédent. Recompté par différence
 avant/après, sans filtre de nom.
+
+## Les cinq poids, et le test qui les garde
+
+Le test est écrit **avant** les nombres, comme demandé — il les a éprouvés à leur
+naissance. Il recalcule les émetteurs depuis les formules des primitives, aux
+paramètres que les recettes déclarent vraiment, et crie si un poids s'écarte.
+
+```
+GroundChunks  24 émetteurs au pire → poids 4,5
+ArcSol        14                   → 3,5
+Colonne       10                   → 3,0
+Chute          8                   → 2,0
+Couloir        5                   → 2,0
+```
+
+**Dérivés, pas choisis** : `racine(émetteurs au pire cas)`. La racine et non le
+compte, parce que douze émetteurs côte à côte se recouvrent.
+
+**Ce que j'ai essayé d'abord, et qui a échoué** : dériver de `particules ×
+taille²`, la vraie charge. Résultat inutilisable — `Colonne` sortait à **×43**
+d'`Impact`. La formule est bonne, le proxy de taille ne l'est pas : les grandes
+particules d'encre sont fines et très transparentes.
+
+**Et je ne les ai PAS branchés.** Mesuré en le faisant pour voir : avec ces poids
+et les plafonds actuels, **14 recettes sur 48 se mettraient à tronquer** — dont
+`Skill1_Impact` à charge 12 pour un plafond de 4. **On recréerait la panne qu'on
+a défaite ce matin.**
+
+La raison est une erreur d'unité : les plafonds 2/4/6/8 comptent des **atomes**.
+Passer à une charge pondérée change l'unité — les plafonds doivent être
+re-dérivés dans la nouvelle avant que le branchement ait un sens. **C'est une
+décision, pas un calcul.**
