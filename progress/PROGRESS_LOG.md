@@ -12067,3 +12067,32 @@ annonçant que d'autres pièces les lisaient — le linter a montré que non.
 achromatiques (encre, 250,250,250), conformément à l'arbitrage de Milan du
 2 septembre. Mais la bible demande « quelques particules solaires » sur le M1.
 Les deux ne disent pas la même chose — à trancher.
+
+## Le blanc au cœur : la cause n'était aucune des trois
+
+Ce n'était ni « couvert par le jaune », ni « trop petit », ni « mal placé dans un
+`ColorSequence` ». **Le blanc n'était pas exprimable.**
+
+Deux constats :
+
+1. `Skill1_Impact` ne déclarait **aucun atome blanc**. Son seul blanc était le
+   `screen_flash`, qui dure 0,08 s.
+2. Les primitives peignent une couleur **plate** — `ColorSequence.new(color)`.
+   La seule nuance existante éclaircissait la couleur par 1,2 : du jaune plus
+   clair, jamais du blanc.
+
+Or la bible décrit un **dégradé dans un même effet**, pas deux effets empilés —
+et le plafond de `Skill1` est plein, donc ajouter un atome blanc l'aurait tronqué.
+
+**Correction : un `coeur` optionnel sur la primitive.** La particule naît à cette
+couleur et vire vers la couleur de l'atome aux deux tiers de sa vie. Vérifié en
+jeu : **14 émetteurs d'arc, tous naissant en `255,255,255` et finissant en
+`255,196,32`.**
+
+**Et le résultat à l'image est honnête, pas spectaculaire.** Les cœurs de flamme
+sont plus pâles qu'avant ; on n'a pas un noyau blanc franc. La raison est
+probable : les particules sont grandes et se recouvrent, donc l'œil moyenne la
+phase blanche (le premier tiers de 0,4 s). Un vrai noyau demanderait **un petit
+élément blanc distinct au point de contact** — c'est-à-dire un atome de plus, que
+le plafond interdit aujourd'hui. **Ça renvoie à la refonte du plafond**, déjà
+identifiée et différée.

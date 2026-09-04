@@ -15,6 +15,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-05_colosse-complet.png` | 790208 |
 | `2026-09-05_colosse-colonne.png` | 637637 |
 | `2026-09-05_colosse-avant-apres.png` | 803652 |
+| `2026-09-05_coeur-blanc.png` | 324885 |
 | `2026-09-05_chaine-m1-mouvement.gif` | 708542 |
 | `2026-09-05_cadence-et-secousse.gif` | 402719 |
 | `2026-09-04_ultime-profil.png` | 4502376 |
