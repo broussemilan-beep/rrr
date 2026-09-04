@@ -12392,3 +12392,36 @@ mais c'est son arbitrage, pas le mien.
 **En attente, non abandonné :** la capture de l'arrêt sur image manga, et le
 renommage `encre` (le grain vs l'arrêt sur image) — les deux demandés avant le
 virage.
+
+## 2026-09-05 (suite) — Licence confirmée, et une mesure que j'avais prise sur un banc truqué
+
+**Licence.** Milan a confirmé le 2026-09-05 l'usage commercial du
+`100+ Combat VFX Pack`. Écrit au §5 de `docs/agents/vfx-curator.md` **avec la
+date et le nom**, plus au manifeste et dans la recette. Une confirmation orale
+sans trace se re-pose au bout d'un mois et personne ne se souvient qui a dit oui.
+
+**Le dôme énorme n'existait pas.** La première capture de `Main du Colosse`
+montrait un dôme doré plein cadre. C'était un **artefact de ma boucle de test**,
+qui rejouait la recette toutes les 0,55 s et empilait les copies. Un seul cast
+par la touche F donne une gerbe modeste. *Une mesure prise sur un banc qui
+répète n'est pas une mesure du jeu* — à ranger à côté de « un relevé
+parfaitement inverse est plus souvent un instrument cassé ».
+
+**Ce qui est acquis, et vérifié par le vrai chemin.** Touche F → service →
+recette : les six couches de pack se résolvent et **arrivent dans le monde**.
+Vérifié par un observateur `ChildAdded` **posé dans la place**, pas par une
+fonction patchée depuis le bac à sable — le premier essai avait patché un
+fantôme (`require` isolé) et rendu une trace vide que j'ai failli lire comme
+« le chemin ne tire pas ».
+
+**Ce qui ne l'est pas.** À un seul cast, les couches ne portent pas à l'écran,
+alors que la sonde serveur montre le facteur appliqué (débit 61 → 195, taille
+50,5 → 161,6, `Enabled = true`). L'écart entre la sonde et l'image n'est pas
+expliqué ; il est le prochain point à élucider, pas à contourner.
+
+**`magnitude` ne voulait rien dire en mode continu** — elle ne pilotait que
+`emitCount`, inutilisé sur ce chemin. Elle porte désormais sur le débit et la
+taille des particules. Correctif réel, indépendant du point ci-dessus.
+
+**Et Milan a raison sur les débris.** L'image le montre sans discussion : des
+cubes verts et bruns, génériques, identiques quel que soit le coup.

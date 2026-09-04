@@ -14,7 +14,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-05_encre-essai.png` | 262385 |
 | `2026-09-05_colosse-zoom-impact.png` | 901770 |
 | `2026-09-05_colosse-resserre.png` | 706370 |
-| `2026-09-05_colosse-pack.png` | 840776 |
+| `2026-09-05_colosse-pack.png` | 707626 |
 | `2026-09-05_colosse-complet.png` | 790208 |
 | `2026-09-05_colosse-colonne.png` | 637637 |
 | `2026-09-05_colosse-avant-apres.png` | 803652 |
