@@ -12004,3 +12004,34 @@ passe rien », l'écran est déjà plein — d'autre chose.
 **Je ne livre donc pas de planche.** Le câblage est prouvé par la mesure ; la
 démonstration visuelle attend une arène nettoyée, ce qui est une décision de
 portée et pas un réglage.
+
+## Correction : l'arène n'y était pour rien
+
+**Je me suis trompée au tour précédent.** J'avais annoncé que 404 émetteurs de
+décor noyaient la capture. En projetant chaque émetteur dans le viewport :
+
+```
+DANS LE CADRE : 4 émetteurs — tous sur le personnage
+hors cadre    : 404, à plus de 120 stud
+```
+
+Les 404 vivent sous un `Read Me!` du pack de démo, loin de l'arène de combat.
+**Il n'y a rien à nettoyer.** « Ce qui existe dans la scène » et « ce qui est dans
+le cadre » sont deux grandeurs différentes ; c'est la seconde qui compte.
+
+**Le vrai coupable était ma propre recette de miss**, écrite le jour même :
+
+```
+au repos                     4 émetteurs
+MISS (light, 2 atomes)      22   → +18   = 53 % d'un hit
+HIT de compétence           38   → +34
+```
+
+Un atome compte pour un au plafond, mais `ArcSol` en pose jusqu'à **quatorze**.
+Le plafond était respecté à la lettre et ne protégeait de rien.
+
+Resserré à `rayon 4, ouverture 90` : **MISS +12, soit 35 % d'un hit.** Le miss
+redevient l'ombre du coup au lieu d'en être la moitié.
+
+**Conséquence pour la suite : le fond est propre, donc la passe de palette est
+montrable.** Rien ne bloque (b).
