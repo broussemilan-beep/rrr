@@ -12162,3 +12162,33 @@ La raison est une erreur d'unité : les plafonds 2/4/6/8 comptent des **atomes**
 Passer à une charge pondérée change l'unité — les plafonds doivent être
 re-dérivés dans la nouvelle avant que le branchement ait un sens. **C'est une
 décision, pas un calcul.**
+
+## Qui tombe, atome par atome — et pourquoi je ne branche pas
+
+Simulé sur l'ordre de sacrifice réel (priorité déclarée, puis rang de
+déclaration) :
+
+```
+Skill1_Impact   charge 8,5 / 5
+  sacrifice : GroundChunks ← ArcSol ← Colonne ← Big-Crack-01
+  JETÉ : GroundChunks, ArcSol      reste : Big-Crack-01, Colonne
+
+Skill3_Impact   charge 7,0 / 6
+  sacrifice : Afterimage ← GroundChunks ← CraterDust ← …
+  JETÉ : Afterimage                reste : tout le reste
+```
+
+**`Skill3` est le bon cas** : il ne perd qu'`Afterimage`, un soutien secondaire —
+et c'est exactement celui que j'avais désigné par écrit ce matin comme « le
+suivant à partir si besoin ». La priorité déclarée encode bien l'intention.
+
+**`Skill1` est le cas ambigu, et je ne tranche pas seul.** La `Colonne` posée ce
+matin **survit** — ta condition est donc respectée à la lettre. Mais ce qui tombe
+avec `GroundChunks`, c'est **`ArcSol`, l'élargissement de cet après-midi**. Ce
+n'est pas un soutien secondaire : c'était la moitié « largeur » de la pièce, et
+elle était voulue.
+
+**L'alternative que je propose plutôt que de brancher tel quel** : baisser le
+rayon déclaré d'`ArcSol` sur cette pièce jusqu'à ce que la charge passe sous 5.
+On choisit alors ce qu'on abandonne, au lieu de laisser le tri le choisir — et on
+ne relève aucun plafond.
