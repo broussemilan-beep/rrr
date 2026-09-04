@@ -11355,3 +11355,45 @@ session entière a cherché ce qu'on avait déjà écrit. Deux semaines.
 L'index de nos capacités aurait donné la réponse en une commande. Il existait la
 veille. Personne ne l'a interrogé, **parce qu'on ne pense à chercher que quand on
 va construire**.
+
+---
+
+# 2026-09-05 — le coup de base se voit enfin
+
+Avant : un filet de fumée. Après : une gerbe dorée au point de contact. Même
+cadrage, même caméra de jeu, même place.
+
+**Et rien n'a été ajouté.** Les trois premiers coups de base déclaraient quatre
+choses pour un plafond de deux : la forme du coup et la secousse de caméra
+étaient écrites, entretenues, et **jetées à chaque coup** depuis toujours.
+L'audit le criait depuis des semaines. On a arrêté de détruire, c'est tout.
+
+Le quatrième — le finisher — n'a pas été touché : il avait déjà son rang.
+
+## Le régime, mesuré en chaîne
+
+Un coup de base se joue quatre fois par seconde ; une compétence une fois toutes
+les quelques secondes. Ce n'est pas le même régime, donc la mesure s'est faite
+sur une chaîne complète :
+
+```
+huit coups enchaînés   →  60 émetteurs, soit 7,5 par coup (contre 4)
+pic d'émetteurs vivants   423
+l'arène AU REPOS          404
+```
+
+**La chaîne complète n'ajoute que dix-neuf émetteurs au décor.** Le coût n'était
+pas le sujet — l'arène en fait déjà quatre cents toute seule.
+
+Et la hiérarchie tient : sept et demi pour un coup de base contre cinquante pour
+une compétence. Il se voit, il ne domine pas.
+
+## L'encre, vue
+
+Le monde passe au noir et blanc avec lignes de vitesse, le personnage devient un
+aplat noir à trait blanc, le lointain blanchit. Couleur normale deux dixièmes
+avant et après : une ponctuation, pas un état.
+
+**Le témoin a trouvé sa propre panne** — l'effet masque tout l'affichage, et le
+témoin en faisait partie. Il se supprimait lui-même. Sans ce garde-fou, on
+concluait « ça ne rend rien » et on refermait la porte une seconde fois.
