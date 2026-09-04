@@ -11515,3 +11515,33 @@ rend un `MomentumService` fantôme (mon palier 2 était faux, le vrai montait pa
 les coups) ; un attribut posé par le client ne remonte pas au serveur ; `Damage`
 au lieu de `damage` dans `MoveConfig` ; et l'observateur lui-même, éprouvé sur un
 M1 ordinaire avant d'être cru.
+
+## La stamina serveur — la racine était plus bas que le diagnostic
+
+Le constat était « `StaminaService` n'a aucun consommateur vivant ». C'était vrai,
+et insuffisant : **il n'était pas chargé du tout.** `ServiceLoader` a été retiré
+pour la tranche V1, et tout `src/server/Services/` avec lui. Son `init()` n'était
+jamais appelé.
+
+Donc même en câblant les appelants, `Consume` aurait rendu faux pour tout le
+monde. On l'a réveillé depuis l'entrée V1 — lui seul, parce que lui seul est
+devenu une dépendance réelle.
+
+Les deux consommateurs sont câblés ensemble, dans le même fichier :
+
+    dash double-tap   25   le coût n'existait que dans un commentaire
+    roulade           22   prélevé par le CLIENT, donc gratuit en PvP
+
+**Vérifié par l'épreuve de l'attaquant** : on tire sur les remotes comme le
+ferait un client modifié, sans rien payer côté client. La stamina serveur descend
+(100 → 81,5 → 29,7), et une demande de dash sans le stock revient
+`Rejected / no_stamina`.
+
+**Une précaution qui compte** : `Consume` rend faux dans deux cas très différents
+— pas assez, ou joueur pas encore suivi. Un appelant qui refuse sur ce faux
+casserait le dash à chaque respawn. `IsTracked` sépare les deux, et les appelants
+échouent **ouvert** tant que le service ne suit pas.
+
+À signaler à Milan, sans le corriger : la regen vaut 15/s hors combat, une
+roulade 22. Le coût est réel mais très clément — il a fallu quatre roulades en
+0,08 s pour atteindre le refus.
