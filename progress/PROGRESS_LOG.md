@@ -11938,3 +11938,26 @@ de Milan après le 3, `.claude/agents/` est vide, et la place ne rend rien sur
 
 **Et la décision de palette reste entière** : sa sélection dit le feu, sa spec dit
 l'or. Personne ne tranche à sa place.
+
+## La bible et l'agent sont versionnés — et l'écart est chiffré
+
+`docs/references/` porte le `.docx` original (il fait foi) et sa conversion `.md`.
+`docs/agents/AGENT_VFX_CURATOR.md` porte l'agent. Conversion en stdlib : ni
+pandoc ni python-docx sur cette machine, et la limite est écrite en tête du
+fichier converti.
+
+**Neuf pièces : quatre proches, cinq à refaire.** M2 devient un *uppercut* là où
+nous avons un cross ; S1 demande une charge qu'on n'a pas ; S2, S3, S4 sont
+entièrement nouvelles.
+
+**Les trois coûts, vérifiés :** le projectile est bien à construire de zéro ; le
+rayon est à moitié acquis (on crée déjà des `Beam` visuels, il manque les dégâts
+continus) ; et le principe d'exécution est **à moitié conforme** — l'animation ne
+dépend d'aucun hit, mais au miss **il ne se passe rien**. C'est une branche `else`
+à écrire, pas un changement d'architecture.
+
+**Ce que la bible confirme** : `Colonne` était la bonne primitive, la hiérarchie
+du §10 redit la doctrine du 16 mai, et « tester en caméra gameplay normale » est
+le critère de capture qu'on vient d'inscrire.
+
+Détail complet : `artifacts/2026-09-05_ECART_BIBLE_DEMIDIEU_SOLEIL.md`.
