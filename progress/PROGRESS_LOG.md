@@ -12223,3 +12223,38 @@ poids par paramètres   Colonne 2,6 + ArcSol 2,2 + GroundChunks 1,0 = 5,9  ✓
 **Le poids par paramètre n'est donc pas une amélioration à remettre à plus tard :
 c'est un prérequis.** Les plafonds restent non branchés — les brancher
 maintenant tronquerait la pièce qu'on vient de mettre en règle.
+
+## Le plafond est branché, et il compte enfin la charge
+
+Le poids est **calculé** sur les paramètres de chaque atome — `racine(émetteurs
+de celui-là)` — au lieu d'être déclaré par famille. Les resserrements écrits au
+tour précédent ont donc enfin un effet.
+
+`GroundChunks` garde son exception à 1,0 : ses 24 émetteurs portent un éclat de
+0,85 stud chacun, surface 40× moindre qu'`ArcSol`. **Une formule paramétrique ne
+guérit pas ce cas.**
+
+**Les seuils, re-dérivés dans l'ordre qui a payé** — l'intention d'abord :
+
+```
+light 4     un héros léger, deux soutiens, une ambiance
+medium 5    un héros LOURD plus un soutien
+heavy 7     un héros lourd, deux soutiens, une ambiance
+ultimate 8  de la marge — rien du contenu actuel n'en approche
+```
+
+**`heavy = 7` et non 6, et c'est la mesure en jeu qui l'a imposé.** À 6,
+`Skill3_Impact` jetait `Afterimage` **puis `GroundChunks`** — deux atomes, dont
+les éclats qui portent l'identité de brawler lourd. `VFXAudit` l'a dit mot pour
+mot. À 7, il ne jette qu'`Afterimage`.
+
+**Vérifié en jeu, pièce par pièce :**
+
+```
+Skill1_Impact   ColonneFX x7, EclatTerrain x14, PosteFX x5   → ses trois atomes
+Skill3_Impact   EclatTerrain x20                             → ses débris
+```
+
+Le test a changé de rôle : il ne surveille plus un poids déclaré, **il surveille
+que les formules recopiées dans le plafond suivent celles des primitives.** La
+duplication reste délibérée ; ce test en paie le prix.
