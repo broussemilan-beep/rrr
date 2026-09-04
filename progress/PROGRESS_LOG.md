@@ -12463,3 +12463,41 @@ répète n'est pas une mesure du jeu.* Ma première capture montrait un dôme do
 plein cadre ; c'était ma boucle qui empilait les copies toutes les 0,55 s.
 
 **Reste** : le catalogue par fonction des 88 effets, puis le chantier débris.
+
+## 2026-09-05 — Le catalogue, puis le virage étendu à deux pièces
+
+**Le catalogue** (`artifacts/catalogue_vfx/pack100_catalogue.json`). Les 88
+effets utilisables du pack s'appellent tous `VFXTemplate` : il n'existe aucun nom
+par lequel les choisir. Le catalogue est l'adresse. Pour chacun, **mesuré
+moteur** : taille de particule, portée (`max Speed × max Lifetime`), durée de
+vie, formes et directions d'émission.
+
+Les quatorze effets déjà regardés à l'écran portent une fonction **nommée
+d'après l'image** ; les autres une fonction **déduite** des directions et de la
+portée — et le fichier le dit. Bon pour trier, pas pour choisir : *regarder
+avant de retenir* reste la règle. L'agent y est branché au §4 bis, avec les
+trois pièges mesurés.
+
+**L'extension.** Ce qui avait pris une journée sur `Main du Colosse` a pris une
+fraction sur les deux suivantes, exactement comme prévu — parce qu'on savait
+quoi chercher.
+
+- **Frappe Céleste** (`G`) — « frappe au sol, onde courte ». Le catalogue donne
+  l'effet fait pour ça : anneau au ras du sol + dôme de fumée, portée 455 studs
+  (index 75, déjà baptisé `Soleil_Onde_Sol`).
+- **Marche du Titan** (`H`) — « pas lourds puis coup final ». Deux nouveaux
+  baptêmes : `Soleil_Colonne_Vortex` (index 5, vortex + anneaux + colonne de
+  fumée, 535 studs — le seul du pack qui MONTE) et `Soleil_Projection`
+  (index 18, gravats à 681 studs).
+
+Toutes les couches héros de ces deux pièces passent en `mode = "continu"`, y
+compris celles qui existaient déjà et qui étaient **pulsées depuis toujours**.
+
+Planche : `artifacts/2026-09-05_kit_virage_etendu.png`, une ligne par pièce,
+déclenchées par leurs touches.
+
+**Note honnête** : les deux pièces sont très saturées d'or et le personnage s'y
+perd. C'est le sens du virage (« on n'hésite pas ») et je ne redescends pas de
+moi-même — mais c'est l'arbitrage de Milan, pas le mien.
+
+**Reste** : le chantier débris.
