@@ -12035,3 +12035,35 @@ redevient l'ombre du coup au lieu d'en être la moitié.
 
 **Conséquence pour la suite : le fond est propre, donc la passe de palette est
 montrable.** Rien ne bloque (b).
+
+## L'ampleur du défaut de plafond — trois lignes
+
+Cinq atomes sur onze posent plus d'un émetteur, et la formule vit dans la
+primitive :
+
+```
+GroundChunks  n = count                              → 18 pour Frappe Céleste
+ArcSol        n = clamp(ouverture × rayon / 2.2, 5, 14) → 14 pour Main du Colosse
+Colonne       n = clamp(hauteur / 1.4, 3, 10)        → 10
+Chute         n = clamp(hauteur / 1.6, 3, 9)         → 9
+Couloir       n = clamp(longueur / 1.6, 3, 12)       → 5 aux valeurs actuelles
+```
+
+**Pire rapport : 18 pour 1.** Non réparé — c'est une refonte du plafond.
+
+## (b) La palette solaire est posée
+
+Blanc incandescent au cœur, jaune solaire autour, orange **uniquement** sur les
+débris. Vérifié par énumération des recettes : **orange hors débris = 0.**
+
+Choix faits par l'algorithme de l'agent, et **deux redescentes énoncées** : le
+blanc bleuté (le plus chaud physiquement) écarté parce qu'il lit « électrique »
+sur une pièce solaire ; l'orange le plus saturé écarté parce qu'il lit rouge.
+
+**Plus aucun nom doré dans le fichier.** J'avais gardé les anciens noms en
+annonçant que d'autres pièces les lisaient — le linter a montré que non.
+
+**Ce que je n'ai pas fait, et qui est une décision** : les quatre M1 restent
+achromatiques (encre, 250,250,250), conformément à l'arbitrage de Milan du
+2 septembre. Mais la bible demande « quelques particules solaires » sur le M1.
+Les deux ne disent pas la même chose — à trancher.
