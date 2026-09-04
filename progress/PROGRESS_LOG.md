@@ -11605,3 +11605,21 @@ les trois fichiers, pas supprimé : même appel que `Skill1_Impact`.
 invisibles à tout suivi statique de `require`. C'est ce qui m'a fait déclarer
 `CombatStateService` mort à tort. La note est dans `index_capacites.py` pour que
 personne n'y ajoute un mode « code mort » qui hériterait du défaut.
+
+## La caméra bloquée après une mort — corrigé, c'était en production
+
+`MiseEnScene` promettait dans son en-tête de rendre la caméra si « le joueur
+meurt ». Les autres cas étaient couverts, **celui-là ne l'était pas** : la
+promesse était écrite, le code ne la tenait pas.
+
+Mesuré avant : scène de 90 s, mort à 1 s → caméra `Scriptable` encore après le
+respawn. Sur l'ultime d'aujourd'hui (4,5 s), un joueur qui meurt dedans
+récupérait sa caméra au minuteur, pas à sa réapparition.
+
+Après correction, même épreuve : rendue en **0,4 s**. Deux voies, parce que la
+mesure a montré un reste — `CharacterRemoving` ne tire qu'au respawn, donc
+`Humanoid.Died` s'y ajoute pour le temps de mort lui-même.
+
+**Et ma première épreuve disait « ça va »** : scène de 6 s, lecture après 15 s.
+C'est le minuteur qui avait rendu la caméra. Une épreuve plus longue que le
+phénomène teste son extinction, pas le phénomène. Au registre.
