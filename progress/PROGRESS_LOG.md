@@ -11545,3 +11545,35 @@ casserait le dash à chaque respawn. `IsTracked` sépare les deux, et les appela
 À signaler à Milan, sans le corriger : la regen vaut 15/s hors combat, une
 roulade 22. Le coût est réel mais très clément — il a fallu quatre roulades en
 0,08 s pour atteindre le refus.
+
+## L'état de `src/server/Services/` — relevé, rien réveillé
+
+Sur 14 modules, 12 définissent un `init()` et **10 ne le voient jamais appelé.**
+
+Trois sont chargés et utilisés par du code vivant sans que leur `init()` tourne.
+Deux sont sans conséquence — celui de `HitboxService` est vide (« pure utility »),
+celui de `RemoteGuard` n'écrit qu'un log. **Le troisième compte** :
+`CombatStateService.init()` branche le nettoyage au respawn et au départ du
+joueur. Il ne tourne pas, donc l'état de combat n'est jamais nettoyé. Non traité.
+
+Six ne sont chargés par personne, dont un îlot mort de trois qui ne se requièrent
+qu'entre eux : `M1Service` → `RollbackService` → `SnapshotService`.
+
+**Et le point rassurant, qu'il faut dire aussi** : aucun service non chargé n'est
+requis par un chemin vivant. Les morts ne sont référencés que par d'autres morts.
+La seule panne silencieuse réelle est ce `init()` manquant.
+
+## Le compte, rangé par forme
+
+Neuf cas en une semaine, quatre formes. Chacune a un coût différent et se
+détecte autrement :
+
+| forme | coût | comment on la trouve |
+|---|---|---|
+| on la possède sans le savoir | travail en double | chercher avant de construire |
+| on la croit possédée, elle est morte | une fausse conclusion | chercher l'appelant |
+| on l'a déjà faite sans le savoir | la place qu'elle prend | chercher avant d'ouvrir le chantier |
+| elle existe mais ne tourne pas | panne silencieuse, et casse quand on la branche | vérifier qu'elle tourne |
+
+**Une règle couvre les quatre** : avant de construire, chercher l'appelant ;
+avant de brancher, vérifier que ça tourne.
