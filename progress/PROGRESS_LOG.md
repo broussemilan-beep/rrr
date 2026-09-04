@@ -11702,3 +11702,35 @@ mort de plus.
 
 Réserve : l'animation testée était `Idle`. L'interaction avec `HitstopController`
 sur un vrai M1_4 reste à voir.
+
+## Le hitstop, mesuré — et il tient à un mot
+
+Ce que le code déclare, sans ambiguïté :
+
+    Light 50 ms   Medium 67   Heavy 83   Ult 133
+
+Un M1 envoie `Light` : **50 ms, soit environ trois images à 60 im/s.** La
+référence, elle, ne dépasse jamais **une image**.
+
+Un piège frôlé : les paliers sont écrits en capitale (`Light`) et plusieurs
+recettes déclarent leur `tier` en minuscule. `TierDuration("light")` rend
+**0,000 s** — pas d'erreur, pas de gel. J'ai vérifié ce que le remote envoie
+vraiment sur un M1 : `Light`, avec la capitale. Le câblage tient, mais il tient
+à une lettre.
+
+**Ce que je n'établis pas** : mes chronométrages en jeu ont donné 162 à 346 ms,
+loin des 50 déclarées, avec un compte d'images incohérent (1 image pour 162 ms).
+L'instrument n'est pas fiable — probablement parce qu'une piste peut quitter la
+liste des pistes jouées pendant le gel. Je ne cite donc pas ces nombres comme un
+fait ; deux candidats à vérifier plus tard : `MangaImpactFrame` gèle aussi, et
+`task.delay` a sa granularité.
+
+**Diviser par cinq ne marche pas.** 50/5 = 10 ms, moins d'une image : le hitstop
+disparaîtrait au lieu de raccourcir. La cible juste est **une image**, et elle
+doit s'écrire en images, pas en secondes — même leçon que `plancheImages`.
+
+**L'arbitrage, et il n'est pas évident.** Le hitstop donne du poids. Chez eux, ce
+poids vient d'ailleurs : la caméra défile de 14 à 19 px par image *pendant*
+l'impact. Notre caméra, elle, ne bouge pas. **Couper le gel sans ajouter du
+mouvement risque de rendre les coups mous, pas plus secs.** Les deux chantiers
+sont liés — c'est la caméra qu'on avait mise de côté.
