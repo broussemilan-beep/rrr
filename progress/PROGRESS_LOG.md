@@ -11275,3 +11275,49 @@ Amener le jeu dans un état par un raccourci est légitime. **Mesurer** par ce m
 raccourci ne l'est pas — il sautait l'animation du client, donc ne montrait pas
 ce que voit un joueur. Le remplacement est déjà en place : le déclencheur appelle
 maintenant ce qu'un clic appelle.
+
+---
+
+# 2026-09-05 — le dash et la roulade sont en jeu
+
+L'outil d'upload est passé de « débloqué » à **vérifié** : deux animations
+publiées, relues depuis Roblox, puis câblées et vues jouer en appuyant sur les
+touches.
+
+```
+dash     Q   0,450 s   marqueur de plantée : tire 3 fois
+roulade  C   0,550 s
+corps déplacé : 4,5 stud
+```
+
+**Le dash** remplace une version qui **reculait du torse de 1,29 stud en plein
+clip** — seule animation vers l'avant du corpus dans ce cas. L'arbitrage datait
+du 3 septembre ; seul l'upload manquait.
+
+**La roulade** portait jusqu'ici une **peau de dash**, faute de pouvoir publier
+autre chose. Elle a maintenant un vrai clip de roulade.
+
+## Une prémisse du dépôt corrigée à sa source
+
+Le code affirmait qu'un vrai clip de roulade arrière existait dans un pack, non
+publié. **C'est faux** — ce pack contient tout autre chose, et il n'y a de
+roulade arrière nulle part. Cette seule phrase a fait redemander ce clip cinq
+tours de suite.
+
+**Et il n'en faut aucun** : le contrôleur applique sa propre vitesse, donc la
+direction vient du code. Un seul clip générique sert les quatre sens, là où on
+cherchait quatre pistes à publier et entretenir.
+
+## La leçon qui se généralise
+
+En cherchant à lire la direction d'une roulade sur le déplacement de la racine du
+clip, les quatre candidats ont rendu zéro. Ce n'était pas un mauvais instrument :
+**le mouvement n'est pas dans l'animation, il est dans le code.**
+
+Avant de mesurer une propriété sur un objet, se demander si cet objet est celui
+qui la produit. Quand une mesure ne varie pas, la première hypothèse doit être
+« je regarde au mauvais endroit ».
+
+## Retours arrière
+
+Une ligne pour revenir, dans les deux cas, écrite à côté du code.
