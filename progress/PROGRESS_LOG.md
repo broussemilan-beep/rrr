@@ -12903,3 +12903,44 @@ que la boucle tournait que le 56,7 % est apparu. *Une mesure sur un instant qu'o
 n'a pas choisi ne mesure rien.*
 
 Planche : `artifacts/2026-09-05_colosse_equilibre.png`.
+
+## 2026-09-05 — `Marche du Titan` : le mur jaune, et un critère qui ne le voyait pas
+
+**Le correctif d'émission devient un opt-in PAR COUCHE.** Corriger les 116
+émetteurs négatifs d'un bloc reproduirait partout le défaut trouvé sur le
+Colosse, et sans rien pour dire lequel a blanchi. Une couche déclare
+`emission = 0` pour être corrigée ; la pièce est rééquilibrée, mesurée, capturée,
+puis on passe à la suivante.
+
+### Mon instrument était aveugle deux fois
+
+1. **Il cherchait du blanc plat**, or `Marche du Titan` est à **0,2 % de blanc**.
+   Son défaut est un **aplat de COULEUR** — clair, saturé, sans structure. Deux
+   modes de panne distincts, il fallait deux mesures.
+2. **Ma fenêtre de teinte s'arrêtait à 0,14**, donc elle **excluait le jaune** —
+   la couleur même de nos effets. Je mesurais l'orange et le rouge en croyant
+   mesurer nos gerbes. Corrigée à 0,19.
+
+Une fois les deux corrigées, le chiffre rejoint l'œil :
+
+```
+                        blanc plat   aplat couleur (pire)   part de cadre
+TITAN avant                0,2 %        27,4 %  (43,0)          38,5 %
+TITAN apres                0,7 %        11,3 %  (22,3)          26,2 %
+COLOSSE equilibre          5,9 %         0,3 %  ( 2,9)          22,1 %
+reference                  0,3 %
+```
+
+**Le verdict de Milan ne valait effectivement plus** — mais pas dans le sens
+espéré : la pièce était toujours un mur, et l'émission négative n'y était pour
+rien. C'est l'empilement de cinq couches à pleine magnitude.
+
+Magnitudes divisées, aplat ramené de 27,4 à 11,3 %, et **l'effet occupe encore
+26,2 % du cadre** — on n'a pas perdu la puissance, on a rendu la forme.
+
+Il reste au-dessus du Colosse (0,3 %), et c'est assumé : une charge de titan est
+une pièce plus longue et plus large qu'une frappe.
+
+Planche : `artifacts/2026-09-05_titan_mur_jaune.png`.
+
+**Reste de la tournée** : `Frappe Céleste`, `Jugement`, `M1_4`.
