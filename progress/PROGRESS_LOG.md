@@ -11577,3 +11577,31 @@ détecte autrement :
 
 **Une règle couvre les quatre** : avant de construire, chercher l'appelant ;
 avant de brancher, vérifier que ça tourne.
+
+## `CombatStateService` réparé — et le réveil a trouvé un second défaut
+
+Son `init()` branche le nettoyage de l'état de combat au respawn et au départ du
+joueur. Il ne tournait pas : stun, iFrames, hyperarmor et attaque en cours
+survivaient à la mort.
+
+**En le relisant avant de l'appeler, j'ai trouvé mieux** : il ne connectait que
+`PlayerAdded`. Un joueur **déjà présent** au moment de l'appel n'était jamais
+suivi — c'est-à-dire toujours, en Play Solo. Le réveiller tel quel aurait donné
+une réparation qui ne répare rien. `StaminaService`, lui, portait cette boucle
+depuis le début ; j'ai copié son motif.
+
+Vérifié en moteur : stun et iFrames posés à `true`, respawn par le vrai chemin,
+les deux à `false` après.
+
+**Et il faut le dire dans le bon sens** : dix `init()` jamais appelés, ça
+ressemble à un incendie. Il y avait **un** vrai cas. Aucun service non chargé
+n'est requis par un chemin vivant — les morts ne sont référencés que par
+des morts.
+
+L'îlot mort `M1Service` → `RollbackService` → `SnapshotService` est marqué dans
+les trois fichiers, pas supprimé : même appel que `Skill1_Impact`.
+
+**Angle mort d'outil noté** : les Skills sont requis dynamiquement, donc
+invisibles à tout suivi statique de `require`. C'est ce qui m'a fait déclarer
+`CombatStateService` mort à tort. La note est dans `index_capacites.py` pour que
+personne n'y ajoute un mode « code mort » qui hériterait du défaut.
