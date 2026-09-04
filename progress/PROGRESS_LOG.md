@@ -11766,3 +11766,33 @@ le livrable est une vidéo courte, pas une image.
 
 Réserve : je n'ai pas déplacé de fichier. Deux modules du même nom sont une dette
 à traiter pour elle-même, pas au milieu d'un réglage de game feel.
+
+## La cadence des M1 — analyse, aucun code
+
+**Le fondu n'est pas le problème, et ton soupçon est réfuté par la valeur.** Lue
+dans l'AnimationDB telle que le jeu la charge :
+
+    M1_1 à M1_4    fadeIn = 0,02 s
+    Réactions      0,03      Mobilité 0,03
+    Compétences    0,05-0,08 Transformations 0,10
+
+**0,02 est exactement la valeur que la référence recommande.** Le levier est déjà
+tiré, et rien ne tombe sur le défaut du pilote (0,15) ni sur celui de Roblox
+(0,10) : chaque base déclare le sien.
+
+**Ce qui domine, c'est `recovery`, pas la durée des pistes.**
+
+    pistes M1     0,55  0,60  0,65  0,85 s
+    recovery      0,34  0,39  0,42  0,52 s   <- plus COURT que les pistes
+    cadence mesurée  min 0,434  médiane 0,473  moyenne 0,493 s
+    la référence     médiane 0,33, 0,23 au plus serré
+
+La porte s'ouvre donc **avant** la fin de l'animation : le coup suivant
+interrompt le précédent, et raccourcir les pistes ne changerait rien à la
+cadence. **Les animations de Milan ne sont pas en cause** — la cadence est un
+nombre dans `MoveData`, pas une durée d'animation.
+
+Réserve sur ma mesure : je martelais toutes les 0,10 s, ce qui ajoute jusqu'à
+0,10 s de retard artificiel. À 0,03 s le déclencheur ne suit plus et rien ne part
+— la mesure basse est donc bornée, pas exacte. Même après correction du biais, il
+reste ~0,05 s au-dessus du `recovery` déclaré, que je n'explique pas.
