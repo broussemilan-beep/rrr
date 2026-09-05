@@ -16,6 +16,7 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-05_poing-secondaire-milan.png` | 1392029 |
 | `2026-09-05_poing-piece-complete.png` | 1528928 |
 | `2026-09-05_poing-impact-profil.png` | 382351 |
+| `2026-09-05_poing-finale.png` | 1486698 |
 | `2026-09-05_poing-charge-profil.png` | 423769 |
 | `2026-09-05_poing-avec-souffle.png` | 1183156 |
 | `2026-09-05_poing-6-jogo.png` | 1618349 |
