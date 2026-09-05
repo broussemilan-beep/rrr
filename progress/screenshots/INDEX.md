@@ -35,6 +35,11 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 | `2026-09-05_encre-essai.png` | 262385 |
 | `2026-09-05_emission-negative.png` | 979886 |
 | `2026-09-05_debris-forme-du-geste.png` | 704864 |
+| `2026-09-05_couche4-souffle.png` | 391273 |
+| `2026-09-05_couche3-lances.png` | 474768 |
+| `2026-09-05_couche2-flammes.png` | 193987 |
+| `2026-09-05_couche1-eclat-radial.png` | 560751 |
+| `2026-09-05_composition.png` | 910594 |
 | `2026-09-05_colosse-zoom-impact.png` | 901770 |
 | `2026-09-05_colosse-resserre.png` | 706370 |
 | `2026-09-05_colosse-pack.png` | 707626 |
