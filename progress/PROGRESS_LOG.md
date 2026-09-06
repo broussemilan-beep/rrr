@@ -13025,3 +13025,68 @@ Tout est dans `artifacts/2026-09-05_PROPOSITION_POING_SCINTILLANT.md`.
 
 Play arrêté, aucun script de session, aucune marque au sol, aucune contrainte de
 dash restante, aucun attribut de pilotage. Palette rendue. 13/13, lint propre.
+
+---
+
+## 2026-09-06 — Le terrain casse, Roche céleste existe, et quatre pannes muettes
+
+### Ce qui a été VU tourner (le mot au sens strict : ce que j'ai regardé)
+
+1. **Le sol se casse depuis un geste, pour la première fois.** 16 morceaux
+   découpés dans la vraie dalle — matériau, couleur, variante et réflectance
+   relus sur elle — soulevés de +1,50 à +3,40 stud, plus une cicatrice.
+2. **`Roche céleste` sort du sol.** Bloc 4,2 × 4 × 4,2 né à y = −1,10 sous une
+   surface à y = 1,00, remonté à y = 3,98. Elle SORT, elle n'apparaît pas.
+3. **Son geste, filmé** ; **la chaîne M1, filmée** (et son ralenti ×3).
+4. **Son animation joue** : `[AnimationDriver] playing: Skill2_RocheCeleste
+   (len=0,83)` — `track.Length > 0,1`, donc l'asset est réel.
+
+### Les quatre pannes muettes trouvées ce jour
+
+| panne | ce qu'elle coûtait |
+|---|---|
+| **`hitDir` posé par un seul appelant** (`CombatService`, la voie des M1) | cinq compétences portaient un `bris` écrit, chargé, fusionné, **sauté à chaque cast**, sans une ligne d'erreur |
+| **`DemanderCouches` appelée depuis le serveur** | `Roche céleste` faisait ses dégâts **sans montrer un pixel** |
+| **Les porteurs de VFX restés interrogeables** | la sonde de sol tombait dessus : `[CrouteSol] refus (sol_invisible)` — le module criait la bonne raison pour la mauvaise pièce |
+| **`porteur` qui ne voyageait pas dans le payload** | les couches de l'ultime ne pouvaient pas suivre l'astre |
+
+Contrôle posé : `tests/test_bris_branche.luau`, vérifié rouge.
+
+### Les deux règles qui sortent de la journée
+
+1. **Une magnitude ne veut rien dire sans la distance d'où on la regarde.** La
+   même couche `Soleil_Onde_Sol` avale le cadre à 2 studs (un dôme de poussière)
+   et à 22 studs (une bande blanche qui barre l'image), pour deux raisons
+   géométriques opposées. Trouvée en posant chaque couche SEULE et en la
+   regardant, après deux corrections à côté.
+2. **Un film se pilote en arrière-plan.** `screencapture -v` lancé en fond lève
+   la contrainte « deux appels d'outil n'encadrent pas 0,35 s ». Mesuré au
+   passage : l'aller-retour MCP fait **7 à 8 s**.
+
+### Mesures
+
+- **Blanc plat de `Roche céleste`** : 36,65 % du cadre au contact (référence
+  0,3 %, plancher de l'arène 1,5 %). Cause nommée, corrigée ; **l'après n'a pas
+  pu être mesuré** (quatre films de la version corrigée ont montré un écran
+  statique alors que le serveur confirmait le tir). Aucun chiffre d'après n'est
+  rapporté.
+- **Caméra de l'ultime**, sonde neuve : deux casts sur le MÊME code donnent
+  **93,7 %** puis **100 %** de frames avec le personnage dans le cadre. Le
+  cadrage **varie d'un cast à l'autre** — c'est une dépendance au lieu, pas un
+  réglage.
+- **Animation de l'ultime** : le bras droit est à son point le plus BAS (+0,00)
+  à l'instant où le soleil est censé naître dans sa main, et à son point le plus
+  HAUT (+1,18) 1,3 s plus tard. La tête bouge de **0,11 stud en 4,5 s**.
+
+### Une rétractation
+
+**« Un seul cast par session de Play »** était faux : c'était le cooldown
+déclaré (5 s / 7 s) plus une cible posée trop près — le `Poing` avance de 6
+studs avant de résoudre sa boîte, donc un mannequin à 4,5 studs finit DERRIÈRE
+l'attaquant et le coup passe à vide sans rien dire.
+
+### Ce qui est construit et pas encore vu
+
+L'empilement à huit couches de l'ultime, le recalage de ses temps, les couches
+de pack de `Roche céleste` après correction, `Soleil jumeau` et `Flash solaire`
+(en cours d'écriture).

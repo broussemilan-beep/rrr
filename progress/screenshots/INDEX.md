@@ -5,6 +5,10 @@ Fetch them at the immutable commit-pinned base URL given in `progress/LATEST.md`
 
 | file | bytes |
 | --- | --- |
+| `2026-09-06_roche-celeste-sort-du-sol.png` | 1873546 |
+| `2026-09-06_m1-chaine-planche.png` | 1600522 |
+| `2026-09-06_croute-seize-morceaux-en-vol.png` | 1821191 |
+| `2026-09-06_candidats-boule-de-feu.png` | 1506094 |
 | `2026-09-05_tournee-finie.png` | 718355 |
 | `2026-09-05_titan-mur-jaune.png` | 641588 |
 | `2026-09-05_salve-encre.png` | 286302 |
